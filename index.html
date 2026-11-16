@@ -29,6 +29,7 @@
   --lyssia: #EE7418; --lyssia-bg: #FFDDBF;
   --naelia: #DE4A8C; --naelia-bg: #FFD4E6;
   --famille: #6B6660; --famille-bg: #EFE8DD;
+  --chloe: #7B4FE3; --chloe-bg: #E7DEFF; --medhi: #0F8A7E; --medhi-bg: #CBEFE9;
   --ok: #2E8A57; --warn: #B98500; --hot: #D23A2A; --hot-bg: #FFDCD6;
   --shadow: 0 14px 34px rgba(22, 22, 22, .18);
   --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
@@ -44,6 +45,7 @@
     --lyssia: #FFA05A; --lyssia-bg: #4C2D14;
     --naelia: #FF89BC; --naelia-bg: #4B1E33;
     --famille: #A39D95; --famille-bg: #2B2825;
+    --chloe: #B89CFF; --chloe-bg: #33295A; --medhi: #4FD1C1; --medhi-bg: #143B37;
     --ok: #5CCB8C; --warn: #E8B83E; --hot: #FF7563; --hot-bg: #4A1E19;
     --shadow: 0 14px 34px rgba(0, 0, 0, .55); color-scheme: dark;
   }
@@ -88,6 +90,8 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .k-lyssia { --k: var(--lyssia); --kbg: var(--lyssia-bg); }
 .k-naelia { --k: var(--naelia); --kbg: var(--naelia-bg); }
 .k-famille { --k: var(--famille); --kbg: var(--famille-bg); }
+.k-chloe { --k: var(--chloe); --kbg: var(--chloe-bg); }
+.k-medhi { --k: var(--medhi); --kbg: var(--medhi-bg); }
 .kid { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 2px 9px 2px 7px; border-radius: 999px; background: var(--kbg); color: var(--ink); white-space: nowrap; }
 .kid::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
 .kids { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -115,7 +119,7 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .row .t { font-weight: 700; overflow-wrap: anywhere; }
 .row .m { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-top: 2px; }
 .row button.grow { background: none; border: 0; text-align: left; padding: 0; }
-.bubble { width: 50px; min-height: 46px; border-radius: 14px; background: var(--kbg, var(--lav)); display: grid; place-items: center; text-align: center; font-family: var(--f-display); font-weight: 800; font-size: 14px; line-height: 1.05; flex: none; padding: 4px; }
+.bubble { width: 50px; min-height: 46px; border-radius: 14px; background: var(--kbg, var(--sand)); display: grid; place-items: center; text-align: center; font-family: var(--f-display); font-weight: 800; font-size: 14px; line-height: 1.05; flex: none; padding: 4px; }
 .bubble.tard { background: #2A2350; color: #FFE98A; }
 /* Infos pratiques, frais, animaux */
 .info { display: flex; gap: 12px; align-items: flex-start; padding: 12px; }
@@ -147,9 +151,17 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .tard-card .tagline { color: #FFE98A; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin: 0; }
 .tard-card .consignes { background: rgba(255,255,255,.1); border-radius: 14px; padding: 10px 12px; margin: 0; white-space: pre-line; }
 .bubble.psg, .psg-tag { background: #10264A; color: #FFFFFF; }
+.bubble.psg { box-shadow: inset -6px 0 0 #DA2128; padding-right: 9px; }
+.psg-tag { border-bottom: 2px solid #DA2128; border-radius: 6px; }
+.psg-card { background: #10264A; color: #FFFFFF; position: relative; overflow: hidden; padding-right: 64px; }
+.psg-card::after { content: ""; position: absolute; right: 20px; top: 0; bottom: 0; width: 26px; background: #DA2128; }
+.psg-card::before { content: ""; position: absolute; right: 20px; top: 0; bottom: 0; width: 26px; border-left: 4px solid #FFFFFF; border-right: 4px solid #FFFFFF; box-sizing: border-box; z-index: 1; }
+.psg-card > * { position: relative; z-index: 2; }
+.psg-card .tagline { color: #FF6B6B; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin: 0; }
 .psg-tag { font-weight: 800; letter-spacing: .04em; }
 .psg-hero, .tile.psg-hero { background: #10264A; color: #FFFFFF; position: relative; overflow: hidden; padding-right: 52px; }
 .psg-hero::after { content: ""; position: absolute; right: 16px; top: 0; bottom: 0; width: 22px; background: #DA2128; }
+.psg-hero::before { content: ""; position: absolute; right: 16px; top: 0; bottom: 0; width: 22px; border-left: 3px solid #FFFFFF; border-right: 3px solid #FFFFFF; box-sizing: border-box; z-index: 1; }
 .psg-hero > * { position: relative; z-index: 1; }
 .when { font-size: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .when.late { color: var(--hot); font-weight: 700; }
@@ -180,7 +192,7 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
 .filters::-webkit-scrollbar { display: none; }
 .filters button { border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 14px; background: var(--kbg, var(--sand)); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
-.filters button.k-milan::before, .filters button.k-lyssia::before, .filters button.k-naelia::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
+.filters button.k-milan::before, .filters button.k-lyssia::before, .filters button.k-naelia::before, .filters button.k-chloe::before, .filters button.k-medhi::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
 .filters button[aria-pressed="true"] { background: var(--btn); color: var(--btn-ink); }
 
 /* Formulaires */
@@ -214,9 +226,9 @@ label.f, .f { display: flex; flex-direction: column; gap: 6px; font-size: 14px; 
 .notice { background: var(--yellow); border-radius: 16px; padding: 12px 16px; font-size: 14px; }
 
 /* Saisie en vrac */
-.vrac { background: var(--yellow); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-.vrac .lbl { font-family: var(--f-display); font-weight: 800; font-size: 20px; margin: 0; }
-.vrac textarea { min-height: 52px; height: 52px; border: 0; padding: 12px 14px; background: rgba(255,255,255,.7); border-radius: 16px; resize: none; font-size: 17px; }
+.vrac { background: var(--yellow); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.vrac .lbl { font-family: var(--f-display); font-weight: 800; font-size: 17px; margin: 0; }
+.vrac textarea { min-height: 48px; height: 48px; border: 0; padding: 12px 14px; background: rgba(255,255,255,.7); border-radius: 16px; resize: none; font-size: 17px; }
 @media (prefers-color-scheme: dark) { .vrac textarea, .btn.soft { background: rgba(0,0,0,.28); } }
 .vrac-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .prop { background: rgba(255,255,255,.6); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
@@ -275,12 +287,13 @@ details[open] summary::after { content: "–"; }
 /* Barre d'onglets flottante */
 .tabs { position: fixed; left: 0; right: 0; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; display: flex; justify-content: center;
   padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); pointer-events: none; }
-.tabs-in { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 2px; width: 100%; max-width: 420px; background: var(--nav); border-radius: 999px; padding: 7px; box-shadow: var(--shadow); }
-.tabs button { background: none; border: 0; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: var(--nav-ink); opacity: .6; padding: 0; }
+.tabs-in { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 0; width: 100%; max-width: 440px; background: var(--nav); border-radius: 30px; padding: 6px; box-shadow: var(--shadow); }
+.tabs button { background: none; border: 0; flex: 1; min-width: 0; height: 54px; border-radius: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--nav-ink); opacity: .62; padding: 0; font-size: 10.5px; font-weight: 600; letter-spacing: .01em; }
+.tabs button span { white-space: nowrap; }
 .tabs button[aria-current="page"] { opacity: 1; background: rgba(255,255,255,.16); }
 @media (prefers-color-scheme: dark) { .tabs button[aria-current="page"] { background: rgba(0,0,0,.12); } }
-.tabs svg { width: 23px; height: 23px; }
-.tabs .add { width: 54px; height: 54px; background: var(--yellow); color: #161616; opacity: 1; }
+.tabs svg { width: 22px; height: 22px; flex: none; }
+.tabs .add { flex: none; width: 54px; height: 54px; border-radius: 50%; background: var(--yellow); color: #161616; opacity: 1; margin: 0 2px; }
 @media (prefers-color-scheme: dark) { .tabs .add { background: #FFE98A; } }
 .tabs .add svg { width: 26px; height: 26px; }
 
@@ -298,7 +311,7 @@ details[open] summary::after { content: "–"; }
 .choice button b { font-family: var(--f-display); font-size: 18px; font-weight: 800; }
 .histo { font-size: 14px; color: var(--muted); margin: 0; padding-left: 18px; }
 
-.toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+.toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   background: var(--btn); color: var(--btn-ink); padding: 12px 18px; border-radius: 999px; display: flex; gap: 14px; align-items: center; max-width: calc(100% - 32px); box-shadow: var(--shadow); font-size: 15px; font-weight: 600; }
 .toast button { background: none; border: 0; color: var(--yellow); font-weight: 800; }
 @media (prefers-color-scheme: dark) { .toast button { color: #8A6A00; } }
@@ -340,13 +353,13 @@ details[open] summary::after { content: "–"; }
   </div>
 
   <nav class="tabs" aria-label="Rubriques"><div class="tabs-in">
-    <button data-act="tab" data-v="accueil" aria-label="Accueil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg></button>
-    <button data-act="tab" data-v="agenda" aria-label="Agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button>
-    <button data-act="tab" data-v="courses" aria-label="Courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9h18l-2 11H5z"/><path d="M8 9l4-6 4 6"/></svg></button>
+    <button data-act="tab" data-v="accueil" aria-label="Accueil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg><span>Accueil</span></button>
+    <button data-act="tab" data-v="agenda" aria-label="Agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span>Agenda</span></button>
+    <button data-act="tab" data-v="courses" aria-label="Courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9h18l-2 11H5z"/><path d="M8 9l4-6 4 6"/></svg><span>Courses</span></button>
     <button class="add" data-act="open-add" aria-label="Ajouter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-    <button data-act="tab" data-v="rappels" aria-label="Rappels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></svg></button>
-    <button data-act="tab" data-v="envies" aria-label="Envies et idées"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
-    <button data-act="tab" data-v="plus" aria-label="Plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></button>
+    <button data-act="tab" data-v="rappels" aria-label="À faire"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></svg><span>À faire</span></button>
+    <button data-act="tab" data-v="envies" aria-label="Envies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>Envies</span></button>
+    <button data-act="tab" data-v="plus" aria-label="Plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg><span>Plus</span></button>
   </div></nav>
 </div>
 
@@ -377,6 +390,12 @@ const ENFANTS = [
   { nom: "Lyssia", cls: "k-lyssia", re: /\blyssia\b/i },
   { nom: "Naelia", cls: "k-naelia", re: /\b(na[eë]lia|nanou)\b/i },
 ];
+// Les parents peuvent aussi être « pour qui » (leurs propres rendez-vous)
+const ADULTES = [
+  { nom: "Chloé", cls: "k-chloe", re: /\bchloe\b/i },
+  { nom: "Medhi", cls: "k-medhi", re: /\bmedhi\b/i },
+];
+const MEMBRES = [...ENFANTS, ...ADULTES];
 
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
@@ -407,7 +426,7 @@ const fmt = (s) => { const d = parse(s); return `${JC[wday(s)]} ${d.getDate()} $
 const fmtCourt = (s) => { const d = parse(s); return `${d.getDate()} ${MC[d.getMonth()]}`; };
 const fmtAn = (s) => { const d = parse(s); return `${d.getDate()} ${MC[d.getMonth()]} ${d.getFullYear()}`; };
 const fmtLong = (s) => { const d = parse(s); return `${JL[wday(s)]} ${d.getDate()} ${ML[d.getMonth()]}`; };
-const fmtH = (h) => h ? h.replace(":", " h ").replace(/ h 00$/, " h") : "";
+const fmtH = (h) => h ? `${Number(h.slice(0, 2))} h ${h.slice(3, 5)}`.replace(/ h 00$/, " h") : "";
 const nb = (n) => Math.round(n).toLocaleString("fr-FR");
 const km = (n) => nb(n) + " km";
 function rel(s) {
@@ -442,12 +461,12 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const sansAccent = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "");
 
 /* ---------- Enfants ---------- */
-const enfant = (nom) => ENFANTS.find((e) => e.nom === nom);
+const enfant = (nom) => MEMBRES.find((e) => e.nom === nom);
 const pourDe = (x) => (Array.isArray(x?.pour) ? x.pour : []).filter(enfant);
 const kidCls = (x) => { const p = pourDe(x); return p.length ? enfant(p[0]).cls : ""; };
 const kidTags = (x) => pourDe(x).map((n) => `<span class="kid ${enfant(n).cls}">${esc(n)}</span>`).join("");
-const enfantsDans = (txt) => ENFANTS.filter((e) => e.re.test(sansAccent(txt))).map((e) => e.nom);
-const pourField = (sel = [], name = "pour") => `<div class="f">Pour qui<div class="chips">${ENFANTS.map((e) => `<label class="${e.cls}"><input type="checkbox" name="${name}" value="${e.nom}" ${sel.includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div></div>`;
+const enfantsDans = (txt) => MEMBRES.filter((e) => e.re.test(sansAccent(txt))).map((e) => e.nom);
+const pourField = (sel = [], name = "pour") => `<div class="f">Pour qui<div class="chips">${MEMBRES.map((e) => `<label class="${e.cls}"><input type="checkbox" name="${name}" value="${e.nom}" ${sel.includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div></div>`;
 
 /* ---------- État ---------- */
 const S = {
@@ -487,8 +506,8 @@ const routineFaite = (r, s) => r.fait === s;
 const sacLyssia = () => S.checklists.find((c) => /lyssia/i.test(c.nom || ""));
 const filtreKid = (x) => !S.kid || (S.kid === "famille" ? !pourDe(x).length : pourDe(x).includes(S.kid));
 // Matchs du PSG à domicile : affichés comme des événements de Medhi, sans être enregistrés dans la base
-const matchsDu = (d) => (S.kid && S.kid !== "famille") ? [] : MATCHS.filter((m) => m.date === d).map((m) => ({
-  id: "psg-" + m.id, psg: true, titre: `PSG – ${m.adv}`, date: m.date, heure: m.heure || "", qui: "Medhi",
+const matchsDu = (d) => (S.kid && S.kid !== "Medhi") ? [] : MATCHS.filter((m) => m.date === d).map((m) => ({
+  id: "psg-" + m.id, psg: true, pour: ["Medhi"], m, titre: `PSG – ${m.adv}`, date: m.date, heure: m.heure || "", qui: "Medhi",
   note: m.heure ? `${m.comp} · Parc des Princes` : `${m.comp} · date exacte à confirmer (${fmt(m.date)} – ${fmt(m.au)})`,
 }));
 // Poubelles : affichées la veille au soir de chaque collecte
@@ -551,7 +570,7 @@ function render() {
   const keep = a && a.id && main.contains(a) && "value" in a ? { id: a.id, v: a.value, s: a.selectionStart } : null;
   $("#date-line").textContent = fmtLong(today()).replace(/^./, (c) => c.toUpperCase());
   $("#hello-name").textContent = `Bonjour ${qui()}`;
-  const av = $("#avatar"); av.textContent = qui().slice(0, 1); av.style.background = qui() === "Medhi" ? "var(--sage)" : "var(--lav)";
+  const av = $("#avatar"); av.textContent = qui().slice(0, 1); av.style.background = qui() === "Medhi" ? "var(--medhi-bg)" : "var(--chloe-bg)"; av.style.color = qui() === "Medhi" ? "var(--medhi)" : "var(--chloe)";
   document.querySelectorAll(".tabs button[data-v]").forEach((b) => b.setAttribute("aria-current", b.dataset.v === S.view && !S.sub ? "page" : "false"));
   $("#vrac-box").hidden = !(S.view === "accueil" && !S.sub);
   renderStatus();
@@ -566,21 +585,18 @@ function renderStatus() {
 const loading = (k) => !S.loaded.has(k);
 const filtresKids = (actif, act = "kid") => `<div class="filters" role="group" aria-label="Filtrer par enfant">
   <button data-act="${act}" data-k="" aria-pressed="${!actif}">Tous</button>
-  ${ENFANTS.map((e) => `<button class="${e.cls}" data-act="${act}" data-k="${e.nom}" aria-pressed="${actif === e.nom}">${e.nom}</button>`).join("")}
+  ${MEMBRES.map((e) => `<button class="${e.cls}" data-act="${act}" data-k="${e.nom}" aria-pressed="${actif === e.nom}">${e.nom}</button>`).join("")}
   ${act === "kid" ? `<button data-act="${act}" data-k="famille" aria-pressed="${actif === "famille"}">Famille</button>` : ""}</div>`;
 
 const VIEWS = {
   accueil() {
     const t = today(); const lun = mondayOf(t);
     const out = [gardeBanner(lun)];
-    const sac = sacLyssia();
-    const passToday = passageLe(t), passTomorrow = passageLe(addDays(t, 1));
-    if (passToday || passTomorrow) {
-      const s = statutSemaine(passToday ? t : addDays(t, 1));
-      out.push(`<section class="card c-white k-lyssia"><p style="margin:0"><b>${passToday ? "Aujourd'hui" : "Demain"} à ${heurePassage()}</b> : Lyssia ${s && s.avec ? "arrive" : "repart chez son autre parent"}.</p>
-        ${sac ? `<div class="actions"><button class="btn sm" data-act="open-check" data-id="${sac.id}">Préparer le sac (${(sac.items || []).filter((i) => i.ok).length}/${(sac.items || []).length})</button></div>` : ""}</section>`);
+    // 1. Ce soir et aujourd'hui : ce qui ne peut pas attendre
+    for (const m of MATCHS.filter((x) => x.date === t && x.heure)) {
+      out.push(`<section class="card psg-card" data-act="sub" data-type="psg" role="button" tabindex="0"><p class="tagline">${Number(m.heure.slice(0, 2)) >= 18 ? "Ce soir" : "Aujourd'hui"} au Parc</p>
+        <p class="big">PSG – ${esc(m.adv)}</p><p style="margin:0">${fmtH(m.heure)} · ${esc(m.comp)} · Medhi au stade</p></section>`);
     }
-    // Poubelles à sortir ce soir
     for (const c of COLLECTES.filter((x) => addDays(x.d, -1) === t)) {
       const so = SORTES[c.s], f = pbFaite(c);
       out.push(`<section class="card" style="background:${so.couleur};color:${so.texte}"><p style="margin:0;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em">Ce soir</p>
@@ -588,18 +604,35 @@ const VIEWS = {
         <p style="margin:0">${so.detail} · collecte demain ${so.moment}${f && f.par ? ` · sortie par ${esc(f.par)}` : ""}.</p>
         <div class="actions"><button class="btn sm" style="background:${so.texte};color:${so.couleur}" data-act="poubelle" data-c="${c.d}" data-s="${c.s}">${f ? "Annuler" : "C'est sorti"}</button></div></section>`);
     }
-    if (!COLLECTES.some((c) => c.d >= t)) out.push(`<section class="card c-sand"><p style="margin:0"><b>Calendrier des poubelles terminé.</b> Envoie la photo du calendrier ${parse(t).getFullYear()} à Claude pour l'ajouter.</p></section>`);
-    // Soirée où l'un rentre tard : l'autre couche les enfants
     for (const e of S.events.filter((x) => x.type === "tard" && (x.date === t || (x.date === addDays(t, 1) && new Date().getHours() >= 18)))) {
-      const autre = coucheur(e);
       out.push(`<section class="card tard-card"><p class="tagline">${e.date === t ? "Ce soir" : "Demain soir"}</p>
-        <p class="big" style="padding-right:70px">${esc(autre)} couche les enfants</p>
+        <p class="big" style="padding-right:70px">${esc(coucheur(e))} couche les enfants</p>
         <p style="margin:0">${esc(e.qui)} rentre tard${e.heure ? `, vers ${fmtH(e.heure)}` : ""}.</p>
         ${e.note ? `<p class="consignes">${esc(e.note)}</p>` : ""}
         <div class="actions"><button class="btn sm soft" style="color:#fff;background:rgba(255,255,255,.16)" data-act="form" data-type="tard" data-id="${e.id}">Modifier</button></div></section>`);
     }
-    // Les trois enfants
-    out.push(`<section class="kids">${ENFANTS.map((e) => {
+    // 2. Aujourd'hui (sans répéter ce qui a déjà sa grande carte)
+    const dus = rappelsActifs().filter((r) => r.prochaine <= t);
+    const rout = S.routines.filter((r) => routineDue(r, t));
+    let todo = evtsDu(t).filter((e) => !e.poubelle && e.type !== "tard" && !(e.psg && e.heure)).map(eventRow).join("");
+    for (const r of dus) todo += rappelRow(r);
+    for (const r of rout) todo += routineRow(r, t);
+    out.push(`<section class="sec"><div class="sec-head"><h2>Aujourd'hui</h2><button class="link" data-act="tab" data-v="agenda">Agenda</button></div>
+      ${loading("rappels") ? '<p class="muted">Chargement…</p>' : todo ? `<ul class="list">${todo}</ul>` : '<p class="empty">Rien d\'autre de prévu aujourd\'hui.</p>'}</section>`);
+    // 3. Croquettes, À faire, courses
+    for (const a of S.animaux) {
+      const c = croquettes(a);
+      if (c && c.jours <= 5) out.push(`<section class="card c-yellow"><p style="margin:0"><b>Croquettes de ${esc(a.nom)}</b> : ${c.jours < 0 ? `le sac devait être fini il y a ${-c.jours} j` : c.jours === 0 ? "le sac devrait être fini aujourd'hui" : `plus que ${c.jours} jour${c.jours > 1 ? "s" : ""} environ`}.</p>
+        <div class="actions"><button class="btn sm" data-act="animal-courses" data-id="${a.id}">Ajouter aux courses</button><button class="btn sm ghost" data-act="animal-sac" data-id="${a.id}">Sac acheté</button></div></section>`);
+    }
+    const taf = tachesOuvertes();
+    const urg = S.courses.filter((c) => c.liste === "urgent");
+    out.push(`<section class="card c-sand"><div class="sec-head"><h2>À faire · ${taf.length}</h2><button class="link" data-act="go-taches">Tout voir</button></div>
+      ${taf.length ? `<ul class="list">${taf.slice(0, 4).map(tacheRow).join("")}</ul>${taf.length > 4 ? `<p class="small" style="margin:0">et ${taf.length - 4} autres</p>` : ""}` : '<p style="margin:0">Rien en attente.</p>'}</section>`);
+    out.push(`<section class="card c-sage"><div class="sec-head"><h2>Courses urgentes · ${urg.length}</h2><button class="link" data-act="tab" data-v="courses">Tout voir</button></div>
+      ${urg.length ? `<ul class="list">${urg.slice(0, 5).map(courseRow).join("")}</ul>${urg.length > 5 ? `<p class="small" style="margin:0">et ${urg.length - 5} autres</p>` : ""}` : '<p style="margin:0">Rien à acheter en urgence.</p>'}</section>`);
+    // 4. Les enfants, puis la semaine
+    out.push(`<section class="sec"><h2>Les enfants</h2><div class="kids">${ENFANTS.map((e) => {
       const ev = S.events.filter((x) => x.date >= t && pourDe(x).includes(e.nom)).sort((a, b) => (a.date + (a.heure || "")).localeCompare(b.date + (b.heure || "")));
       const rp = rappelsActifs().filter((r) => pourDe(r).includes(e.nom));
       const next = [...ev.map((x) => ({ d: x.date, h: x.heure, t: x.titre })), ...rp.map((r) => ({ d: r.prochaine, h: "", t: r.titre }))].sort((a, b) => (a.d + (a.h || "")).localeCompare(b.d + (b.h || "")))[0];
@@ -607,39 +640,17 @@ const VIEWS = {
       return `<button class="kidcard ${e.cls}" data-act="kid-agenda" data-k="${e.nom}"><b>${e.nom}</b>
         <span>${next ? `${esc(next.t)}<br><span class="muted">${rel(next.d)}${next.h ? " · " + fmtH(next.h) : ""}</span>` : '<span class="muted">Rien de prévu</span>'}</span>
         <span class="n">${n}<span class="small muted" style="font-family:var(--f-body);font-weight:500"> cette sem.</span></span></button>`;
-    }).join("")}</section>`);
-    // Aujourd'hui
-    const dus = rappelsActifs().filter((r) => r.prochaine <= t);
-    const rout = S.routines.filter((r) => routineDue(r, t));
-    let todo = evtsDu(t).map(eventRow).join("");
-    for (const r of dus) todo += rappelRow(r);
-    for (const r of rout) todo += routineRow(r, t);
-    out.push(`<section class="sec"><div class="sec-head"><h2>Aujourd'hui</h2></div>
-      ${loading("rappels") ? '<p class="muted">Chargement…</p>' : todo ? `<ul class="list">${todo}</ul>` : '<p class="empty">Rien de prévu aujourd\'hui.</p>'}</section>`);
-    // 7 jours
+    }).join("")}</div></section>`);
     let week = "";
     for (let i = 1; i <= 7; i++) {
       const d = addDays(t, i); const ev = evtsDu(d); const rp = rappelsActifs().filter((r) => r.prochaine === d);
       if (!ev.length && !rp.length && !passageLe(d)) continue;
       week += `<li class="day">${i === 1 ? "Demain" : fmt(d)}${passageLe(d) ? ` · passage de Lyssia ${heurePassage()}` : ""}</li>` + ev.map(eventRow).join("") + rp.map(rappelRow).join("");
     }
-    out.push(`<section class="sec"><div class="sec-head"><h2>Les 7 prochains jours</h2><button class="link" data-act="tab" data-v="agenda">Agenda</button></div>
+    out.push(`<section class="sec"><div class="sec-head"><h2>Les 7 prochains jours</h2></div>
       ${week ? `<ul class="list">${week}</ul>` : '<p class="empty">Aucun rendez-vous ni rappel dans les 7 prochains jours.</p>'}</section>`);
-    // Croquettes à racheter bientôt
-    for (const a of S.animaux) {
-      const c = croquettes(a);
-      if (c && c.jours <= 5) out.push(`<section class="card c-yellow"><p style="margin:0"><b>Croquettes de ${esc(a.nom)}</b> : ${c.jours < 0 ? `le sac devait être fini il y a ${-c.jours} j` : c.jours === 0 ? "le sac devrait être fini aujourd'hui" : `plus que ${c.jours} jour${c.jours > 1 ? "s" : ""} environ`}.</p>
-        <div class="actions"><button class="btn sm" data-act="animal-courses" data-id="${a.id}">Ajouter aux courses</button><button class="btn sm ghost" data-act="animal-sac" data-id="${a.id}">Sac acheté</button></div></section>`);
-    }
-    // À faire
-    const taf = tachesOuvertes();
-    out.push(`<section class="card c-sand"><div class="sec-head"><h2>À faire · ${taf.length}</h2><button class="link" data-act="go-taches">Tout voir</button></div>
-      ${taf.length ? `<ul class="list">${taf.slice(0, 4).map(tacheRow).join("")}</ul>${taf.length > 4 ? `<p class="small" style="margin:0">et ${taf.length - 4} autres</p>` : ""}` : '<p style="margin:0">Rien en attente. Écris « lancer la machine » ou « récupérer le colis Vinted » dans « Note tout ici ».</p>'}</section>`);
-    // Courses
-    const urg = S.courses.filter((c) => c.liste === "urgent");
-    out.push(`<section class="card c-sage"><div class="sec-head"><h2>Courses urgentes · ${urg.length}</h2><button class="link" data-act="tab" data-v="courses">Tout voir</button></div>
-      ${urg.length ? `<ul class="list">${urg.slice(0, 5).map(courseRow).join("")}</ul>${urg.length > 5 ? `<p class="small" style="margin:0">et ${urg.length - 5} autres</p>` : ""}` : '<p style="margin:0">Rien à acheter en urgence.</p>'}</section>`);
-    return `<div class="sec" style="gap:20px">${out.join("")}</div>`;
+    if (!COLLECTES.some((c) => c.d >= t)) out.push(`<section class="card c-sand"><p style="margin:0"><b>Calendrier des poubelles terminé.</b> Envoie la photo du nouveau calendrier à Claude pour l'ajouter.</p></section>`);
+    return `<div class="sec" style="gap:18px">${out.join("")}</div>`;
   },
 
   agenda() {
@@ -1025,11 +1036,16 @@ function kmChart(yi) {
 function gardeBanner(lun) {
   const s = statutSemaine(lun);
   if (!s) return `<section class="garde sans"><p class="tagline">Lyssia</p><p class="big">${S.garde === undefined ? "Chargement…" : "Garde à régler"}</p></section>`;
-  const nx = prochainChangement(lun);
+  const nx = prochainChangement(lun); const t = today();
+  // Jour de passage : on annonce l'heure en priorité
+  const pj = passageLe(t) ? t : passageLe(addDays(t, 1)) ? addDays(t, 1) : null;
+  const sp = pj ? statutSemaine(pj) : null;
+  const ligne = pj ? `<b>${pj === t ? "Aujourd'hui" : "Demain"} à ${heurePassage()}</b> : elle ${sp && sp.avec ? "arrive" : "repart chez son autre parent"}.`
+    : nx ? (s.avec ? `Elle repart ${fmtLong(nx)} à ${heurePassage()}.` : `Elle arrive ${fmtLong(nx)} à ${heurePassage()}.`) : "";
   return `<section class="garde ${s.avec ? "avec" : "sans"}" data-act="sub" data-type="garde" role="button" tabindex="0">
     <p class="tagline">Lyssia</p>
     <p class="big">${s.avec ? "Avec nous cette semaine" : "Semaine sans Lyssia"}</p>
-    <p>${nx ? (s.avec ? `Elle repart ${fmtLong(nx)} à ${heurePassage()}.` : `Elle arrive ${fmtLong(nx)} à ${heurePassage()}.`) : ""}${s.motif !== "Alternance" ? ` ${esc(s.motif)}.` : ""}</p></section>`;
+    <p>${ligne}${s.motif !== "Alternance" ? ` ${esc(s.motif)}.` : ""}</p></section>`;
 }
 const coucheur = (e) => e.qui === "Medhi" ? "Chloé" : "Medhi";
 function eventRow(e) {
@@ -1039,10 +1055,10 @@ function eventRow(e) {
   if (e.type === "tard") return `<li class="row"><span class="bubble tard">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "Soir"}</span>
     <button class="grow" data-act="form" data-type="tard" data-id="${e.id}"><div class="t">${esc(coucheur(e))} couche les enfants</div><div class="m"><span>${esc(e.qui)} rentre tard${e.heure ? ` (vers ${fmtH(e.heure)})` : ""}</span>${e.note ? `<span>${esc(e.note.split("\n")[0])}${e.note.includes("\n") ? "…" : ""}</span>` : ""}</div></button></li>`;
   if (e.psg) return `<li class="row"><span class="bubble psg">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "À<br>conf."}</span>
-    <button class="grow" data-act="sub" data-type="psg"><div class="t">${esc(e.titre)}</div><div class="m"><span class="tag psg-tag">PSG</span><span>Medhi</span><span>${esc(e.note)}</span></div></button></li>`;
+    <button class="grow" data-act="sub" data-type="psg"><div class="t">${esc(e.titre)}</div><div class="m"><span class="tag psg-tag">PSG</span>${kidTags(e)}<span>${esc(e.note)}</span></div></button></li>`;
   return `<li class="row ${kidCls(e)}"><span class="bubble">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "Jour-<br>née"}</span>
     <button class="grow" data-act="form" data-type="event" data-id="${e.id}"><div class="t">${esc(e.titre)}</div>
-    <div class="m">${kidTags(e)}${quiTag(e.qui)}${e.note ? `<span>${esc(e.note)}</span>` : ""}</div></button></li>`;
+    <div class="m">${kidTags(e)}${pourDe(e).includes(e.qui) ? "" : quiTag(e.qui)}${e.note ? `<span>${esc(e.note)}</span>` : ""}</div></button></li>`;
 }
 function rappelRow(r) {
   const late = r.prochaine < today();
@@ -1137,7 +1153,7 @@ function vracPropsHTML(prefix) {
     ${p.type === "course" ? `<div class="chips">${Object.entries(LISTES).map(([k, v]) => `<label><input type="radio" name="${prefix}${i}-liste" value="${k}" data-prop="${i}" data-field="liste" ${k === (p.liste || "urgent") ? "checked" : ""}><span>${v}</span></label>`).join("")}</div>` : ""}
     ${p.type === "lien" ? `<div class="chips"><label><input type="radio" name="${prefix}${i}-genre" value="achat" data-prop="${i}" data-field="genre" ${p.genre !== "idee" ? "checked" : ""}><span>Achat</span></label><label><input type="radio" name="${prefix}${i}-genre" value="idee" data-prop="${i}" data-field="genre" ${p.genre === "idee" ? "checked" : ""}><span>Idée</span></label></div>` : ""}
     ${p.type === "tache" ? `<div class="chips">${QUI.map((q) => `<label><input type="radio" name="${prefix}${i}-qui" value="${q}" data-prop="${i}" data-field="qui" ${(p.qui || "Les deux") === q ? "checked" : ""}><span>${q}</span></label>`).join("")}</div>` : ""}
-    ${p.type !== "course" && p.type !== "tard" && p.type !== "tache" ? `<div class="chips">${ENFANTS.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
+    ${p.type !== "course" && p.type !== "tard" && p.type !== "tache" ? `<div class="chips">${MEMBRES.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
   </div>`).join("");
 }
 function hintTxt() {
