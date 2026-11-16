@@ -1,5 +1,5 @@
 // Garde une copie de la page pour l'ouvrir sans réseau. Les données, elles, sont gérées par Firebase.
-const CACHE = "qg-famille-v8";
+const CACHE = "qg-famille-v9";
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", (e) => {

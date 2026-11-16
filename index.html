@@ -172,7 +172,7 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .tick svg { width: 16px; height: 16px; }
 .day { font-family: var(--f-display); font-size: 14px; font-weight: 700; color: var(--muted); padding: 12px 10px 2px; list-style: none; }
 .day.today { color: var(--ink); }
-.btn { border: 0; background: var(--btn); color: var(--btn-ink); font-weight: 700; padding: 12px 20px; border-radius: 999px; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; }
+.btn { text-decoration: none; border: 0; background: var(--btn); color: var(--btn-ink); font-weight: 700; padding: 12px 20px; border-radius: 999px; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; }
 .btn.sm { padding: 8px 14px; font-size: 14px; }
 .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
 .btn.soft { background: rgba(255,255,255,.55); color: var(--ink); }
@@ -309,6 +309,7 @@ details[open] summary::after { content: "–"; }
 .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .choice button { border: 0; border-radius: 20px; padding: 14px; text-align: left; display: flex; flex-direction: column; gap: 2px; color: var(--ink); }
 .choice button b { font-family: var(--f-display); font-size: 18px; font-weight: 800; }
+.choice .tard-card { color: #FFFFFF; }
 .histo { font-size: 14px; color: var(--muted); margin: 0; padding-left: 18px; }
 
 .toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); bottom: calc(96px + env(safe-area-inset-bottom, 0px));
@@ -622,8 +623,10 @@ const VIEWS = {
     // 3. Croquettes, À faire, courses
     for (const a of S.animaux) {
       const c = croquettes(a);
-      if (c && c.jours <= 5) out.push(`<section class="card c-yellow"><p style="margin:0"><b>Croquettes de ${esc(a.nom)}</b> : ${c.jours < 0 ? `le sac devait être fini il y a ${-c.jours} j` : c.jours === 0 ? "le sac devrait être fini aujourd'hui" : `plus que ${c.jours} jour${c.jours > 1 ? "s" : ""} environ`}.</p>
-        <div class="actions"><button class="btn sm" data-act="animal-courses" data-id="${a.id}">Ajouter aux courses</button><button class="btn sm ghost" data-act="animal-sac" data-id="${a.id}">Sac acheté</button></div></section>`);
+      if (!(c && c.jours <= 5) && !demandeCroq(a)) continue;
+      const etat = !c ? "" : c.jours < 0 ? ` : le sac devait être fini il y a ${-c.jours} j.` : c.jours === 0 ? " : le sac devrait être fini aujourd'hui." : ` : plus que ${c.jours} jour${c.jours > 1 ? "s" : ""} environ.`;
+      out.push(`<section class="card c-yellow"><p style="margin:0"><b>Croquettes de ${esc(a.nom)}</b>${etat}</p>
+        ${croqBoutons(a)}</section>`);
     }
     const taf = tachesOuvertes();
     const urg = S.courses.filter((c) => c.liste === "urgent");
@@ -830,8 +833,9 @@ const VIEWS = {
         <div class="actions"><button class="btn sm" data-act="form" data-type="animal" data-id="${a.id}">Modifier la fiche</button></div></section>
       <section class="card c-white"><h2>Croquettes</h2>
         ${cr.marque ? `<dl class="kv"><dt>Marque</dt><dd>${esc(cr.marque)}</dd>${cr.ref ? `<dt>Référence</dt><dd>${esc(cr.ref)}</dd>` : ""}${cr.poids ? `<dt>Sac</dt><dd>${esc(cr.poids)} kg${cr.prix ? ` · ${esc(cr.prix)} €` : ""}</dd>` : ""}${cr.magasin ? `<dt>Où</dt><dd>${/^https?:/.test(cr.magasin) ? `<a href="${esc(cr.magasin)}" target="_blank" rel="noopener">Lien d'achat</a>` : esc(cr.magasin)}</dd>` : ""}${cr.duree ? `<dt>Un sac dure</dt><dd>${esc(cr.duree)} semaines</dd>` : ""}</dl>` : '<p class="muted" style="margin:0">Marque, référence, taille du sac et où les acheter : plus besoin de se renvoyer la photo du paquet.</p>'}
-        ${c ? `<p style="margin:0;font-weight:700;${c.jours <= 5 ? "color:var(--hot)" : ""}">Sac acheté le ${fmtAn(a.dernierSac)} · à racheter vers le ${fmtAn(c.fin)}</p>` : ""}
-        <div class="actions"><button class="btn sm" data-act="animal-sac" data-id="${a.id}">Sac acheté aujourd'hui</button><button class="btn sm ghost" data-act="animal-courses" data-id="${a.id}">Ajouter aux courses</button></div></section>
+        ${c ? `<p style="margin:0;font-weight:700;${c.jours <= 5 ? "color:var(--hot)" : ""}">Sac ouvert le ${fmtAn(a.dernierSac)} · à racheter vers le ${fmtAn(c.fin)}</p>` : ""}
+        ${a.commandeLe ? `<p class="small muted" style="margin:0">Dernière commande le ${fmtAn(a.commandeLe)}${a.commandePar ? " par " + esc(a.commandePar) : ""}.</p>` : ""}
+        ${croqBoutons(a)}</section>
       <section class="card c-white"><h2>Vétérinaire</h2>
         ${v.nom || v.tel || v.adresse ? `<dl class="kv">${v.nom ? `<dt>Nom</dt><dd>${esc(v.nom)}</dd>` : ""}${v.tel ? `<dt>Téléphone</dt><dd><a href="tel:${esc(tel)}" style="color:inherit">${esc(v.tel)}</a> <button class="mini" data-act="copy" data-v="${esc(v.tel)}">Copier</button></dd>` : ""}${v.adresse ? `<dt>Adresse</dt><dd>${esc(v.adresse)}</dd>` : ""}</dl>` : '<p class="muted" style="margin:0">Pas encore renseigné.</p>'}</section>
       ${a.consignes ? `<section class="card c-lav"><h2>Consignes</h2><p style="margin:0;white-space:pre-line">${esc(a.consignes)}</p></section>` : ""}
@@ -1065,7 +1069,7 @@ function rappelRow(r) {
   return `<li class="row ${kidCls(r)}"><button class="tick" data-act="rappel-done" data-id="${r.id}" aria-label="Fait : ${esc(r.titre)}"></button>
     <button class="grow" data-act="form" data-type="rappel" data-id="${r.id}"><div class="t">${esc(r.titre)}</div>
     <div class="m">${kidTags(r)}${r.cat ? `<span>${esc(r.cat)}</span>` : ""}${r.recur ? `<span>${recurTxt(r.recur)}</span>` : ""}${quiTag(r.qui)}${r.note ? `<span>${esc(r.note)}</span>` : ""}</div></button>
-    <span class="when ${late ? "late" : ""}">${rel(r.prochaine)}</span></li>`;
+    <span style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none">${r.lien ? `<a class="mini" style="text-decoration:none" href="${esc(r.lien)}" target="_blank" rel="noopener">${/starcroq/.test(r.lien) ? "Starcroq ↗" : "Ouvrir ↗"}</a>` : ""}<span class="when ${late ? "late" : ""}">${rel(r.prochaine)}</span></span></li>`;
 }
 function routineRow(r, t, showDays) {
   const due = routineDue(r, t), done = routineFaite(r, t);
@@ -1113,6 +1117,26 @@ function fraisRow(f) {
     <div class="m"><span>Payé par ${f.payePar === FLAVIE ? FLAVIE : "nous"}</span><span>${part === 100 ? `entièrement à la charge ${f.payePar === FLAVIE ? "de nous" : "de " + FLAVIE}` : `part de ${f.payePar === FLAVIE ? "nous" : FLAVIE} : ${euros(du)}`}</span>${f.regle ? `<span>réglé${f.regleLe ? " le " + fmtCourt(f.regleLe) : ""}</span>` : ""}</div></button>
     <span class="euro">${euros(num(f.montant))}</span></li>`;
 }
+// Croquettes : Medhi signale qu'il en faut, Chloé les commande en ligne
+const ACHETEUSE = "Chloé";
+const SITE_CROQ = "https://starcroq.com/";
+const lienCroq = (a) => /^https?:/.test(a?.croq?.magasin || "") ? a.croq.magasin : SITE_CROQ;
+const demandeCroq = (a) => S.rappels.find((r) => r.animal === a.id && !r.termine);
+function animalPour(txt) {
+  const n = sansAccent(txt).toLowerCase();
+  return S.animaux.find((a) => n.includes(sansAccent(a.nom).toLowerCase()))
+    || (/\bchats?\b/.test(n) && S.animaux.find((a) => /^chat/i.test(a.espece || "")))
+    || S.animaux.find((a) => /^chien/i.test(a.espece || "")) || S.animaux[0];
+}
+const rappelCroq = (a) => ({ titre: `Commander les croquettes de ${a.nom}`, prochaine: today(), cat: "Animaux", recur: null, pour: [], qui: ACHETEUSE,
+  note: `Demandé par ${qui()}${a.croq?.marque ? ` · ${a.croq.marque}${a.croq.ref ? " " + a.croq.ref : ""}${a.croq.poids ? ", " + a.croq.poids + " kg" : ""}` : ""}`,
+  lien: lienCroq(a), animal: a.id, histo: [], termine: false, cree: now() });
+function croqBoutons(a) {
+  const dm = demandeCroq(a);
+  if (dm) return `<p style="margin:0;font-weight:700">Commande demandée à ${ACHETEUSE} le ${fmtCourt(dm.prochaine)} ✓</p>
+    ${qui() === ACHETEUSE ? `<div class="actions"><a class="btn sm" href="${esc(dm.lien || lienCroq(a))}" target="_blank" rel="noopener">Commander sur Starcroq</a><button class="btn sm ghost" data-act="rappel-done" data-id="${dm.id}">C'est commandé</button></div>` : ""}`;
+  return `<div class="actions"><button class="btn sm" data-act="croq-demande" data-id="${a.id}">${qui() === ACHETEUSE ? "À commander" : "Il faut en commander"}</button><button class="btn sm ghost" data-act="animal-sac" data-id="${a.id}">Nouveau sac ouvert</button></div>`;
+}
 function croquettes(a) {
   const sem = num(a?.croq?.duree);
   if (!a?.dernierSac || !sem) return null;
@@ -1141,8 +1165,8 @@ function envieRow(l) {
 }
 
 /* ---------- Saisie en vrac ---------- */
-const TYPES = { course: "Course", tache: "À faire", evenement: "Événement", rappel: "Rappel", lien: "Envie", tard: "Soirée tard" };
-const DEST = { course: "Courses", tache: "À faire", evenement: "Agenda", rappel: "Rappels", lien: "Envies", tard: "Agenda" };
+const TYPES = { croq: "Commande croquettes", course: "Course", tache: "À faire", evenement: "Événement", rappel: "Rappel", lien: "Envie", tard: "Soirée tard" };
+const DEST = { croq: `Rappels de ${ACHETEUSE}`, course: "Courses", tache: "À faire", evenement: "Agenda", rappel: "Rappels", lien: "Envies", tard: "Agenda" };
 let props = [];
 function vracPropsHTML(prefix) {
   return props.map((p, i) => `<div class="prop">
@@ -1153,7 +1177,7 @@ function vracPropsHTML(prefix) {
     ${p.type === "course" ? `<div class="chips">${Object.entries(LISTES).map(([k, v]) => `<label><input type="radio" name="${prefix}${i}-liste" value="${k}" data-prop="${i}" data-field="liste" ${k === (p.liste || "urgent") ? "checked" : ""}><span>${v}</span></label>`).join("")}</div>` : ""}
     ${p.type === "lien" ? `<div class="chips"><label><input type="radio" name="${prefix}${i}-genre" value="achat" data-prop="${i}" data-field="genre" ${p.genre !== "idee" ? "checked" : ""}><span>Achat</span></label><label><input type="radio" name="${prefix}${i}-genre" value="idee" data-prop="${i}" data-field="genre" ${p.genre === "idee" ? "checked" : ""}><span>Idée</span></label></div>` : ""}
     ${p.type === "tache" ? `<div class="chips">${QUI.map((q) => `<label><input type="radio" name="${prefix}${i}-qui" value="${q}" data-prop="${i}" data-field="qui" ${(p.qui || "Les deux") === q ? "checked" : ""}><span>${q}</span></label>`).join("")}</div>` : ""}
-    ${p.type !== "course" && p.type !== "tard" && p.type !== "tache" ? `<div class="chips">${MEMBRES.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
+    ${p.type !== "course" && p.type !== "tard" && p.type !== "tache" && p.type !== "croq" ? `<div class="chips">${MEMBRES.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
   </div>`).join("");
 }
 function hintTxt() {
@@ -1175,6 +1199,7 @@ function onVracInput(el) {
     if (/\brentr\w*\s+(un peu\s+|tres\s+)?tard\b|\bcouche[rs]?\s+les enfants\b/.test(txt)) {
       return { ...p, type: "tard", date: p.date || today(), qui: /\bmedhi\s+rentre/.test(txt) ? "Medhi" : /\bchloe\s+rentre/.test(txt) ? "Chloé" : qui() };
     }
+    if (/\bcroquettes?\b/.test(txt) && S.animaux.length && p.type !== "lien") { const a = animalPour(txt); return { type: "croq", titre: `Commander les croquettes de ${a.nom}`, animal: a.id }; }
     return { ...p, pour: enfantsDans(p.titre || ""), genre: p.type === "lien" ? "achat" : undefined };
   });
   renderVrac();
@@ -1188,6 +1213,7 @@ async function saveVrac() {
     for (const p of keep) {
       const titre = (p.titre || "").trim(); const pour = p.pour || [];
       if (p.type === "course") b.set(doc(collection(fs, "courses")), { nom: titre, liste: p.liste || "urgent", note: "", qui: me, cree: now() });
+      else if (p.type === "croq") { const a = S.animaux.find((x) => x.id === p.animal); if (a && !demandeCroq(a)) b.set(doc(collection(fs, "rappels")), rappelCroq(a)); }
       else if (p.type === "tache") b.set(doc(collection(fs, "taches")), { titre, qui: p.qui || "Les deux", note: "", pour, fait: false, par: me, cree: now() });
       else if (p.type === "tard") { const q = p.qui || me; b.set(doc(collection(fs, "events")), { type: "tard", titre: `${q} rentre tard`, date: p.date || t, heure: p.heure || "", qui: q, note: "", pour: [], par: me, cree: now() }); }
       else if (p.type === "evenement") b.set(doc(collection(fs, "events")), { titre, date: p.date || t, heure: p.heure || "", note: "", pour, qui: "Les deux", par: me, cree: now() });
@@ -1222,6 +1248,7 @@ function openAdd() {
     </form>
     <h3>Ou avec tous les détails</h3>
     <div class="choice">
+      <button class="c-yellow" style="grid-column:1/-1" data-act="croq-choix"><b>Plus de croquettes</b><span class="small">${ACHETEUSE} le voit tout de suite dans ses rappels</span></button>
       <button class="tard-card" style="grid-column:1/-1" data-act="form" data-type="tard"><b>Je rentre tard</b><span class="small">L'autre couche les enfants, avec les consignes</span></button>
       <button class="c-lav" data-act="form" data-type="event"><b>Événement</b><span class="small">RDV, sortie</span></button>
       <button class="c-yellow" data-act="form" data-type="rappel"><b>Rappel</b><span class="small">Récurrent, avec catégorie</span></button>
@@ -1293,8 +1320,8 @@ function openForm(type, id, extra) {
       <div class="two"><label class="f">Poids du sac (kg)<input type="text" id="f-cp" name="c_poids" inputmode="decimal" value="${esc(cr.poids)}"></label>
       <label class="f">Prix (€)<input type="text" id="f-cpx" name="c_prix" inputmode="decimal" value="${esc(cr.prix)}"></label></div>
       <div class="two"><label class="f">Un sac dure (semaines)<input type="number" id="f-cd" name="c_duree" min="1" max="52" value="${esc(cr.duree)}"></label>
-      <label class="f">Dernier sac acheté le<input type="date" id="f-cds" name="dernierSac" value="${esc(a.dernierSac)}"></label></div>
-      <label class="f">Où les acheter (magasin ou lien)<input type="text" id="f-cmag" name="c_magasin" value="${esc(cr.magasin)}"></label>
+      <label class="f">Dernier sac ouvert le<input type="date" id="f-cds" name="dernierSac" value="${esc(a.dernierSac)}"></label></div>
+      <label class="f">Lien pour commander<input type="text" id="f-cmag" name="c_magasin" value="${esc(cr.magasin || SITE_CROQ)}"></label>
       <h3>Vétérinaire</h3>
       <label class="f">Nom<input type="text" id="f-vn" name="v_nom" value="${esc(v.nom)}"></label>
       <div class="two"><label class="f">Téléphone<input type="tel" id="f-vt" name="v_tel" value="${esc(v.tel)}"></label>
@@ -1460,6 +1487,15 @@ const ACT = {
     copier(`Coucou ! Récap des frais de Lyssia :\n${lignes.join("\n")}\n${fin}`, "Récap copié, colle-le dans WhatsApp");
   },
   "open-animal": (d) => { S.sub = { type: "animal", id: d.id }; render(); scrollTo(0, 0); },
+  "croq-demande": async (d) => {
+    const a = S.animaux.find((x) => x.id === d.id); if (!a) return; closeSheet();
+    if (demandeCroq(a)) { toast(`Déjà demandé à ${ACHETEUSE}`); return; }
+    await W(() => col("rappels").add(rappelCroq(a)), qui() === ACHETEUSE ? "Ajouté à tes rappels" : `C'est noté : ${ACHETEUSE} le voit dans ses rappels`);
+  },
+  "croq-choix": () => {
+    if (S.animaux.length === 1) return ACT["croq-demande"]({ id: S.animaux[0].id });
+    openSheet("Quelles croquettes ?", `<div class="choice">${S.animaux.map((a) => `<button class="c-yellow" data-act="croq-demande" data-id="${a.id}"><b>${esc(a.nom)}</b><span class="small">${esc(a.croq?.marque || a.espece || "")}${demandeCroq(a) ? " · déjà demandé" : ""}</span></button>`).join("")}</div>`);
+  },
   "animal-sac": async (d) => {
     const a = S.animaux.find((x) => x.id === d.id); if (!a) return;
     await W(() => col("animaux").doc(a.id).update({ dernierSac: today() }), `Nouveau sac de croquettes pour ${a.nom}`);
@@ -1513,6 +1549,7 @@ const ACT = {
       else suivante = addRecur(t, r.recur.n, r.recur.unite);
     }
     const patch = r.recur ? { prochaine: suivante, histo } : { termine: true, histo };
+    if (r.animal) updateDoc(doc(fs, "animaux", r.animal), { commandeLe: t, commandePar: qui() }).catch(() => {});
     await W(() => col("rappels").doc(r.id).update(patch), r.recur ? `Fait. Prochaine fois : ${fmt(patch.prochaine)}` : "Fait", () => col("rappels").doc(r.id).update(prev));
   },
   snooze: async (d) => { closeSheet(); const nd = addDays(today(), Number(d.d)); await W(() => col("rappels").doc(d.id).update({ prochaine: nd }), `Reporté au ${fmt(nd)}`); },
