@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>QG Famille</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="QG Famille">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F2F5F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F171A" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Familjen+Grotesk:wght@500;700&display=swap">
+<style>
+/* Une colonne façon appli de téléphone, barre d'onglets en bas, bouton + flottant.
+   Le surligneur orange reprend celui du calendrier papier : il marque les semaines avec Lyssia. */
+:root {
+  --bg: #F2F5F3; --surface: #FFFFFF; --surface-2: #E8EDEA; --ink: #17242B; --muted: #5B686D; --line: #D6DEDA;
+  --accent: #1D6A64; --accent-ink: #FFFFFF; --hl: #FFB65C; --hl-ink: #3B2300;
+  --chloe: #1D6A64; --medhi: #6B4A96; --deux: #6F7F7B; --danger: #B3261E; --late: #B3261E;
+  --shadow: 0 10px 30px rgba(23, 36, 43, .16);
+  --f-display: "Familjen Grotesk", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r: 14px; color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F171A; --surface: #172227; --surface-2: #1F2C32; --ink: #E5ECE9; --muted: #9AA9A6; --line: #2A383D;
+    --accent: #55B6AB; --accent-ink: #082A27; --hl: #E7973F; --hl-ink: #1E1100;
+    --chloe: #55B6AB; --medhi: #B194D9; --deux: #8E9C99; --danger: #F2847A; --late: #F2847A;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: env(safe-area-inset-top, 0px); -webkit-tap-highlight-color: transparent;
+}
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 560px; margin: 0 auto; padding-block: 14px calc(150px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 18px; }
+
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font-family: var(--f-display); font-weight: 700; font-size: 22px; letter-spacing: -.01em; margin: 0; }
+.brand small { display: block; font-family: var(--f-body); font-weight: 400; font-size: 14px; color: var(--muted); letter-spacing: 0; }
+.who { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 14px; display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--deux); flex: none; }
+.dot.q-chloe { background: var(--chloe); } .dot.q-medhi { background: var(--medhi); }
+
+h2 { font-family: var(--f-display); font-weight: 700; font-size: 19px; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--f-display); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0; }
+.sec { display: flex; flex-direction: column; gap: 10px; }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.link { background: none; border: 0; color: var(--accent); font-weight: 700; padding: 4px 0; font-size: 15px; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.empty { color: var(--muted); font-size: 15px; padding: 14px; border: 1px dashed var(--line); border-radius: var(--r); margin: 0; }
+
+.garde { background: var(--surface); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--line); }
+.garde-title { font-family: var(--f-display); font-weight: 700; font-size: 21px; line-height: 1.25; margin: 0; }
+.hl { background: linear-gradient(100deg, transparent 0 1%, var(--hl) 3% 97%, transparent 99%); color: var(--hl-ink); border-radius: 4px 10px 5px 11px / 11px 4px 10px 5px; padding: 0 .3em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.pill { display: inline-flex; align-items: center; font-size: 13px; font-weight: 700; padding: 2px 10px; border-radius: 4px 10px 5px 11px / 11px 4px 10px 5px; white-space: nowrap; }
+.pill.avec { background: var(--hl); color: var(--hl-ink); }
+.pill.sans { background: var(--surface-2); color: var(--muted); }
+
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 52px; }
+.row + .row { border-top: 1px solid var(--line); }
+.row .grow { flex: 1; min-width: 0; }
+.row .t { font-weight: 700; overflow-wrap: anywhere; }
+.row .m { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.row button.grow { background: none; border: 0; text-align: left; padding: 0; }
+.when { font-size: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.when.late { color: var(--late); font-weight: 700; }
+.qui { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
+.tick { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); flex: none; display: grid; place-items: center; padding: 0; }
+.tick.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.tick svg { width: 16px; height: 16px; }
+.btn { border: 0; background: var(--accent); color: var(--accent-ink); font-weight: 700; padding: 10px 16px; border-radius: 10px; font-size: 15px; }
+.btn.sm { padding: 7px 12px; font-size: 14px; border-radius: 8px; }
+.btn.ghost { background: var(--surface-2); color: var(--ink); }
+.btn.danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+.btn:disabled { opacity: .5; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.week { display: flex; flex-direction: column; gap: 8px; }
+.week-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.week-head b { font-family: var(--f-display); font-size: 17px; font-variant-numeric: tabular-nums; }
+.day { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 10px 14px 0; }
+.day.today { color: var(--accent); }
+.kind { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+
+.seg { display: flex; background: var(--surface-2); border-radius: 12px; padding: 4px; gap: 4px; }
+.seg button { flex: 1; border: 0; background: transparent; padding: 9px 6px; border-radius: 9px; font-weight: 700; font-size: 15px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.seg .n { font-weight: 400; font-variant-numeric: tabular-nums; }
+
+.quick { display: flex; gap: 8px; }
+.quick input { flex: 1; min-width: 0; }
+input[type="text"], input[type="url"], input[type="date"], input[type="time"], input[type="number"], input[type="email"], input[type="password"], select, textarea {
+  width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 11px 12px; font-size: 16px; min-width: 0;
+}
+input[type="date"], input[type="time"] { min-height: 46px; }
+textarea { min-height: 90px; resize: vertical; }
+label.f { display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 700; color: var(--muted); }
+.form { display: flex; flex-direction: column; gap: 14px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips label { position: relative; }
+.chips input { position: absolute; opacity: 0; inset: 0; }
+.chips span { display: inline-block; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 15px; }
+.chips input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.chips input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; text-align: left; display: flex; flex-direction: column; gap: 4px; min-height: 92px; }
+.tile b { font-family: var(--f-display); font-size: 17px; }
+.tile.soon { background: transparent; border-style: dashed; cursor: default; }
+.tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--surface-2); color: var(--muted); }
+.notice { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; font-size: 14px; }
+
+/* Saisie en vrac */
+.vrac { background: var(--surface); border: 2px solid var(--accent); border-radius: var(--r); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.vrac textarea { min-height: 48px; height: 48px; border: 0; padding: 4px 2px; background: transparent; resize: none; font-size: 17px; }
+.vrac textarea:focus { outline: none; }
+.vrac-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.prop { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.prop-top { display: flex; align-items: center; gap: 8px; }
+.prop-top select { width: auto; padding: 6px 8px; font-size: 14px; font-weight: 700; }
+.prop-top input { flex: 1; }
+.prop .two input { padding: 8px 10px; }
+.type-ico { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+
+/* Connexion */
+.login { max-width: 400px; margin: 10vh auto 0; display: flex; flex-direction: column; gap: 18px; }
+.login h1 { font-family: var(--f-display); font-size: 34px; margin: 0; letter-spacing: -.02em; }
+.login .err { color: var(--danger); font-size: 15px; margin: 0; min-height: 1.4em; }
+
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
+  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  display: flex; justify-content: center; }
+.tabs-in { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; max-width: 560px; }
+.tabs button { background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; color: var(--muted); padding: 6px 2px; border-radius: 10px; }
+.tabs button[aria-current="page"] { color: var(--accent); font-weight: 700; }
+.tabs svg { width: 24px; height: 24px; }
+.fab { position: fixed; z-index: 21; right: max(18px, calc(env(safe-area-inset-right, 0px) + 18px)); bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  width: 58px; height: 58px; border-radius: 18px; border: 0; background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow); display: grid; place-items: center; }
+.fab svg { width: 28px; height: 28px; }
+
+.backdrop { position: fixed; inset: 0; background: rgba(10, 18, 21, .45); z-index: 30; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 31; display: flex; justify-content: center; pointer-events: none; }
+.sheet-in { pointer-events: auto; width: 100%; max-width: 600px; max-height: 88vh; overflow: auto; background: var(--bg); border-radius: 20px 20px 0 0;
+  padding: 10px max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
+  display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); }
+.grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 4px; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.x { background: var(--surface-2); border: 0; width: 34px; height: 34px; border-radius: 50%; font-size: 20px; line-height: 1; flex: none; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice button { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; text-align: left; display: flex; flex-direction: column; gap: 2px; }
+.choice button b { font-family: var(--f-display); font-size: 17px; }
+.histo { font-size: 14px; color: var(--muted); margin: 0; padding-left: 18px; }
+
+.toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); bottom: calc(150px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 12px; display: flex; gap: 14px; align-items: center; max-width: calc(100% - 32px); box-shadow: var(--shadow); font-size: 15px; }
+.toast button { background: none; border: 0; color: var(--hl); font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) {
+  .sheet-in { animation: up .22s ease-out; }
+  @keyframes up { from { transform: translateY(30px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+@media (max-width: 380px) { .tiles, .choice { grid-template-columns: 1fr; } .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- Connexion -->
+<section class="login" id="login" hidden>
+  <div><h1>QG Famille</h1><p class="muted" style="margin:4px 0 0">Chloé et Medhi uniquement.</p></div>
+  <form class="form" id="login-form" autocomplete="on">
+    <label class="f">E-mail<input type="email" id="l-email" name="email" autocomplete="username" required></label>
+    <label class="f">Mot de passe<input type="password" id="l-pass" name="password" autocomplete="current-password" required></label>
+    <p class="err" id="l-err" aria-live="polite"></p>
+    <div class="actions"><button class="btn" type="submit" id="l-go">Se connecter</button><button class="link" type="button" id="l-forgot">Mot de passe oublié</button></div>
+  </form>
+</section>
+
+<!-- Application -->
+<div id="app" hidden>
+  <div class="wrap">
+    <header class="top">
+      <h1 class="brand">QG Famille<small id="date-line"></small></h1>
+      <span class="who"><span class="dot" id="who-dot"></span><span id="who-name"></span></span>
+    </header>
+    <div id="status" class="notice" hidden></div>
+    <form class="vrac" id="vrac-box" data-form="vrac" autocomplete="off">
+      <textarea id="vrac" name="vrac" rows="1" placeholder="Note tout ici : « lait », « véto mardi 17h », « payer la cantine avant vendredi »" aria-label="Saisie rapide" enterkeyhint="done"></textarea>
+      <div id="vrac-preview"></div>
+      <div class="vrac-foot" id="vrac-foot" hidden><span class="muted small" id="vrac-hint"></span><button class="btn" type="submit">Ranger</button></div>
+    </form>
+    <main id="view"><p class="muted">Chargement…</p></main>
+  </div>
+
+  <button class="fab" data-act="open-add" aria-label="Ajouter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+
+  <nav class="tabs" aria-label="Rubriques"><div class="tabs-in">
+    <button data-act="tab" data-v="accueil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg>Accueil</button>
+    <button data-act="tab" data-v="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Agenda</button>
+    <button data-act="tab" data-v="courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9h18l-2 11H5z"/><path d="M8 9l4-6 4 6"/></svg>Courses</button>
+    <button data-act="tab" data-v="rappels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></svg>Rappels</button>
+    <button data-act="tab" data-v="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Plus</button>
+  </div></nav>
+</div>
+
+<div id="sheet-root"></div>
+<div id="toast-root"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { classerTout } from "./vrac.js";
+
+/* ---------- Configuration ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyCN7hMOTFHQsV1AzxrkIlqs_P88esgh0nU",
+  authDomain: "qg-famille-f457a.firebaseapp.com",
+  projectId: "qg-famille-f457a",
+  storageBucket: "qg-famille-f457a.firebasestorage.app",
+  messagingSenderId: "727669042117",
+  appId: "1:727669042117:web:ad9cbe9590da6f520439ac"
+};
+const PERSONNES = { "9NzQmcWTbtW1mJMdBIJioNIPlcv1": "Chloé", "5nDSdTq7oKRElUM1NSsM6xQUDgM2": "Medhi" };
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+let fs;
+try { fs = initializeFirestore(fbApp, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
+catch { fs = getFirestore(fbApp); }
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
+/* ---------- Outils ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pad = (n) => String(n).padStart(2, "0");
+const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parse = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const utc = (s) => { const [y, m, d] = s.split("-").map(Number); return Date.UTC(y, m - 1, d); };
+const today = () => iso(new Date());
+const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return iso(d); };
+const diffDays = (a, b) => Math.round((utc(b) - utc(a)) / 86400000);
+const wday = (s) => (parse(s).getDay() + 6) % 7; // lundi = 0
+const mondayOf = (s) => addDays(s, -wday(s));
+const JC = ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."];
+const JL = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
+const MC = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+const ML = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+const fmt = (s) => { const d = parse(s); return `${JC[wday(s)]} ${d.getDate()} ${MC[d.getMonth()]}`; };
+const fmtLong = (s) => { const d = parse(s); return `${JL[wday(s)]} ${d.getDate()} ${ML[d.getMonth()]}`; };
+const fmtH = (h) => h ? h.replace(":", " h ").replace(/ h 00$/, " h") : "";
+function rel(s) {
+  const n = diffDays(today(), s);
+  if (n === 0) return "aujourd'hui"; if (n === 1) return "demain"; if (n === -1) return "hier";
+  if (n < 0) return `en retard de ${-n} j`; return fmt(s);
+}
+function addRecur(s, n, u) {
+  n = Math.max(1, Number(n) || 1);
+  if (u === "jour") return addDays(s, n);
+  if (u === "semaine") return addDays(s, 7 * n);
+  const d = parse(s); const months = u === "an" ? 12 * n : n;
+  const day = d.getDate(); const t = new Date(d.getFullYear(), d.getMonth() + months, 1);
+  const last = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate();
+  t.setDate(Math.min(day, last)); return iso(t);
+}
+function recurTxt(r) {
+  if (!r) return "";
+  const n = Number(r.n) || 1;
+  const one = { jour: "chaque jour", semaine: "chaque semaine", mois: "chaque mois", an: "chaque année" };
+  const many = { jour: "jours", semaine: "semaines", mois: "mois", an: "ans" };
+  return n === 1 ? one[r.unite] : `tous les ${n} ${many[r.unite]}`;
+}
+const QUI = ["Chloé", "Medhi", "Les deux"];
+const quiCls = (q) => q === "Chloé" ? "q-chloe" : q === "Medhi" ? "q-medhi" : "q-deux";
+const quiTag = (q) => q ? `<span class="qui"><span class="dot ${quiCls(q)}"></span>${esc(q)}</span>` : "";
+const CATS = ["Animaux", "Santé enfants", "Maison", "Voiture", "Administratif", "Abonnements", "École", "Autre"];
+const LISTES = { urgent: "Urgent", constate: "Constaté", unjour: "Un jour" };
+const STATUTS = ["À voir", "En réflexion", "Validé", "Abandonné"];
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* ---------- État ---------- */
+const S = {
+  view: "accueil", sub: null, courseTab: "urgent", rapTab: "rappels", me: "",
+  events: [], courses: [], rappels: [], routines: [], checklists: [], liens: [], exceptions: [],
+  garde: null, frequents: [], loaded: new Set(), offline: !navigator.onLine, confirm: null, unsub: [],
+};
+const COLS = { events: "events", courses: "courses", rappels: "rappels", routines: "routines", checklists: "checklists", liens: "liens", exceptions: "garde_exceptions" };
+const qui = () => S.me;
+
+/* ---------- Garde de Lyssia ---------- */
+function statutJour(s) {
+  for (const e of S.exceptions) if (e.du && e.au && s >= e.du && s <= e.au) return { avec: !!e.avec, motif: e.motif || "Exception" };
+  if (!S.garde || !S.garde.ancre) return null;
+  const w = Math.floor(diffDays(S.garde.ancre, s) / 7);
+  return { avec: ((w % 2) + 2) % 2 === 0, motif: "Alternance" };
+}
+const statutSemaine = (lun) => statutJour(addDays(lun, 2));
+function prochainChangement(lun) {
+  const s = statutSemaine(lun); if (!s) return null;
+  for (let k = 1; k < 40; k++) { const m = addDays(lun, 7 * k); const t = statutSemaine(m); if (t && t.avec !== s.avec) return m; }
+  return null;
+}
+const heurePassage = () => fmtH((S.garde && S.garde.heure) || "16:40");
+function passageLe(s) {
+  if (wday(s) !== 0) return false;
+  const a = statutSemaine(s), b = statutSemaine(addDays(s, -7));
+  return a && b && a.avec !== b.avec;
+}
+
+/* ---------- Données dérivées ---------- */
+const rappelsActifs = () => S.rappels.filter((r) => !r.termine && r.prochaine).sort((a, b) => a.prochaine.localeCompare(b.prochaine));
+const routineDue = (r, s) => (r.jours || []).includes(wday(s));
+const routineFaite = (r, s) => r.fait === s;
+const sacLyssia = () => S.checklists.find((c) => /lyssia/i.test(c.nom || ""));
+
+/* ---------- Rendu ---------- */
+const main = $("#view");
+function render() {
+  const a = document.activeElement;
+  const keep = a && a.id && main.contains(a) && "value" in a ? { id: a.id, v: a.value, s: a.selectionStart } : null;
+  const t = today();
+  $("#date-line").textContent = fmtLong(t);
+  $("#who-name").textContent = qui();
+  $("#who-dot").className = "dot " + quiCls(qui());
+  document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-current", b.dataset.v === S.view ? "page" : "false"));
+  $("#vrac-box").hidden = !(S.view === "accueil" && !S.sub);
+  renderStatus();
+  main.innerHTML = (VIEWS[S.sub ? S.sub.type : S.view] || VIEWS.accueil)();
+  if (keep) { const n = document.getElementById(keep.id); if (n) { n.value = keep.v; n.focus(); try { n.setSelectionRange(keep.s, keep.s); } catch {} } }
+}
+function renderStatus() {
+  const el = $("#status");
+  const msg = S.offline ? "Pas de réseau : tes ajouts sont gardés sur ce téléphone et partiront dès le retour du réseau." : "";
+  el.hidden = !msg; el.textContent = msg;
+}
+const loading = (k) => !S.loaded.has(k);
+
+const VIEWS = {
+  accueil() {
+    const t = today(); const lun = mondayOf(t);
+    const out = [gardeBanner(t, lun)];
+    const sac = sacLyssia();
+    const passToday = passageLe(t), passTomorrow = passageLe(addDays(t, 1));
+    if (passToday || passTomorrow) {
+      const s = statutSemaine(passToday ? t : addDays(t, 1));
+      out.push(`<section class="sec"><div class="garde"><p style="margin:0"><b>${passToday ? "Aujourd'hui" : "Demain"} à ${heurePassage()}</b> : Lyssia ${s && s.avec ? "arrive" : "repart chez son autre parent"}.</p>
+        ${sac ? `<div class="actions"><button class="btn sm" data-act="open-check" data-id="${sac.id}">Préparer le sac (${(sac.items || []).filter((i) => i.ok).length}/${(sac.items || []).length})</button></div>` : ""}</div></section>`);
+    }
+    const dus = rappelsActifs().filter((r) => r.prochaine <= t);
+    const rout = S.routines.filter((r) => routineDue(r, t));
+    const evToday = S.events.filter((e) => e.date === t).sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
+    let todo = evToday.map(eventRow).join("");
+    for (const r of dus) todo += rappelRow(r);
+    for (const r of rout) todo += routineRow(r, t);
+    out.push(`<section class="sec"><div class="sec-head"><h2>Aujourd'hui</h2></div>
+      ${loading("rappels") ? '<p class="muted">Chargement…</p>' : todo ? `<ul class="list">${todo}</ul>` : '<p class="empty">Rien de prévu aujourd\'hui.</p>'}</section>`);
+    let week = "";
+    for (let i = 1; i <= 7; i++) {
+      const d = addDays(t, i);
+      const ev = S.events.filter((e) => e.date === d).sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
+      const rp = rappelsActifs().filter((r) => r.prochaine === d);
+      if (!ev.length && !rp.length && !passageLe(d)) continue;
+      week += `<li class="day">${i === 1 ? "Demain" : fmt(d)}${passageLe(d) ? ` · passage de Lyssia ${heurePassage()}` : ""}</li>` + ev.map(eventRow).join("") + rp.map(rappelRow).join("");
+    }
+    out.push(`<section class="sec"><div class="sec-head"><h2>Les 7 prochains jours</h2><button class="link" data-act="tab" data-v="agenda">Agenda</button></div>
+      ${week ? `<ul class="list">${week}</ul>` : '<p class="empty">Aucun rendez-vous ni rappel dans les 7 prochains jours.</p>'}</section>`);
+    const urg = S.courses.filter((c) => c.liste === "urgent");
+    out.push(`<section class="sec"><div class="sec-head"><h2>Courses urgentes <span class="muted small">${urg.length}</span></h2><button class="link" data-act="tab" data-v="courses">Tout voir</button></div>
+      ${urg.length ? `<ul class="list">${urg.slice(0, 5).map(courseRow).join("")}</ul>${urg.length > 5 ? `<p class="muted small" style="margin:0">et ${urg.length - 5} autres</p>` : ""}` : '<p class="empty">Rien à acheter en urgence.</p>'}</section>`);
+    return `<div class="sec" style="gap:22px">${out.join("")}</div>`;
+  },
+
+  agenda() {
+    const t = today(); const lun0 = mondayOf(t);
+    let html = `<div class="sec-head"><h2>Agenda</h2><button class="link" data-act="sub" data-type="garde">Garde de Lyssia</button></div>`;
+    for (let w = 0; w < 10; w++) {
+      const m = addDays(lun0, 7 * w), dim = addDays(m, 6), s = statutSemaine(m);
+      const dm = parse(m), dd = parse(dim);
+      const label = dm.getMonth() === dd.getMonth() ? `${dm.getDate()} – ${dd.getDate()} ${MC[dd.getMonth()]}` : `${dm.getDate()} ${MC[dm.getMonth()]} – ${dd.getDate()} ${MC[dd.getMonth()]}`;
+      let days = "";
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(m, i); if (d < t) continue;
+        const ev = S.events.filter((e) => e.date === d).sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
+        const rp = rappelsActifs().filter((r) => r.prochaine === d || (d === t && r.prochaine < t));
+        const pass = passageLe(d);
+        if (!ev.length && !rp.length && !pass && d !== t) continue;
+        days += `<li class="day ${d === t ? "today" : ""}">${d === t ? "Aujourd'hui" : fmt(d)}${pass ? ` · passage ${heurePassage()}` : ""}</li>`;
+        days += ev.map(eventRow).join("") + rp.map(rappelRow).join("");
+        if (!ev.length && !rp.length) days += `<li class="row"><span class="muted small">Rien de prévu</span></li>`;
+      }
+      html += `<section class="week"><div class="week-head"><b>${label}</b>${s ? `<span class="pill ${s.avec ? "avec" : "sans"}">${s.avec ? "Avec Lyssia" : "Sans Lyssia"}</span>` : ""}</div>
+        ${days ? `<ul class="list">${days}</ul>` : ""}</section>`;
+    }
+    return `<div class="sec">${html}<div class="actions"><button class="btn" data-act="form" data-type="event">Ajouter un événement</button></div></div>`;
+  },
+
+  courses() {
+    const tab = S.courseTab;
+    const items = S.courses.filter((c) => c.liste === tab).sort((a, b) => (a.cree || "").localeCompare(b.cree || ""));
+    const n = (k) => S.courses.filter((c) => c.liste === k).length;
+    const ph = { urgent: "Ex. lait, piles, croquettes", constate: "Ce qui va bientôt manquer", unjour: "Ex. nouvelle poêle" }[tab];
+    return `<div class="sec">
+      <h2>Courses</h2>
+      <div class="seg" role="group">${Object.entries(LISTES).map(([k, v]) => `<button data-act="course-tab" data-k="${k}" aria-pressed="${k === tab}">${v} <span class="n">${n(k)}</span></button>`).join("")}</div>
+      <form class="quick" data-form="quick-course" autocomplete="off">
+        <input type="text" id="qc-nom" name="nom" placeholder="${ph}" list="freq" aria-label="Article à ajouter" enterkeyhint="done">
+        <button class="btn" type="submit">Ajouter</button>
+      </form>
+      <datalist id="freq">${S.frequents.map((f) => `<option value="${esc(f)}">`).join("")}</datalist>
+      ${loading("courses") ? '<p class="muted">Chargement…</p>' : items.length ? `<ul class="list">${items.map(courseRow).join("")}</ul>` : `<p class="empty">${{ urgent: "Liste vide. Ajoute ce qu'il faut acheter à la prochaine course.", constate: "Note ici ce que tu vois baisser, au fil de l'eau.", unjour: "Les achats qui peuvent attendre." }[tab]}</p>`}
+      ${tab === "constate" && items.length ? `<div class="actions"><button class="btn ghost" data-act="go-shopping">Je pars faire les courses : tout passer en Urgent</button></div>` : ""}
+      ${tab === "urgent" && items.length ? `<p class="muted small" style="margin:0">Coche un article une fois acheté : il disparaît de la liste.</p>` : ""}
+    </div>`;
+  },
+
+  rappels() {
+    const t = today();
+    const seg = `<div class="seg" role="group"><button data-act="rap-tab" data-k="rappels" aria-pressed="${S.rapTab === "rappels"}">Rappels</button><button data-act="rap-tab" data-k="routines" aria-pressed="${S.rapTab === "routines"}">Routines du foyer</button></div>`;
+    if (S.rapTab === "routines") {
+      const list = S.routines.slice().sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
+      return `<div class="sec"><h2>Rappels</h2>${seg}
+        ${list.length ? `<ul class="list">${list.map((r) => routineRow(r, t, true)).join("")}</ul>` : '<p class="empty">Aucune routine. Exemple : poubelles le mardi soir, litière, draps.</p>'}
+        <div class="actions"><button class="btn" data-act="form" data-type="routine">Nouvelle routine</button></div></div>`;
+    }
+    const act = rappelsActifs(); const in7 = addDays(t, 7);
+    const groups = [
+      ["En retard", act.filter((r) => r.prochaine < t)],
+      ["Aujourd'hui", act.filter((r) => r.prochaine === t)],
+      ["7 prochains jours", act.filter((r) => r.prochaine > t && r.prochaine <= in7)],
+      ["Plus tard", act.filter((r) => r.prochaine > in7)],
+    ].filter(([, l]) => l.length);
+    return `<div class="sec"><h2>Rappels</h2>${seg}
+      ${loading("rappels") ? '<p class="muted">Chargement…</p>' : groups.length ? groups.map(([h, l]) => `<div class="sec"><h3>${h}</h3><ul class="list">${l.map(rappelRow).join("")}</ul></div>`).join("") : '<p class="empty">Aucun rappel. Exemple : collier antiparasitaire des chats tous les 8 mois, vaccin annuel, contrôle technique.</p>'}
+      <div class="actions"><button class="btn" data-act="form" data-type="rappel">Nouveau rappel</button></div></div>`;
+  },
+
+  plus() {
+    const nCheck = S.checklists.length, nLiens = S.liens.filter((l) => l.statut !== "Abandonné" && l.statut !== "Validé").length;
+    const s = statutSemaine(mondayOf(today()));
+    const soon = ["Projets et devis", "Infos pratiques", "Cadeaux", "Budget et défis"];
+    return `<div class="sec"><h2>Plus</h2>
+      <div class="tiles">
+        <button class="tile" data-act="sub" data-type="checklists"><b>Checklists</b><span class="muted small">${nCheck} modèle${nCheck > 1 ? "s" : ""}</span></button>
+        <button class="tile" data-act="sub" data-type="liens"><b>À réfléchir</b><span class="muted small">${nLiens} en cours</span></button>
+        <button class="tile" data-act="sub" data-type="garde"><b>Garde de Lyssia</b><span class="muted small">${s ? (s.avec ? "Avec nous cette semaine" : "Sans Lyssia cette semaine") : "À configurer"}</span></button>
+        <button class="tile" data-act="export"><b>Sauvegarde</b><span class="muted small">Télécharger toutes nos données</span></button>
+      </div>
+      <h3>Prochainement</h3>
+      <div class="tiles">${soon.map((x) => `<div class="tile soon"><b class="muted">${x}</b><span class="muted small">À construire</span></div>`).join("")}</div>
+      <div class="actions"><button class="btn ghost" data-act="logout">Se déconnecter (${esc(qui())})</button></div></div>`;
+  },
+
+  checklists() {
+    return `<div class="sec">${back()}<h2>Checklists</h2>
+      ${S.checklists.length ? `<ul class="list">${S.checklists.slice().sort((a, b) => (a.nom || "").localeCompare(b.nom || "")).map((c) => {
+        const it = c.items || [], ok = it.filter((i) => i.ok).length;
+        return `<li class="row"><button class="grow" data-act="open-check" data-id="${c.id}"><div class="t">${esc(c.nom)}</div><div class="m">${ok}/${it.length} coché${ok > 1 ? "s" : ""}</div></button></li>`;
+      }).join("")}</ul>` : '<p class="empty">Aucune checklist. Crée un modèle une fois, réutilise-le à chaque fois.</p>'}
+      <div class="actions"><button class="btn" data-act="form" data-type="checklist">Nouvelle checklist</button></div></div>`;
+  },
+
+  checklist() {
+    const c = S.checklists.find((x) => x.id === S.sub.id);
+    if (!c) return `<div class="sec">${back()}<p class="empty">Cette checklist n'existe plus.</p></div>`;
+    const it = c.items || [];
+    return `<div class="sec">${back()}<div class="sec-head"><h2>${esc(c.nom)}</h2><span class="muted small">${it.filter((i) => i.ok).length}/${it.length}</span></div>
+      ${it.length ? `<ul class="list">${it.map((i, k) => `<li class="row"><button class="tick ${i.ok ? "on" : ""}" data-act="check-item" data-k="${k}" aria-label="${i.ok ? "Décocher" : "Cocher"} ${esc(i.t)}">${i.ok ? CHECK : ""}</button><span class="grow ${i.ok ? "muted" : ""}">${esc(i.t)}</span><button class="btn sm ghost" data-act="check-to-courses" data-k="${k}" title="Ajouter aux courses urgentes">Courses</button><button class="x" data-act="check-del" data-k="${k}" aria-label="Retirer ${esc(i.t)}">×</button></li>`).join("")}</ul>` : '<p class="empty">Ajoute le premier élément.</p>'}
+      <form class="quick" data-form="check-add" autocomplete="off"><input type="text" id="ck-add" name="t" placeholder="Ajouter un élément" aria-label="Nouvel élément"><button class="btn" type="submit">Ajouter</button></form>
+      <div class="actions"><button class="btn ghost" data-act="check-reset">Tout décocher pour la prochaine fois</button>
+      <button class="btn danger" data-act="del" data-col="checklists" data-id="${c.id}">${S.confirm === c.id ? "Confirmer la suppression" : "Supprimer"}</button></div></div>`;
+  },
+
+  liens() {
+    const order = (l) => STATUTS.indexOf(l.statut || "À voir");
+    const list = S.liens.slice().sort((a, b) => order(a) - order(b) || (b.cree || "").localeCompare(a.cree || ""));
+    return `<div class="sec">${back()}<h2>À réfléchir</h2>
+      <p class="muted small" style="margin:0">Les liens à comparer ou à décider plus tard : une maison, une activité, un achat.</p>
+      ${list.length ? `<ul class="list">${list.map((l) => {
+        let host = ""; try { host = new URL(l.url).hostname.replace(/^www\./, ""); } catch {}
+        return `<li class="row"><div class="grow"><div class="t">${l.url ? `<a href="${esc(l.url)}" target="_blank" rel="noopener" style="color:inherit">${esc(l.titre || host || l.url)}</a>` : esc(l.titre)}</div>
+          <div class="m">${host ? `<span>${esc(host)}</span>` : ""}${l.tag ? `<span class="tag">${esc(l.tag)}</span>` : ""}${l.note ? `<span>${esc(l.note)}</span>` : ""}</div></div>
+          <select data-chg="lien-statut" data-id="${l.id}" aria-label="Statut" style="width:auto;padding:6px 8px;font-size:14px">${STATUTS.map((s) => `<option ${s === (l.statut || "À voir") ? "selected" : ""}>${s}</option>`).join("")}</select>
+          <button class="x" data-act="del" data-col="liens" data-id="${l.id}" aria-label="Supprimer">${S.confirm === l.id ? "✓" : "×"}</button></li>`;
+      }).join("")}</ul>` : '<p class="empty">Aucun lien pour l\'instant. Colle un lien dans la saisie rapide de l\'accueil.</p>'}
+      <div class="actions"><button class="btn" data-act="form" data-type="lien">Ajouter un lien</button></div></div>`;
+  },
+
+  garde() {
+    const g = S.garde || {}; const lun0 = mondayOf(today());
+    let weeks = "";
+    for (let w = 0; w < 12; w++) {
+      const m = addDays(lun0, 7 * w), s = statutSemaine(m);
+      weeks += `<li class="row"><span class="grow">Semaine du ${fmt(m)}</span>${s ? `<span class="pill ${s.avec ? "avec" : "sans"}">${s.avec ? "Avec Lyssia" : "Sans"}</span>` : ""}${s && s.motif !== "Alternance" ? `<span class="muted small">${esc(s.motif)}</span>` : ""}</li>`;
+    }
+    const ex = S.exceptions.slice().sort((a, b) => (a.du || "").localeCompare(b.du || ""));
+    return `<div class="sec">${back()}<h2>Garde de Lyssia</h2>
+      <p class="muted small" style="margin:0">Une semaine sur deux, du lundi ${heurePassage()} au lundi suivant. Les vacances et les échanges se gèrent avec des exceptions.</p>
+      <form class="form" data-form="garde-cfg">
+        <div class="two"><label class="f">Un lundi où elle arrive<input type="date" id="g-ancre" name="ancre" value="${esc(g.ancre || "")}" required></label>
+        <label class="f">Heure de passage<input type="time" id="g-heure" name="heure" value="${esc(g.heure || "16:40")}"></label></div>
+        <div class="actions"><button class="btn sm" type="submit">Enregistrer la règle</button></div>
+      </form>
+      <h3>Les 12 prochaines semaines</h3><ul class="list">${weeks}</ul>
+      <div class="sec-head"><h3>Exceptions</h3></div>
+      ${ex.length ? `<ul class="list">${ex.map((e) => `<li class="row"><div class="grow"><div class="t">${fmt(e.du)} → ${fmt(e.au)}</div><div class="m"><span class="pill ${e.avec ? "avec" : "sans"}">${e.avec ? "Avec" : "Sans"}</span><span>${esc(e.motif || "")}</span></div></div><button class="x" data-act="del" data-col="exceptions" data-id="${e.id}" aria-label="Supprimer">${S.confirm === e.id ? "✓" : "×"}</button></li>`).join("")}</ul>` : '<p class="empty">Aucune exception.</p>'}
+      <div class="actions"><button class="btn" data-act="form" data-type="exception">Ajouter une exception</button></div></div>`;
+  },
+};
+const back = () => `<div><button class="link" data-act="back">← Retour</button></div>`;
+
+function gardeBanner(t, lun) {
+  const s = statutSemaine(lun);
+  if (!s) return `<section class="garde"><p class="garde-title">Garde de Lyssia</p><p class="muted" style="margin:0">${S.garde === undefined ? "Chargement…" : "La règle de garde n'est pas encore réglée."}</p></section>`;
+  const nx = prochainChangement(lun);
+  return `<section class="garde">
+    <p class="garde-title">${s.avec ? '<span class="hl">Lyssia est avec nous cette semaine</span>' : "Semaine sans Lyssia"}</p>
+    <p class="muted" style="margin:0">${nx ? (s.avec ? `Elle repart le ${fmtLong(nx)} à ${heurePassage()}.` : `Elle arrive le ${fmtLong(nx)} à ${heurePassage()}.`) : ""}${s.motif !== "Alternance" ? ` ${esc(s.motif)}.` : ""}</p></section>`;
+}
+function eventRow(e) {
+  return `<li class="row"><button class="grow" data-act="form" data-type="event" data-id="${e.id}"><div class="t">${esc(e.titre)}</div>
+    <div class="m">${e.heure ? `<span>${fmtH(e.heure)}</span>` : ""}${quiTag(e.qui)}${e.note ? `<span>${esc(e.note)}</span>` : ""}</div></button><span class="kind">RDV</span></li>`;
+}
+function rappelRow(r) {
+  const late = r.prochaine < today();
+  return `<li class="row"><button class="tick" data-act="rappel-done" data-id="${r.id}" aria-label="Fait : ${esc(r.titre)}"></button>
+    <button class="grow" data-act="form" data-type="rappel" data-id="${r.id}"><div class="t">${esc(r.titre)}</div>
+    <div class="m">${r.cat ? `<span>${esc(r.cat)}</span>` : ""}${r.recur ? `<span>${recurTxt(r.recur)}</span>` : ""}${quiTag(r.qui)}${r.note ? `<span>${esc(r.note)}</span>` : ""}</div></button>
+    <span class="when ${late ? "late" : ""}">${rel(r.prochaine)}</span></li>`;
+}
+function routineRow(r, t, showDays) {
+  const due = routineDue(r, t), done = routineFaite(r, t);
+  const days = (r.jours || []).length === 7 ? "chaque jour" : (r.jours || []).slice().sort().map((d) => JC[d]).join(" ");
+  return `<li class="row">${due ? `<button class="tick ${done ? "on" : ""}" data-act="routine-done" data-id="${r.id}" aria-label="${done ? "Annuler" : "Fait"} : ${esc(r.nom)}">${done ? CHECK : ""}</button>` : `<span class="tick" aria-hidden="true" style="opacity:.35"></span>`}
+    <button class="grow" data-act="form" data-type="routine" data-id="${r.id}"><div class="t ${done ? "muted" : ""}">${esc(r.nom)}</div><div class="m">${showDays || !due ? `<span>${days}</span>` : '<span>routine</span>'}${quiTag(r.qui)}</div></button></li>`;
+}
+function courseRow(c) {
+  return `<li class="row"><button class="tick" data-act="buy" data-id="${c.id}" aria-label="Acheté : ${esc(c.nom)}"></button>
+    <button class="grow" data-act="course-menu" data-id="${c.id}"><div class="t">${esc(c.nom)}</div>${c.note ? `<div class="m">${esc(c.note)}</div>` : ""}</button>
+    ${c.qui ? `<span class="dot ${quiCls(c.qui)}" title="Ajouté par ${esc(c.qui)}"></span>` : ""}</li>`;
+}
+
+/* ---------- Saisie en vrac ---------- */
+const TYPES = { course: "Course", evenement: "Événement", rappel: "Rappel", lien: "Lien" };
+const DEST = { course: "Courses", evenement: "Agenda", rappel: "Rappels", lien: "À réfléchir" };
+let props = []; // éléments proposés par le rangement automatique
+function vracPropsHTML(prefix) {
+  if (!props.length) return "";
+  return props.map((p, i) => `<div class="prop">
+    <div class="prop-top"><select data-prop="${i}" data-field="type" id="${prefix}${i}-type" aria-label="Ranger dans">${Object.entries(TYPES).map(([k, v]) => `<option value="${k}" ${k === p.type ? "selected" : ""}>${v}</option>`).join("")}</select>
+    <input type="text" data-prop="${i}" data-field="titre" id="${prefix}${i}-titre" value="${esc(p.titre || p.url || "")}" aria-label="Titre">
+    <button class="x" type="button" data-act="prop-del" data-k="${i}" aria-label="Retirer">×</button></div>
+    ${p.type === "evenement" || p.type === "rappel" ? `<div class="two"><input type="date" data-prop="${i}" data-field="date" id="${prefix}${i}-date" value="${esc(p.date || today())}" aria-label="Date"><input type="time" data-prop="${i}" data-field="heure" id="${prefix}${i}-heure" value="${esc(p.heure || "")}" aria-label="Heure"></div>` : ""}
+    ${p.type === "course" ? `<div class="chips">${Object.entries(LISTES).map(([k, v]) => `<label><input type="radio" name="${prefix}${i}-liste" value="${k}" data-prop="${i}" data-field="liste" ${k === (p.liste || "urgent") ? "checked" : ""}><span>${v}</span></label>`).join("")}</div>` : ""}
+  </div>`).join("");
+}
+function hintTxt() {
+  if (!props.length) return "";
+  const dests = [...new Set(props.map((p) => DEST[p.type]))];
+  return `${props.length} élément${props.length > 1 ? "s" : ""} → ${dests.join(", ")}`;
+}
+function renderVrac() {
+  for (const [box, prefix] of [["#vrac-preview", "v"], ["#vrac-preview-s", "s"]]) {
+    const el = $(box); if (!el) continue;
+    el.innerHTML = vracPropsHTML(prefix);
+  }
+  for (const [foot, hint] of [["#vrac-foot", "#vrac-hint"], ["#vrac-foot-s", "#vrac-hint-s"]]) {
+    const f = $(foot); if (f) f.hidden = !props.length;
+    const h = $(hint); if (h) h.textContent = hintTxt();
+  }
+}
+function onVracInput(el) {
+  el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 220) + "px";
+  props = classerTout(el.value);
+  renderVrac();
+}
+async function saveVrac() {
+  const keep = props.filter((p) => (p.titre || p.url || "").trim());
+  if (!keep.length) return;
+  const t = today(); const me = qui();
+  const ok = await W(async () => {
+    const b = writeBatch(fs);
+    for (const p of keep) {
+      const titre = (p.titre || "").trim();
+      if (p.type === "course") b.set(doc(collection(fs, "courses")), { nom: titre, liste: p.liste || "urgent", note: "", qui: me, cree: new Date().toISOString() });
+      else if (p.type === "evenement") b.set(doc(collection(fs, "events")), { titre, date: p.date || t, heure: p.heure || "", note: "", qui: "Les deux", par: me, cree: new Date().toISOString() });
+      else if (p.type === "rappel") b.set(doc(collection(fs, "rappels")), { titre, prochaine: p.date || t, cat: "Autre", recur: null, note: p.heure ? `à ${fmtH(p.heure)}` : "", qui: me, histo: [], termine: false, cree: new Date().toISOString() });
+      else b.set(doc(collection(fs, "liens")), { url: p.url || titre, titre: p.url ? titre : "", tag: "", note: "", statut: "À voir", par: me, cree: new Date().toISOString() });
+    }
+    await b.commit();
+  }, `Rangé : ${hintTxt().split("→ ")[1] || ""}`);
+  if (ok) {
+    props = [];
+    for (const id of ["#vrac", "#vrac-s"]) { const el = $(id); if (el) { el.value = ""; el.style.height = ""; } }
+    renderVrac();
+    closeSheet();
+  }
+}
+
+/* ---------- Feuilles ---------- */
+function openSheet(title, body) {
+  $("#sheet-root").innerHTML = `<div class="backdrop" data-act="close"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="sheet-in">
+    <div class="grab"></div><div class="sheet-head"><h2>${esc(title)}</h2><button class="x" data-act="close" aria-label="Fermer">×</button></div>${body}</div></div>`;
+  const f = $("#sheet-root input:not([type=hidden]):not([type=radio]):not([type=checkbox]), #sheet-root textarea"); if (f && !f.value) setTimeout(() => f.focus(), 60);
+}
+const closeSheet = () => { $("#sheet-root").innerHTML = ""; };
+const quiField = (v, name = "qui") => `<div class="f" style="font-size:14px;font-weight:700;color:var(--muted)">Qui s'en occupe<div class="chips" role="radiogroup">${QUI.map((q) => `<label><input type="radio" name="${name}" value="${q}" ${q === (v || qui() || "Les deux") ? "checked" : ""}><span>${q}</span></label>`).join("")}</div></div>`;
+
+function openAdd() {
+  props = [];
+  openSheet("Ajouter", `<form class="vrac" data-form="vrac" autocomplete="off">
+      <textarea id="vrac-s" name="vrac" rows="1" placeholder="Tape ou dicte : « réunion école jeudi 18h30 »" aria-label="Saisie rapide"></textarea>
+      <div id="vrac-preview-s"></div>
+      <div class="vrac-foot" id="vrac-foot-s" hidden><span class="muted small" id="vrac-hint-s"></span><button class="btn" type="submit">Ranger</button></div>
+    </form>
+    <h3>Ou avec tous les détails</h3>
+    <div class="choice">
+      <button data-act="form" data-type="event"><b>Événement</b><span class="muted small">RDV, sortie</span></button>
+      <button data-act="form" data-type="rappel"><b>Rappel</b><span class="muted small">Récurrent, avec catégorie</span></button>
+      <button data-act="form" data-type="routine"><b>Routine</b><span class="muted small">Tâche de la maison</span></button>
+      <button data-act="form" data-type="checklist"><b>Checklist</b><span class="muted small">Valise, sac, rentrée</span></button>
+    </div>`);
+}
+
+function openForm(type, id) {
+  const t = today();
+  if (type === "event") {
+    const e = S.events.find((x) => x.id === id) || {};
+    openSheet(id ? "Modifier l'événement" : "Nouvel événement", `<form class="form" data-form="event" data-id="${id || ""}">
+      <label class="f">Quoi<input type="text" id="f-titre" name="titre" value="${esc(e.titre)}" required placeholder="Ex. vaccin de Lyssia"></label>
+      <div class="two"><label class="f">Date<input type="date" id="f-date" name="date" value="${esc(e.date || t)}" required></label>
+      <label class="f">Heure<input type="time" id="f-heure" name="heure" value="${esc(e.heure || "")}"></label></div>
+      ${quiField(e.qui)}
+      <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(e.note)}" placeholder="Lieu, choses à prévoir…"></label>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="events" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
+  }
+  if (type === "rappel") {
+    const r = S.rappels.find((x) => x.id === id) || {};
+    const rc = r.recur || null;
+    openSheet(id ? "Rappel" : "Nouveau rappel", `<form class="form" data-form="rappel" data-id="${id || ""}">
+      <label class="f">Quoi<input type="text" id="f-titre" name="titre" value="${esc(r.titre)}" required placeholder="Ex. collier antiparasitaire des chats"></label>
+      <div class="two"><label class="f">Prochaine fois<input type="date" id="f-date" name="prochaine" value="${esc(r.prochaine || t)}" required></label>
+      <label class="f">Catégorie<select id="f-cat" name="cat">${CATS.map((c) => `<option ${c === (r.cat || "Autre") ? "selected" : ""}>${c}</option>`).join("")}</select></label></div>
+      <div class="two"><label class="f">Répéter<select id="f-unite" name="unite"><option value="">Une seule fois</option>${[["jour", "jours"], ["semaine", "semaines"], ["mois", "mois"], ["an", "ans"]].map(([k, v]) => `<option value="${k}" ${rc && rc.unite === k ? "selected" : ""}>Tous les N ${v}</option>`).join("")}</select></label>
+      <label class="f">N<input type="number" id="f-n" name="n" min="1" max="99" value="${esc(rc ? rc.n : 1)}"></label></div>
+      ${quiField(r.qui)}
+      <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(r.note)}"></label>
+      ${r.histo && r.histo.length ? `<div><h3>Historique</h3><ul class="histo">${r.histo.map((h) => `<li>Fait le ${fmt(h.d)}${h.par ? ` par ${esc(h.par)}` : ""}</li>`).join("")}</ul></div>` : ""}
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>
+      ${id ? `<button class="btn ghost" type="button" data-act="snooze" data-id="${id}" data-d="1">Demain</button><button class="btn ghost" type="button" data-act="snooze" data-id="${id}" data-d="7">Dans 1 semaine</button><button class="btn danger" type="button" data-act="del" data-col="rappels" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
+  }
+  if (type === "lien") {
+    openSheet("Ajouter un lien", `<form class="form" data-form="lien">
+      <label class="f">Lien<input type="url" id="f-url" name="url" placeholder="https://…" required></label>
+      <label class="f">Titre<input type="text" id="f-titre" name="titre" placeholder="Facultatif"></label>
+      <div class="two"><label class="f">Thème<input type="text" id="f-tag" name="tag" placeholder="Ex. vacances été" list="tags"></label><datalist id="tags">${[...new Set(S.liens.map((l) => l.tag).filter(Boolean))].map((x) => `<option value="${esc(x)}">`).join("")}</datalist>
+      <label class="f">Note<input type="text" id="f-note" name="note"></label></div>
+      <div class="actions"><button class="btn" type="submit">Ajouter</button></div></form>`);
+  }
+  if (type === "routine") {
+    const r = S.routines.find((x) => x.id === id) || { jours: [] };
+    openSheet(id ? "Routine" : "Nouvelle routine", `<form class="form" data-form="routine" data-id="${id || ""}">
+      <label class="f">Quoi<input type="text" id="f-nom" name="nom" value="${esc(r.nom)}" required placeholder="Ex. sortir les poubelles"></label>
+      <div class="f" style="font-size:14px;font-weight:700;color:var(--muted)">Quels jours<div class="chips">${JC.map((j, k) => `<label><input type="checkbox" name="jours" value="${k}" ${(r.jours || []).includes(k) ? "checked" : ""}><span>${j}</span></label>`).join("")}</div></div>
+      ${quiField(r.qui)}
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="routines" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
+  }
+  if (type === "checklist") {
+    openSheet("Nouvelle checklist", `<form class="form" data-form="checklist">
+      <label class="f">Nom<input type="text" id="f-nom" name="nom" required placeholder="Ex. Valise vacances"></label>
+      <label class="f">Éléments, un par ligne<textarea id="f-items" name="items" placeholder="Maillot&#10;Crème solaire&#10;Chargeurs"></textarea></label>
+      <div class="actions"><button class="btn" type="submit">Créer</button></div></form>`);
+  }
+  if (type === "exception") {
+    openSheet("Exception de garde", `<form class="form" data-form="exception">
+      <div class="two"><label class="f">Du<input type="date" id="f-du" name="du" required value="${t}"></label><label class="f">Au<input type="date" id="f-au" name="au" required value="${t}"></label></div>
+      <div class="chips"><label><input type="radio" name="avec" value="1" checked><span>Avec nous</span></label><label><input type="radio" name="avec" value="0"><span>Chez l'autre parent</span></label></div>
+      <label class="f">Motif<input type="text" id="f-motif" name="motif" placeholder="Ex. échange de week-end, vacances d'hiver"></label>
+      <div class="actions"><button class="btn" type="submit">Ajouter</button></div></form>`);
+  }
+}
+
+/* ---------- Écritures ---------- */
+function errMsg(e) {
+  if (e?.code === "permission-denied") return "Accès refusé : reconnecte-toi.";
+  if (e?.code === "resource-exhausted") return "Quota gratuit du jour atteint : réessaie demain.";
+  return "Enregistrement impossible pour l'instant. Réessaie.";
+}
+// Hors réseau, Firebase garde l'écriture sur le téléphone et la confirme plus tard :
+// on n'attend donc pas plus d'une seconde et demie avant de rendre la main.
+async function W(fn, ok, undo) {
+  let failed = null;
+  const p = Promise.resolve().then(fn).catch((e) => { failed = e; toast(errMsg(e)); });
+  await Promise.race([p, sleep(1500)]);
+  if (failed) return false;
+  if (ok) toast(ok, undo);
+  return true;
+}
+const col = (k) => {
+  const path = COLS[k] || k; const c = collection(fs, path);
+  return {
+    add: (data) => addDoc(c, data),
+    doc: (id) => { const r = doc(fs, path, id); return { update: (d) => updateDoc(r, d), set: (d) => setDoc(r, d), delete: () => deleteDoc(r) }; },
+  };
+};
+const now = () => new Date().toISOString();
+let toastTimer = null;
+function toast(msg, undo) {
+  clearTimeout(toastTimer);
+  $("#toast-root").innerHTML = `<div class="toast" role="status"><span>${esc(msg)}</span>${undo ? '<button data-act="undo">Annuler</button>' : ""}</div>`;
+  S.undo = undo || null;
+  toastTimer = setTimeout(() => { $("#toast-root").innerHTML = ""; S.undo = null; }, undo ? 6000 : 3000);
+}
+function addFrequent(nom) {
+  const n = nom.trim(); if (!n) return;
+  const list = [n, ...S.frequents.filter((f) => f.toLowerCase() !== n.toLowerCase())].slice(0, 80);
+  setDoc(doc(fs, "config", "frequents"), { noms: list }).catch(() => {});
+}
+async function exporter() {
+  const data = { exporte: now(), garde: S.garde };
+  for (const k of Object.keys(COLS)) data[k] = S[k];
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const name = `qg-famille-${today()}.json`;
+  const file = new File([blob], name, { type: "application/json" });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: "Sauvegarde QG Famille" }); return; } catch (e) { if (e.name === "AbortError") return; }
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+/* ---------- Actions ---------- */
+const ACT = {
+  tab: (d) => { S.view = d.v; S.sub = null; S.confirm = null; render(); scrollTo(0, 0); },
+  sub: (d) => { S.sub = { type: d.type }; render(); scrollTo(0, 0); },
+  back: () => { S.sub = S.sub && S.sub.type === "checklist" ? { type: "checklists" } : null; S.confirm = null; render(); },
+  close: () => closeSheet(),
+  "open-add": () => openAdd(),
+  form: (d) => openForm(d.type, d.id),
+  "course-tab": (d) => { S.courseTab = d.k; render(); },
+  "rap-tab": (d) => { S.rapTab = d.k; render(); },
+  undo: async () => { const u = S.undo; S.undo = null; $("#toast-root").innerHTML = ""; if (u) await W(u, "Rétabli"); },
+  export: () => exporter(),
+  logout: () => { signOut(auth); },
+  "prop-del": (d) => { props.splice(Number(d.k), 1); renderVrac(); },
+
+  buy: async (d) => {
+    const c = S.courses.find((x) => x.id === d.id); if (!c) return;
+    const { id, ...data } = c;
+    if (await W(() => col("courses").doc(id).delete(), `${c.nom} : acheté`, () => col("courses").doc(id).set(data))) addFrequent(c.nom);
+  },
+  "course-menu": (d) => {
+    const c = S.courses.find((x) => x.id === d.id); if (!c) return;
+    openSheet(c.nom, `<div class="sec"><h3>Déplacer vers</h3><div class="actions">${Object.entries(LISTES).filter(([k]) => k !== c.liste).map(([k, v]) => `<button class="btn ghost" data-act="course-move" data-id="${c.id}" data-to="${k}">${v}</button>`).join("")}</div>
+      <div class="actions"><button class="btn danger" data-act="del" data-col="courses" data-id="${c.id}" data-close="1">Supprimer</button></div>${c.qui ? `<p class="muted small" style="margin:0">Ajouté par ${esc(c.qui)}</p>` : ""}</div>`);
+  },
+  "course-move": async (d) => { closeSheet(); await W(() => col("courses").doc(d.id).update({ liste: d.to }), `Déplacé vers ${LISTES[d.to]}`); },
+  "go-shopping": async () => {
+    const l = S.courses.filter((c) => c.liste === "constate");
+    await W(async () => { const b = writeBatch(fs); for (const c of l) b.update(doc(fs, "courses", c.id), { liste: "urgent" }); await b.commit(); }, `${l.length} article${l.length > 1 ? "s" : ""} passé${l.length > 1 ? "s" : ""} en Urgent`);
+    S.courseTab = "urgent"; render();
+  },
+
+  "rappel-done": async (d) => {
+    const r = S.rappels.find((x) => x.id === d.id); if (!r) return;
+    const t = today(); const histo = [{ d: t, par: qui() }, ...(r.histo || [])].slice(0, 12);
+    const prev = { prochaine: r.prochaine, histo: r.histo || [], termine: !!r.termine };
+    const patch = r.recur ? { prochaine: addRecur(t, r.recur.n, r.recur.unite), histo } : { termine: true, histo };
+    await W(() => col("rappels").doc(r.id).update(patch), r.recur ? `Fait. Prochaine fois : ${fmt(patch.prochaine)}` : "Fait", () => col("rappels").doc(r.id).update(prev));
+  },
+  snooze: async (d) => { closeSheet(); const nd = addDays(today(), Number(d.d)); await W(() => col("rappels").doc(d.id).update({ prochaine: nd }), `Reporté au ${fmt(nd)}`); },
+  "routine-done": async (d) => {
+    const r = S.routines.find((x) => x.id === d.id); if (!r) return; const t = today();
+    const done = r.fait === t;
+    await W(() => col("routines").doc(r.id).update({ fait: done ? (r.avant || "") : t, avant: done ? "" : (r.fait || ""), par: qui() }));
+  },
+
+  "open-check": (d) => { S.view = "plus"; S.sub = { type: "checklist", id: d.id }; S.confirm = null; render(); scrollTo(0, 0); },
+  "check-item": async (d) => {
+    const c = S.checklists.find((x) => x.id === S.sub?.id); if (!c) return;
+    const items = (c.items || []).map((i, k) => (k === Number(d.k) ? { ...i, ok: !i.ok } : i));
+    await W(() => col("checklists").doc(c.id).update({ items }));
+  },
+  "check-del": async (d) => {
+    const c = S.checklists.find((x) => x.id === S.sub?.id); if (!c) return;
+    await W(() => col("checklists").doc(c.id).update({ items: (c.items || []).filter((_, k) => k !== Number(d.k)) }));
+  },
+  "check-reset": async () => {
+    const c = S.checklists.find((x) => x.id === S.sub?.id); if (!c) return;
+    await W(() => col("checklists").doc(c.id).update({ items: (c.items || []).map((i) => ({ ...i, ok: false })) }), "Checklist prête pour la prochaine fois");
+  },
+  "check-to-courses": async (d) => {
+    const c = S.checklists.find((x) => x.id === S.sub?.id); const it = c?.items?.[Number(d.k)]; if (!it) return;
+    await W(() => col("courses").add({ nom: it.t, liste: "urgent", qui: qui(), cree: now() }), `${it.t} ajouté aux courses urgentes`);
+  },
+
+  del: async (d, el) => {
+    if (S.confirm !== d.id && !d.close) { S.confirm = d.id; render(); return; }
+    if (d.close && el.dataset.armed !== "1") { el.dataset.armed = "1"; el.textContent = "Confirmer la suppression"; return; }
+    const list = S[d.col] || []; const item = list.find((x) => x.id === d.id);
+    const data = item ? (({ id, ...rest }) => rest)(item) : null;
+    S.confirm = null; if (d.close) closeSheet();
+    if (d.col === "checklists") S.sub = { type: "checklists" };
+    await W(() => col(d.col).doc(d.id).delete(), "Supprimé", data ? () => col(d.col).doc(d.id).set(data) : null);
+    render();
+  },
+};
+
+const SUBMIT = {
+  vrac: () => saveVrac(),
+  "quick-course": async (fd, f) => {
+    const nom = String(fd.get("nom") || "").trim(); if (!nom) return;
+    f.reset(); const n = $("#qc-nom"); if (n) n.value = "";
+    await W(() => col("courses").add({ nom, liste: S.courseTab, qui: qui(), cree: now() }));
+    const n2 = $("#qc-nom"); if (n2) n2.focus();
+  },
+  event: async (fd, f) => {
+    const id = f.dataset.id; const data = { titre: String(fd.get("titre")).trim(), date: fd.get("date"), heure: fd.get("heure") || "", qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || "") };
+    closeSheet();
+    await W(() => (id ? col("events").doc(id).update(data) : col("events").add({ ...data, par: qui(), cree: now() })), id ? "Modifié" : `Ajouté le ${fmt(data.date)}`);
+  },
+  rappel: async (fd, f) => {
+    const id = f.dataset.id; const u = fd.get("unite");
+    const data = { titre: String(fd.get("titre")).trim(), prochaine: fd.get("prochaine"), cat: fd.get("cat"), recur: u ? { n: Math.max(1, Number(fd.get("n")) || 1), unite: u } : null, qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || ""), termine: false };
+    closeSheet();
+    await W(() => (id ? col("rappels").doc(id).update(data) : col("rappels").add({ ...data, histo: [], cree: now() })), id ? "Modifié" : "Rappel créé");
+  },
+  routine: async (fd, f) => {
+    const id = f.dataset.id; const jours = fd.getAll("jours").map(Number);
+    if (!jours.length) { toast("Choisis au moins un jour"); return; }
+    const data = { nom: String(fd.get("nom")).trim(), jours, qui: fd.get("qui") || "Les deux" };
+    closeSheet();
+    await W(() => (id ? col("routines").doc(id).update(data) : col("routines").add({ ...data, fait: "", cree: now() })), id ? "Modifié" : "Routine créée");
+  },
+  lien: async (fd) => {
+    const data = { url: String(fd.get("url")).trim(), titre: String(fd.get("titre") || "").trim(), tag: String(fd.get("tag") || "").trim(), note: String(fd.get("note") || ""), statut: "À voir", par: qui(), cree: now() };
+    closeSheet(); await W(() => col("liens").add(data), "Lien ajouté");
+  },
+  checklist: async (fd) => {
+    const nom = String(fd.get("nom")).trim();
+    const items = String(fd.get("items") || "").split("\n").map((s) => s.trim()).filter(Boolean).map((t) => ({ t, ok: false }));
+    closeSheet(); await W(() => col("checklists").add({ nom, items, cree: now() }), "Checklist créée");
+  },
+  "check-add": async (fd, f) => {
+    const t = String(fd.get("t") || "").trim(); const c = S.checklists.find((x) => x.id === S.sub?.id); if (!t || !c) return;
+    f.reset(); await W(() => col("checklists").doc(c.id).update({ items: [...(c.items || []), { t, ok: false }] }));
+    const n = $("#ck-add"); if (n) { n.value = ""; n.focus(); }
+  },
+  exception: async (fd) => {
+    let du = fd.get("du"), au = fd.get("au"); if (au < du) [du, au] = [au, du];
+    closeSheet(); await W(() => col("exceptions").add({ du, au, avec: fd.get("avec") === "1", motif: String(fd.get("motif") || "") }), "Exception ajoutée");
+  },
+  "garde-cfg": async (fd) => {
+    const ancre = fd.get("ancre"); if (!ancre) return;
+    await W(() => setDoc(doc(fs, "config", "garde"), { ancre: mondayOf(ancre), heure: fd.get("heure") || "16:40" }), "Règle enregistrée");
+  },
+};
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act]"); if (!el) return;
+  const fn = ACT[el.dataset.act]; if (!fn) return;
+  e.preventDefault(); fn(el.dataset, el, e);
+});
+document.addEventListener("submit", (e) => {
+  const f = e.target; const fn = SUBMIT[f.dataset.form]; if (!fn) return;
+  e.preventDefault(); fn(new FormData(f), f);
+});
+document.addEventListener("change", async (e) => {
+  const el = e.target;
+  if (el.dataset.chg === "lien-statut") await W(() => col("liens").doc(el.dataset.id).update({ statut: el.value }), "Statut mis à jour");
+  if (el.dataset.prop !== undefined) {
+    const p = props[Number(el.dataset.prop)]; if (!p) return;
+    p[el.dataset.field] = el.value;
+    if (el.dataset.field === "type") { if (p.type === "lien" && !p.url) p.url = p.titre; renderVrac(); }
+  }
+});
+document.addEventListener("input", (e) => {
+  const el = e.target;
+  if (el.id === "vrac" || el.id === "vrac-s") { onVracInput(el); return; }
+  if (el.dataset.prop !== undefined && el.dataset.field !== "type" && el.type !== "radio") { const p = props[Number(el.dataset.prop)]; if (p) p[el.dataset.field] = el.value; }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && $("#sheet-root").innerHTML) closeSheet();
+  // Entrée valide la saisie rapide ; Maj+Entrée passe à la ligne
+  if ((e.target.id === "vrac" || e.target.id === "vrac-s") && e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveVrac(); }
+});
+addEventListener("online", () => { S.offline = false; renderStatus(); });
+addEventListener("offline", () => { S.offline = true; renderStatus(); });
+// Passage à minuit ou retour sur l'appli après plusieurs heures : on rafraîchit les dates
+document.addEventListener("visibilitychange", () => { if (!document.hidden && $("#app").hidden === false) render(); });
+
+/* ---------- Premier lancement : règle de garde 2026-2027 ---------- */
+async function premierLancement() {
+  const b = writeBatch(fs);
+  b.set(doc(fs, "config", "garde"), { ancre: "2026-09-14", heure: "16:40" });
+  b.set(doc(fs, "garde_exceptions", "toussaint-2026-s1"), { du: "2026-10-19", au: "2026-10-25", avec: true, motif: "Toussaint, 1re semaine" });
+  b.set(doc(fs, "garde_exceptions", "toussaint-2026-s2"), { du: "2026-10-26", au: "2026-11-08", avec: false, motif: "Toussaint, 2e semaine" });
+  b.set(doc(fs, "garde_exceptions", "ete-2027-juillet"), { du: "2027-07-01", au: "2027-07-31", avec: false, motif: "Été 2027 : juillet chez l'autre parent" });
+  b.set(doc(fs, "garde_exceptions", "ete-2027-aout"), { du: "2027-08-01", au: "2027-08-31", avec: true, motif: "Été 2027 : août avec nous" });
+  b.set(doc(fs, "checklists", "sac-lyssia"), { nom: "Sac de Lyssia", items: ["Cahiers et trousse", "Affaires de sport", "Doudou", "Médicaments en cours", "Chargeur"].map((t) => ({ t, ok: false })), cree: now() });
+  b.set(doc(fs, "rappels", "verif-garde-2027"), { titre: "Vérifier la règle de garde (petites vacances, été)", prochaine: "2027-09-01", cat: "Administratif", recur: { n: 1, unite: "an" }, qui: "Chloé", note: "Les semaines de petites vacances s'inversent-elles ? Mettre à jour les exceptions.", histo: [], termine: false, cree: now() });
+  await b.commit();
+}
+
+/* ---------- Connexion et démarrage ---------- */
+function ecouter() {
+  S.garde = undefined;
+  for (const [k, path] of Object.entries(COLS)) {
+    S.unsub.push(onSnapshot(collection(fs, path), { includeMetadataChanges: false }, (snap) => {
+      S[k] = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      if (!snap.metadata.fromCache || S[k].length) S.loaded.add(k);
+      render();
+    }, (e) => { if (e.code === "permission-denied") toast("Accès refusé à cette base."); }));
+  }
+  S.unsub.push(onSnapshot(doc(fs, "config", "garde"), (s) => {
+    S.garde = s.exists() ? s.data() : null;
+    if (!s.exists() && !s.metadata.fromCache) premierLancement().catch(() => {});
+    render();
+  }, () => {}));
+  S.unsub.push(onSnapshot(doc(fs, "config", "frequents"), (s) => { S.frequents = s.exists() && Array.isArray(s.data().noms) ? s.data().noms : []; }, () => {}));
+}
+
+onAuthStateChanged(auth, (u) => {
+  S.unsub.forEach((f) => f()); S.unsub = [];
+  if (u && PERSONNES[u.uid]) {
+    S.me = PERSONNES[u.uid];
+    $("#login").hidden = true; $("#app").hidden = false;
+    ecouter(); render();
+  } else {
+    if (u) signOut(auth); // compte inconnu
+    S.me = "";
+    $("#app").hidden = true; $("#login").hidden = false;
+  }
+});
+
+$("#login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = $("#l-err"); const go = $("#l-go");
+  err.textContent = ""; go.disabled = true;
+  try { await signInWithEmailAndPassword(auth, $("#l-email").value.trim(), $("#l-pass").value); }
+  catch (x) {
+    err.textContent = {
+      "auth/invalid-credential": "E-mail ou mot de passe incorrect.",
+      "auth/invalid-email": "Cette adresse e-mail n'est pas valide.",
+      "auth/too-many-requests": "Trop d'essais. Attends quelques minutes ou utilise « Mot de passe oublié ».",
+      "auth/network-request-failed": "Pas de réseau. Vérifie ta connexion puis réessaie.",
+    }[x.code] || "Connexion impossible. Réessaie.";
+  } finally { go.disabled = false; }
+});
+$("#l-forgot").addEventListener("click", async () => {
+  const email = $("#l-email").value.trim(); const err = $("#l-err");
+  if (!email) { err.textContent = "Tape d'abord ton e-mail, puis appuie sur « Mot de passe oublié »."; return; }
+  try { await sendPasswordResetEmail(auth, email); err.textContent = "Si ce compte existe, un e-mail de réinitialisation vient d'être envoyé."; }
+  catch { err.textContent = "Envoi impossible pour l'instant. Réessaie."; }
+});
+</script>
+</body>
+</html>
