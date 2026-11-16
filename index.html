@@ -116,6 +116,11 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .row .m { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-top: 2px; }
 .row button.grow { background: none; border: 0; text-align: left; padding: 0; }
 .bubble { width: 50px; min-height: 46px; border-radius: 14px; background: var(--kbg, var(--lav)); display: grid; place-items: center; text-align: center; font-family: var(--f-display); font-weight: 800; font-size: 14px; line-height: 1.05; flex: none; padding: 4px; }
+.bubble.psg, .psg-tag { background: #10264A; color: #FFFFFF; }
+.psg-tag { font-weight: 800; letter-spacing: .04em; }
+.psg-hero, .tile.psg-hero { background: #10264A; color: #FFFFFF; position: relative; overflow: hidden; padding-right: 52px; }
+.psg-hero::after { content: ""; position: absolute; right: 16px; top: 0; bottom: 0; width: 22px; background: #DA2128; }
+.psg-hero > * { position: relative; z-index: 1; }
 .when { font-size: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .when.late { color: var(--hot); font-weight: 700; }
 .qui { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }
@@ -323,6 +328,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebas
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 import { classerTout } from "./vrac.js";
+import { MATCHS, MAJ as PSG_MAJ } from "./psg.js";
 
 /* ---------- Configuration ---------- */
 const firebaseConfig = {
@@ -447,7 +453,12 @@ const routineDue = (r, s) => (r.jours || []).includes(wday(s));
 const routineFaite = (r, s) => r.fait === s;
 const sacLyssia = () => S.checklists.find((c) => /lyssia/i.test(c.nom || ""));
 const filtreKid = (x) => !S.kid || (S.kid === "famille" ? !pourDe(x).length : pourDe(x).includes(S.kid));
-const evtsDu = (d) => S.events.filter((e) => e.date === d && filtreKid(e)).sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
+// Matchs du PSG à domicile : affichés comme des événements de Medhi, sans être enregistrés dans la base
+const matchsDu = (d) => (S.kid && S.kid !== "famille") ? [] : MATCHS.filter((m) => m.date === d).map((m) => ({
+  id: "psg-" + m.id, psg: true, titre: `PSG – ${m.adv}`, date: m.date, heure: m.heure || "", qui: "Medhi",
+  note: m.heure ? `${m.comp} · Parc des Princes` : `${m.comp} · date exacte à confirmer (${fmt(m.date)} – ${fmt(m.au)})`,
+}));
+const evtsDu = (d) => [...S.events.filter((e) => e.date === d && filtreKid(e)), ...matchsDu(d)].sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
 
 /* ---------- Suivi kilométrique du leasing ---------- */
 const VOITURE = { start: "2026-09-11", allowance: 30000, kmDepart: 0, marge: 1500, medhi: 105, chloe: null };
@@ -657,11 +668,24 @@ const VIEWS = {
         <button class="tile lvl-${lv}" style="background:var(--lvbg)" data-act="sub" data-type="voiture"><b>Voiture</b><span>Kilométrage du leasing</span><span class="s"><b style="font-size:16px">${VERDICTS[lv]}</b>${yi.empty ? "" : `<br>${km(yi.used)} cette année`}</span></button>
         <button class="tile k-lyssia" style="background:var(--kbg)" data-act="sub" data-type="garde"><b>Garde de Lyssia</b><span class="s">${s ? (s.avec ? "Avec nous cette semaine" : "Sans Lyssia cette semaine") : "À configurer"}</span></button>
         <button class="tile c-sage" data-act="sub" data-type="checklists"><b>Checklists</b><span class="s">${nCheck} modèle${nCheck > 1 ? "s" : ""}</span></button>
-        <button class="tile c-lav" data-act="export"><b>Sauvegarde</b><span class="s">Télécharger toutes nos données</span></button>
+        <button class="tile psg-hero" data-act="sub" data-type="psg"><b>Matchs du PSG</b><span class="s">${(() => { const n = MATCHS.find((m) => (m.au || m.date) >= today()); return n ? `Prochain : ${esc(n.adv)}, ${n.heure ? fmt(n.date) + " · " + fmtH(n.heure) : "à confirmer"}` : "Saison terminée"; })()}</span></button>
       </div>
       <h3>Prochainement</h3>
       <div class="tiles">${soon.map((x) => `<div class="tile soon"><b class="muted" style="font-size:17px">${x}</b><span class="muted small">À construire</span></div>`).join("")}</div>
-      <div class="actions"><button class="btn ghost" data-act="logout">Se déconnecter (${esc(qui())})</button></div></div>`;
+      <div class="actions"><button class="btn ghost" data-act="export">Sauvegarder nos données</button><button class="btn ghost" data-act="logout">Se déconnecter (${esc(qui())})</button></div></div>`;
+  },
+
+  psg() {
+    const t = today();
+    const avenir = MATCHS.filter((m) => (m.au || m.date) >= t);
+    const passe = MATCHS.length - avenir.length;
+    return `<div class="sec" style="gap:14px">${back()}
+      <section class="card psg-hero"><p class="big">Matchs du PSG</p><p style="margin:0">Au Parc des Princes · abonnement de Medhi</p></section>
+      <p class="small muted" style="margin:0">Les matchs apparaissent tout seuls dans l'agenda. La Ligue fixe la date exacte et l'heure environ un mois avant : d'ici là, seul le week-end est connu. Liste mise à jour le ${fmtAn(PSG_MAJ)}, d'après psg.fr.</p>
+      ${avenir.length ? `<ul class="list">${avenir.map((m) => `<li class="row"><span class="bubble psg">${m.heure ? fmtH(m.heure).replace(" h ", " h<br>") : "À<br>conf."}</span>
+        <div class="grow"><div class="t">PSG – ${esc(m.adv)}</div><div class="m"><span>${m.heure ? fmt(m.date) : `week-end du ${fmtCourt(m.date)} au ${fmtCourt(m.au)}`}</span><span>${esc(m.comp)}</span></div></div></li>`).join("")}</ul>` : '<p class="empty">Plus de match à domicile prévu cette saison.</p>'}
+      ${passe ? `<p class="small muted" style="margin:0">${passe} match${passe > 1 ? "s" : ""} déjà joué${passe > 1 ? "s" : ""} non affiché${passe > 1 ? "s" : ""}.</p>` : ""}
+      <p class="small muted" style="margin:0">Coupe de France et phases finales de Ligue des champions : ajoutées dès que les tirages sont connus.</p></div>`;
   },
 
   checklists() {
@@ -842,6 +866,8 @@ function gardeBanner(lun) {
     <p>${nx ? (s.avec ? `Elle repart ${fmtLong(nx)} à ${heurePassage()}.` : `Elle arrive ${fmtLong(nx)} à ${heurePassage()}.`) : ""}${s.motif !== "Alternance" ? ` ${esc(s.motif)}.` : ""}</p></section>`;
 }
 function eventRow(e) {
+  if (e.psg) return `<li class="row"><span class="bubble psg">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "À<br>conf."}</span>
+    <button class="grow" data-act="sub" data-type="psg"><div class="t">${esc(e.titre)}</div><div class="m"><span class="tag psg-tag">PSG</span><span>Medhi</span><span>${esc(e.note)}</span></div></button></li>`;
   return `<li class="row ${kidCls(e)}"><span class="bubble">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "Jour-<br>née"}</span>
     <button class="grow" data-act="form" data-type="event" data-id="${e.id}"><div class="t">${esc(e.titre)}</div>
     <div class="m">${kidTags(e)}${quiTag(e.qui)}${e.note ? `<span>${esc(e.note)}</span>` : ""}</div></button></li>`;
