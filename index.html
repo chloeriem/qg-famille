@@ -425,6 +425,7 @@ function addRecur(s, n, u) {
 }
 function recurTxt(r) {
   if (!r) return "";
+  if (r.fixe && r.jour && (r.unite === "mois" || r.unite === "an")) return r.unite === "mois" && (Number(r.n) || 1) === 1 ? `le ${r.jour === 1 ? "1er" : r.jour} de chaque mois` : `à date fixe, ${r.unite === "an" ? "chaque année" : `tous les ${r.n} mois`}`;
   const n = Number(r.n) || 1;
   const one = { jour: "chaque jour", semaine: "chaque semaine", mois: "chaque mois", an: "chaque année" };
   const many = { jour: "jours", semaine: "semaines", mois: "mois", an: "ans" };
@@ -1279,6 +1280,7 @@ function openForm(type, id, extra) {
       <label class="f">Catégorie<select id="f-cat" name="cat">${CATS.map((c) => `<option ${c === (r.cat || "Autre") ? "selected" : ""}>${c}</option>`).join("")}</select></label></div>
       <div class="two"><label class="f">Répéter<select id="f-unite" name="unite"><option value="">Une seule fois</option>${[["jour", "jours"], ["semaine", "semaines"], ["mois", "mois"], ["an", "ans"]].map(([k, v]) => `<option value="${k}" ${rc && rc.unite === k ? "selected" : ""}>Tous les N ${v}</option>`).join("")}</select></label>
       <label class="f">N<input type="number" id="f-n" name="n" min="1" max="99" value="${esc(rc ? rc.n : 1)}"></label></div>
+      <div class="chips"><label><input type="checkbox" name="fixe" value="1" ${rc && rc.fixe ? "checked" : ""}><span>Toujours le même jour du mois</span></label></div>
       ${pourField(pourDe(r))}${quiField(r.qui)}
       <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(r.note)}"></label>
       ${r.histo && r.histo.length ? `<div><h3>Historique</h3><ul class="histo">${r.histo.map((h) => `<li>Fait le ${fmt(h.d)}${h.par ? ` par ${esc(h.par)}` : ""}</li>`).join("")}</ul></div>` : ""}
@@ -1453,7 +1455,16 @@ const ACT = {
     const r = S.rappels.find((x) => x.id === d.id); if (!r) return;
     const t = today(); const histo = [{ d: t, par: qui() }, ...(r.histo || [])].slice(0, 12);
     const prev = { prochaine: r.prochaine, histo: r.histo || [], termine: !!r.termine };
-    const patch = r.recur ? { prochaine: addRecur(t, r.recur.n, r.recur.unite), histo } : { termine: true, histo };
+    let suivante = null;
+    if (r.recur) {
+      // Date fixe (ex. le 25 de chaque mois) : on avance depuis l'échéance prévue, pas depuis le jour où c'est fait
+      if (r.recur.fixe) {
+        const jour = (x) => { const d = parse(x); const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); d.setDate(Math.min(r.recur.jour || d.getDate(), last)); return iso(d); };
+        suivante = jour(addRecur(r.prochaine, r.recur.n, r.recur.unite)); while (suivante <= t) suivante = jour(addRecur(suivante, r.recur.n, r.recur.unite));
+      }
+      else suivante = addRecur(t, r.recur.n, r.recur.unite);
+    }
+    const patch = r.recur ? { prochaine: suivante, histo } : { termine: true, histo };
     await W(() => col("rappels").doc(r.id).update(patch), r.recur ? `Fait. Prochaine fois : ${fmt(patch.prochaine)}` : "Fait", () => col("rappels").doc(r.id).update(prev));
   },
   snooze: async (d) => { closeSheet(); const nd = addDays(today(), Number(d.d)); await W(() => col("rappels").doc(d.id).update({ prochaine: nd }), `Reporté au ${fmt(nd)}`); },
@@ -1547,7 +1558,7 @@ const SUBMIT = {
   },
   rappel: async (fd, f) => {
     const id = f.dataset.id; const u = fd.get("unite");
-    const data = { titre: String(fd.get("titre")).trim(), prochaine: fd.get("prochaine"), cat: fd.get("cat"), recur: u ? { n: Math.max(1, Number(fd.get("n")) || 1), unite: u } : null, pour: fd.getAll("pour"), qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || ""), termine: false };
+    const data = { titre: String(fd.get("titre")).trim(), prochaine: fd.get("prochaine"), cat: fd.get("cat"), recur: u ? { n: Math.max(1, Number(fd.get("n")) || 1), unite: u, ...(fd.get("fixe") && (u === "mois" || u === "an") ? { fixe: true, jour: parse(fd.get("prochaine")).getDate() } : {}) } : null, pour: fd.getAll("pour"), qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || ""), termine: false };
     closeSheet();
     await W(() => (id ? col("rappels").doc(id).update(data) : col("rappels").add({ ...data, histo: [], cree: now() })), id ? "Modifié" : "Rappel créé");
   },
@@ -1692,6 +1703,16 @@ function ecouter() {
     render();
   }, () => {}));
   S.unsub.push(onSnapshot(doc(fs, "config", "voiture"), (s) => { S.voiture = s.exists() ? s.data() : null; render(); }, () => {}));
+  S.unsub.push(onSnapshot(doc(fs, "config", "ajouts"), (s) => {
+    if (s.metadata.fromCache) return;
+    const fait = s.exists() ? s.data() : {};
+    if (!fait.paieNounou) {
+      const b = writeBatch(fs);
+      b.set(doc(fs, "rappels", "paie-nounou"), { titre: "Faire la paie de la nounou (Pajemploi)", prochaine: "2026-11-25", cat: "Administratif", recur: { n: 1, unite: "mois", fixe: true, jour: 25 }, pour: [], qui: "Chloé", note: "Déclaration Pajemploi entre le 25 et le 5 du mois suivant", histo: [], termine: false, cree: now() });
+      b.set(doc(fs, "config", "ajouts"), { ...fait, paieNounou: true });
+      b.commit().catch(() => {});
+    }
+  }, () => {}));
   S.unsub.push(onSnapshot(collection(fs, "animaux"), (snap) => {
     if (!snap.metadata.fromCache && snap.empty) setDoc(doc(fs, "animaux", "vega"), { nom: "Véga", espece: "Chien", croq: {}, veto: {}, cree: now() }).catch(() => {});
   }, () => {}));
