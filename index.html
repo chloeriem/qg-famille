@@ -8,33 +8,44 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="QG Famille">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#F2F5F3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F171A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F7F4EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex, nofollow">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Familjen+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Une colonne façon appli de téléphone, barre d'onglets en bas, bouton + flottant.
-   Le surligneur orange reprend celui du calendrier papier : il marque les semaines avec Lyssia. */
+/* Une colonne façon appli, grandes cartes pastel, barre d'onglets noire flottante.
+   Bleu, orange et rose sont réservés aux enfants : Milan, Lyssia, Naelia.
+   Les rubriques utilisent jaune, lavande et vert sauge pour ne jamais se confondre avec eux. */
 :root {
-  --bg: #F2F5F3; --surface: #FFFFFF; --surface-2: #E8EDEA; --ink: #17242B; --muted: #5B686D; --line: #D6DEDA;
-  --accent: #1D6A64; --accent-ink: #FFFFFF; --hl: #FFB65C; --hl-ink: #3B2300;
-  --chloe: #1D6A64; --medhi: #6B4A96; --deux: #6F7F7B; --danger: #B3261E; --late: #B3261E;
-  --shadow: 0 10px 30px rgba(23, 36, 43, .16);
-  --f-display: "Familjen Grotesk", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --f-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --r: 14px; color-scheme: light;
+  --bg: #F7F4EF; --surface: #FFFFFF; --ink: #161616; --muted: #6B6660; --line: #E9E3DA;
+  --nav: #161616; --nav-ink: #FFFFFF; --btn: #161616; --btn-ink: #FFFFFF;
+  --yellow: #FFE98A; --lav: #DED8FF; --sage: #D3E8C6; --sand: #EFE8DD;
+  --milan: #2F6FEB; --milan-bg: #D6E4FF;
+  --lyssia: #EE7418; --lyssia-bg: #FFDDBF;
+  --naelia: #DE4A8C; --naelia-bg: #FFD4E6;
+  --famille: #6B6660; --famille-bg: #EFE8DD;
+  --ok: #2E8A57; --warn: #B98500; --hot: #D23A2A; --hot-bg: #FFDCD6;
+  --shadow: 0 14px 34px rgba(22, 22, 22, .18);
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r: 24px; --r-sm: 16px; color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0F171A; --surface: #172227; --surface-2: #1F2C32; --ink: #E5ECE9; --muted: #9AA9A6; --line: #2A383D;
-    --accent: #55B6AB; --accent-ink: #082A27; --hl: #E7973F; --hl-ink: #1E1100;
-    --chloe: #55B6AB; --medhi: #B194D9; --deux: #8E9C99; --danger: #F2847A; --late: #F2847A;
-    --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
+    --bg: #121212; --surface: #1E1D1B; --ink: #F3EFE9; --muted: #A39D95; --line: #2E2B28;
+    --nav: #F3EFE9; --nav-ink: #161616; --btn: #F3EFE9; --btn-ink: #161616;
+    --yellow: #4A421E; --lav: #312C55; --sage: #26391F; --sand: #2B2825;
+    --milan: #85ACFF; --milan-bg: #1E2E50;
+    --lyssia: #FFA05A; --lyssia-bg: #4C2D14;
+    --naelia: #FF89BC; --naelia-bg: #4B1E33;
+    --famille: #A39D95; --famille-bg: #2B2825;
+    --ok: #5CCB8C; --warn: #E8B83E; --hot: #FF7563; --hot-bg: #4A1E19;
+    --shadow: 0 14px 34px rgba(0, 0, 0, .55); color-scheme: dark;
   }
 }
 * { box-sizing: border-box; }
@@ -42,149 +53,232 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.45;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-top: env(safe-area-inset-top, 0px); -webkit-tap-highlight-color: transparent;
+  padding-top: env(safe-area-inset-top, 0px); -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased;
 }
 [hidden] { display: none !important; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.wrap { max-width: 560px; margin: 0 auto; padding-block: 14px calc(150px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 18px; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.wrap { max-width: 560px; margin: 0 auto; padding-block: 18px calc(120px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 18px; }
 
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.brand { font-family: var(--f-display); font-weight: 700; font-size: 22px; letter-spacing: -.01em; margin: 0; }
-.brand small { display: block; font-family: var(--f-body); font-weight: 400; font-size: 14px; color: var(--muted); letter-spacing: 0; }
-.who { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 14px; display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
-.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--deux); flex: none; }
-.dot.q-chloe { background: var(--chloe); } .dot.q-medhi { background: var(--medhi); }
+/* En-tête */
+.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.hello { margin: 0; }
+.hello small { display: block; font-size: 15px; color: var(--muted); font-weight: 500; }
+.hello b { display: block; font-family: var(--f-display); font-weight: 800; font-size: 34px; line-height: 1.05; letter-spacing: -.02em; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; border: 0; display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; font-size: 18px; flex: none; background: var(--lav); color: var(--ink); }
 
-h2 { font-family: var(--f-display); font-weight: 700; font-size: 19px; margin: 0; text-wrap: balance; }
-h3 { font-family: var(--f-display); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0; }
+h2 { font-family: var(--f-display); font-weight: 800; font-size: 22px; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 0; }
 .sec { display: flex; flex-direction: column; gap: 10px; }
-.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.link { background: none; border: 0; color: var(--accent); font-weight: 700; padding: 4px 0; font-size: 15px; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.link { background: none; border: 0; color: var(--ink); font-weight: 700; padding: 4px 0; font-size: 15px; text-decoration: underline; text-underline-offset: 3px; }
 .muted { color: var(--muted); }
 .small { font-size: 14px; }
-.empty { color: var(--muted); font-size: 15px; padding: 14px; border: 1px dashed var(--line); border-radius: var(--r); margin: 0; }
+.empty { color: var(--muted); font-size: 15px; padding: 16px; border: 1.5px dashed var(--line); border-radius: var(--r-sm); margin: 0; }
 
-.garde { background: var(--surface); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--line); }
-.garde-title { font-family: var(--f-display); font-weight: 700; font-size: 21px; line-height: 1.25; margin: 0; }
-.hl { background: linear-gradient(100deg, transparent 0 1%, var(--hl) 3% 97%, transparent 99%); color: var(--hl-ink); border-radius: 4px 10px 5px 11px / 11px 4px 10px 5px; padding: 0 .3em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.pill { display: inline-flex; align-items: center; font-size: 13px; font-weight: 700; padding: 2px 10px; border-radius: 4px 10px 5px 11px / 11px 4px 10px 5px; white-space: nowrap; }
-.pill.avec { background: var(--hl); color: var(--hl-ink); }
-.pill.sans { background: var(--surface-2); color: var(--muted); }
+/* Cartes pastel */
+.card { border-radius: var(--r); padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.c-yellow { background: var(--yellow); } .c-lav { background: var(--lav); } .c-sage { background: var(--sage); } .c-sand { background: var(--sand); }
+.c-white { background: var(--surface); border: 1px solid var(--line); }
+.big { font-family: var(--f-display); font-weight: 800; font-size: 27px; line-height: 1.08; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
 
-.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
-.row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 52px; }
-.row + .row { border-top: 1px solid var(--line); }
+/* Enfants */
+.k-milan { --k: var(--milan); --kbg: var(--milan-bg); }
+.k-lyssia { --k: var(--lyssia); --kbg: var(--lyssia-bg); }
+.k-naelia { --k: var(--naelia); --kbg: var(--naelia-bg); }
+.k-famille { --k: var(--famille); --kbg: var(--famille-bg); }
+.kid { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 2px 9px 2px 7px; border-radius: 999px; background: var(--kbg); color: var(--ink); white-space: nowrap; }
+.kid::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
+.kids { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.kidcard { background: var(--kbg); border: 0; border-radius: 20px; padding: 14px 12px; text-align: left; display: flex; flex-direction: column; gap: 6px; min-height: 120px; min-width: 0; }
+.kidcard b { font-family: var(--f-display); font-weight: 800; font-size: 19px; display: flex; align-items: center; gap: 7px; }
+.kidcard b::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--k); flex: none; }
+.kidcard span { font-size: 13.5px; line-height: 1.3; overflow-wrap: anywhere; }
+.kidcard .n { font-family: var(--f-display); font-weight: 800; font-size: 22px; margin-top: auto; }
+
+/* Garde */
+.garde { border-radius: var(--r); padding: 20px; display: flex; flex-direction: column; gap: 8px; background: var(--lyssia-bg); position: relative; overflow: hidden; }
+.garde.sans { background: var(--surface); border: 1.5px dashed var(--lyssia); }
+.garde .tagline { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--lyssia); margin: 0; }
+.garde.avec::after { content: ""; position: absolute; right: -36px; top: -36px; width: 130px; height: 130px; border-radius: 50%; background: var(--lyssia); opacity: .22; }
+.garde p { margin: 0; }
+.pill { display: inline-flex; align-items: center; font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.avec { background: var(--lyssia); color: #fff; }
+.pill.sans { background: var(--sand); color: var(--muted); }
+
+/* Listes */
+.list { list-style: none; margin: 0; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.row { display: flex; align-items: center; gap: 12px; padding: 10px; min-height: 56px; border-radius: 16px; }
+.row + .row { border-top: 1px solid var(--line); border-radius: 0 0 16px 16px; }
 .row .grow { flex: 1; min-width: 0; }
 .row .t { font-weight: 700; overflow-wrap: anywhere; }
-.row .m { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.row .m { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-top: 2px; }
 .row button.grow { background: none; border: 0; text-align: left; padding: 0; }
+.bubble { width: 50px; min-height: 46px; border-radius: 14px; background: var(--kbg, var(--lav)); display: grid; place-items: center; text-align: center; font-family: var(--f-display); font-weight: 800; font-size: 14px; line-height: 1.05; flex: none; padding: 4px; }
 .when { font-size: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.when.late { color: var(--late); font-weight: 700; }
-.qui { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
-.tick { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); flex: none; display: grid; place-items: center; padding: 0; }
-.tick.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.when.late { color: var(--hot); font-weight: 700; }
+.qui { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+.tick { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--k, var(--line)); background: transparent; flex: none; display: grid; place-items: center; padding: 0; }
+.tick.on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 .tick svg { width: 16px; height: 16px; }
-.btn { border: 0; background: var(--accent); color: var(--accent-ink); font-weight: 700; padding: 10px 16px; border-radius: 10px; font-size: 15px; }
-.btn.sm { padding: 7px 12px; font-size: 14px; border-radius: 8px; }
-.btn.ghost { background: var(--surface-2); color: var(--ink); }
-.btn.danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+.day { font-family: var(--f-display); font-size: 14px; font-weight: 700; color: var(--muted); padding: 12px 10px 2px; list-style: none; }
+.day.today { color: var(--ink); }
+.btn { border: 0; background: var(--btn); color: var(--btn-ink); font-weight: 700; padding: 12px 20px; border-radius: 999px; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; }
+.btn.sm { padding: 8px 14px; font-size: 14px; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+.btn.soft { background: rgba(255,255,255,.55); color: var(--ink); }
+.btn.danger { background: transparent; color: var(--hot); border: 1.5px solid var(--hot); }
 .btn:disabled { opacity: .5; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .week { display: flex; flex-direction: column; gap: 8px; }
-.week-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.week-head b { font-family: var(--f-display); font-size: 17px; font-variant-numeric: tabular-nums; }
-.day { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 10px 14px 0; }
-.day.today { color: var(--accent); }
-.kind { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.week-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 4px; }
+.week-head b { font-family: var(--f-display); font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
 
-.seg { display: flex; background: var(--surface-2); border-radius: 12px; padding: 4px; gap: 4px; }
-.seg button { flex: 1; border: 0; background: transparent; padding: 9px 6px; border-radius: 9px; font-weight: 700; font-size: 15px; color: var(--muted); white-space: nowrap; }
-.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
-.seg .n { font-weight: 400; font-variant-numeric: tabular-nums; }
+/* Filtres et onglets */
+.seg { display: flex; background: var(--sand); border-radius: 999px; padding: 4px; gap: 4px; }
+.seg button { flex: 1; border: 0; background: transparent; padding: 9px 6px; border-radius: 999px; font-weight: 700; font-size: 15px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--btn); color: var(--btn-ink); }
+.seg .n { font-weight: 500; opacity: .75; font-variant-numeric: tabular-nums; }
+.filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.filters button { border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 14px; background: var(--kbg, var(--sand)); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.filters button.k-milan::before, .filters button.k-lyssia::before, .filters button.k-naelia::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
+.filters button[aria-pressed="true"] { background: var(--btn); color: var(--btn-ink); }
 
+/* Formulaires */
 .quick { display: flex; gap: 8px; }
 .quick input { flex: 1; min-width: 0; }
 input[type="text"], input[type="url"], input[type="date"], input[type="time"], input[type="number"], input[type="email"], input[type="password"], select, textarea {
-  width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 11px 12px; font-size: 16px; min-width: 0;
+  width: 100%; border: 1.5px solid var(--line); background: var(--surface); border-radius: 14px; padding: 12px 14px; font-size: 16px; min-width: 0;
 }
-input[type="date"], input[type="time"] { min-height: 46px; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--ink); }
+input[type="date"], input[type="time"] { min-height: 48px; }
 textarea { min-height: 90px; resize: vertical; }
-label.f { display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 700; color: var(--muted); }
+label.f, .f { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 700; color: var(--muted); }
 .form { display: flex; flex-direction: column; gap: 14px; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips label { position: relative; }
 .chips input { position: absolute; opacity: 0; inset: 0; }
-.chips span { display: inline-block; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 15px; }
-.chips input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
-.chips input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font-size: 15px; color: var(--ink); font-weight: 600; }
+.chips label[class*="k-"] span { background: var(--kbg); border-color: transparent; }
+.chips label[class*="k-"] span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
+.chips input:checked + span { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
+.chips input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 2px; }
 
+/* Tuiles */
 .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; text-align: left; display: flex; flex-direction: column; gap: 4px; min-height: 92px; }
-.tile b { font-family: var(--f-display); font-size: 17px; }
-.tile.soon { background: transparent; border-style: dashed; cursor: default; }
-.tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--surface-2); color: var(--muted); }
-.notice { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; font-size: 14px; }
+.tile { border: 0; border-radius: var(--r); padding: 16px; text-align: left; display: flex; flex-direction: column; gap: 4px; min-height: 124px; color: var(--ink); }
+.tile b { font-family: var(--f-display); font-size: 20px; font-weight: 800; line-height: 1.1; }
+.tile .s { font-size: 14px; margin-top: auto; }
+.tile.soon { background: transparent; border: 1.5px dashed var(--line); cursor: default; min-height: 90px; }
+.tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--sand); color: var(--muted); }
+.notice { background: var(--yellow); border-radius: 16px; padding: 12px 16px; font-size: 14px; }
 
 /* Saisie en vrac */
-.vrac { background: var(--surface); border: 2px solid var(--accent); border-radius: var(--r); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-.vrac textarea { min-height: 48px; height: 48px; border: 0; padding: 4px 2px; background: transparent; resize: none; font-size: 17px; }
-.vrac textarea:focus { outline: none; }
+.vrac { background: var(--yellow); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.vrac .lbl { font-family: var(--f-display); font-weight: 800; font-size: 20px; margin: 0; }
+.vrac textarea { min-height: 52px; height: 52px; border: 0; padding: 12px 14px; background: rgba(255,255,255,.7); border-radius: 16px; resize: none; font-size: 17px; }
+@media (prefers-color-scheme: dark) { .vrac textarea, .btn.soft { background: rgba(0,0,0,.28); } }
 .vrac-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.prop { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.prop { background: rgba(255,255,255,.6); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+@media (prefers-color-scheme: dark) { .prop { background: rgba(0,0,0,.25); } }
 .prop-top { display: flex; align-items: center; gap: 8px; }
-.prop-top select { width: auto; padding: 6px 8px; font-size: 14px; font-weight: 700; }
-.prop-top input { flex: 1; }
-.prop .two input { padding: 8px 10px; }
-.type-ico { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+.prop-top select { width: auto; padding: 7px 8px; font-size: 14px; font-weight: 700; border-radius: 10px; }
+.prop-top input { flex: 1; padding: 8px 10px; border-radius: 10px; }
+.prop .two input { padding: 8px 10px; border-radius: 10px; }
+.prop .chips span { padding: 5px 11px; font-size: 14px; }
+
+/* Voiture */
+.lvl-ok { --lv: var(--ok); --lvbg: var(--sage); } .lvl-warn { --lv: var(--warn); --lvbg: var(--yellow); } .lvl-hot { --lv: var(--hot); --lvbg: var(--hot-bg); } .lvl-none { --lv: var(--muted); --lvbg: var(--sand); }
+.status { background: var(--lvbg); }
+.status .verdict { font-family: var(--f-display); font-weight: 800; font-size: 36px; line-height: 1; letter-spacing: -.02em; margin: 0; }
+.gauge { position: relative; height: 34px; border-radius: 999px; background: rgba(255,255,255,.65); overflow: hidden; }
+@media (prefers-color-scheme: dark) { .gauge { background: rgba(0,0,0,.3); } }
+.gauge .fp { position: absolute; left: 0; top: 0; bottom: 0; background: var(--lv); opacity: .35; border-radius: 999px; }
+.gauge .fu { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); border-radius: 999px; }
+.gauge .cap { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--hot); }
+.gauge .tk { position: absolute; top: 4px; bottom: 4px; width: 3px; margin-left: -1.5px; background: var(--bg); border-radius: 2px; }
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; }
+.legend li { display: flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+.figs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fig { background: var(--surface); border-radius: 18px; padding: 12px 14px; }
+.fig .v { font-family: var(--f-display); font-weight: 800; font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.fig .l { color: var(--muted); font-size: 13px; line-height: 1.3; margin-top: 2px; }
+.fig .s { font-size: 13px; margin-top: 2px; font-weight: 700; }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { font-family: var(--f-body); font-size: 11px; fill: var(--muted); }
+.ybar { display: block; height: 12px; border-radius: 6px; background: var(--sand); position: relative; overflow: hidden; }
+.ybar span { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; }
+details summary { cursor: pointer; font-family: var(--f-display); font-weight: 800; font-size: 18px; list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+details summary::after { content: "+"; float: right; color: var(--muted); }
+details[open] summary::after { content: "–"; }
+.msg { margin: 0; font-size: 14px; min-height: 1.2em; }
+.msg.err { color: var(--hot); } .msg.ok { color: var(--ok); }
+
+/* Envies */
+.envie { display: flex; gap: 12px; align-items: flex-start; padding: 12px; }
+.envie + .envie { border-top: 1px solid var(--line); }
+.envie .ico { width: 44px; height: 44px; border-radius: 14px; background: var(--kbg, var(--yellow)); display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; font-size: 18px; flex: none; text-transform: uppercase; }
+.envie a { color: inherit; text-decoration: none; }
+.envie a:hover { text-decoration: underline; }
+.price { font-family: var(--f-display); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* Connexion */
-.login { max-width: 400px; margin: 10vh auto 0; display: flex; flex-direction: column; gap: 18px; }
-.login h1 { font-family: var(--f-display); font-size: 34px; margin: 0; letter-spacing: -.02em; }
-.login .err { color: var(--danger); font-size: 15px; margin: 0; min-height: 1.4em; }
+.login { max-width: 400px; margin: 8vh auto 0; display: flex; flex-direction: column; gap: 18px; }
+.login .hero { background: var(--yellow); border-radius: var(--r); padding: 26px 22px; position: relative; overflow: hidden; }
+.login .hero::after { content: ""; position: absolute; right: -30px; bottom: -40px; width: 140px; height: 140px; border-radius: 50%; background: var(--lav); }
+.login h1 { font-family: var(--f-display); font-weight: 800; font-size: 40px; line-height: 1; margin: 0; letter-spacing: -.03em; position: relative; z-index: 1; }
+.login .hero p { position: relative; z-index: 1; margin: 8px 0 0; }
+.login .err { color: var(--hot); font-size: 15px; margin: 0; min-height: 1.4em; }
 
-.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
-  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
-  display: flex; justify-content: center; }
-.tabs-in { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; max-width: 560px; }
-.tabs button { background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; color: var(--muted); padding: 6px 2px; border-radius: 10px; }
-.tabs button[aria-current="page"] { color: var(--accent); font-weight: 700; }
-.tabs svg { width: 24px; height: 24px; }
-.fab { position: fixed; z-index: 21; right: max(18px, calc(env(safe-area-inset-right, 0px) + 18px)); bottom: calc(78px + env(safe-area-inset-bottom, 0px));
-  width: 58px; height: 58px; border-radius: 18px; border: 0; background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow); display: grid; place-items: center; }
-.fab svg { width: 28px; height: 28px; }
+/* Barre d'onglets flottante */
+.tabs { position: fixed; left: 0; right: 0; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; display: flex; justify-content: center;
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); pointer-events: none; }
+.tabs-in { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 2px; width: 100%; max-width: 420px; background: var(--nav); border-radius: 999px; padding: 7px; box-shadow: var(--shadow); }
+.tabs button { background: none; border: 0; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: var(--nav-ink); opacity: .6; padding: 0; }
+.tabs button[aria-current="page"] { opacity: 1; background: rgba(255,255,255,.16); }
+@media (prefers-color-scheme: dark) { .tabs button[aria-current="page"] { background: rgba(0,0,0,.12); } }
+.tabs svg { width: 23px; height: 23px; }
+.tabs .add { width: 54px; height: 54px; background: var(--yellow); color: #161616; opacity: 1; }
+@media (prefers-color-scheme: dark) { .tabs .add { background: #FFE98A; } }
+.tabs .add svg { width: 26px; height: 26px; }
 
-.backdrop { position: fixed; inset: 0; background: rgba(10, 18, 21, .45); z-index: 30; }
+/* Feuilles */
+.backdrop { position: fixed; inset: 0; background: rgba(10, 10, 10, .45); z-index: 30; }
 .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 31; display: flex; justify-content: center; pointer-events: none; }
-.sheet-in { pointer-events: auto; width: 100%; max-width: 600px; max-height: 88vh; overflow: auto; background: var(--bg); border-radius: 20px 20px 0 0;
+.sheet-in { pointer-events: auto; width: 100%; max-width: 600px; max-height: 90vh; overflow: auto; background: var(--bg); border-radius: 28px 28px 0 0;
   padding: 10px max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
   display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); }
 .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 4px; }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.x { background: var(--surface-2); border: 0; width: 34px; height: 34px; border-radius: 50%; font-size: 20px; line-height: 1; flex: none; }
+.x { background: var(--sand); border: 0; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; line-height: 1; flex: none; color: var(--ink); }
 .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.choice button { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; text-align: left; display: flex; flex-direction: column; gap: 2px; }
-.choice button b { font-family: var(--f-display); font-size: 17px; }
+.choice button { border: 0; border-radius: 20px; padding: 14px; text-align: left; display: flex; flex-direction: column; gap: 2px; color: var(--ink); }
+.choice button b { font-family: var(--f-display); font-size: 18px; font-weight: 800; }
 .histo { font-size: 14px; color: var(--muted); margin: 0; padding-left: 18px; }
 
-.toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); bottom: calc(150px + env(safe-area-inset-bottom, 0px));
-  background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 12px; display: flex; gap: 14px; align-items: center; max-width: calc(100% - 32px); box-shadow: var(--shadow); font-size: 15px; }
-.toast button { background: none; border: 0; color: var(--hl); font-weight: 700; }
+.toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  background: var(--btn); color: var(--btn-ink); padding: 12px 18px; border-radius: 999px; display: flex; gap: 14px; align-items: center; max-width: calc(100% - 32px); box-shadow: var(--shadow); font-size: 15px; font-weight: 600; }
+.toast button { background: none; border: 0; color: var(--yellow); font-weight: 800; }
+@media (prefers-color-scheme: dark) { .toast button { color: #8A6A00; } }
 @media (prefers-reduced-motion: no-preference) {
   .sheet-in { animation: up .22s ease-out; }
   @keyframes up { from { transform: translateY(30px); opacity: .6; } to { transform: none; opacity: 1; } }
 }
-@media (max-width: 380px) { .tiles, .choice { grid-template-columns: 1fr; } .two { grid-template-columns: 1fr; } }
+@media (max-width: 380px) { .choice { grid-template-columns: 1fr; } .two { grid-template-columns: 1fr; } .kids { gap: 6px; } .kidcard { padding: 12px 9px; } }
 </style>
 </head>
 <body>
 
 <!-- Connexion -->
 <section class="login" id="login" hidden>
-  <div><h1>QG Famille</h1><p class="muted" style="margin:4px 0 0">Chloé et Medhi uniquement.</p></div>
+  <div class="hero"><h1>QG Famille</h1><p>Chloé et Medhi uniquement.</p></div>
   <form class="form" id="login-form" autocomplete="on">
     <label class="f">E-mail<input type="email" id="l-email" name="email" autocomplete="username" required></label>
     <label class="f">Mot de passe<input type="password" id="l-pass" name="password" autocomplete="current-password" required></label>
@@ -197,26 +291,27 @@ label.f { display: flex; flex-direction: column; gap: 5px; font-size: 14px; font
 <div id="app" hidden>
   <div class="wrap">
     <header class="top">
-      <h1 class="brand">QG Famille<small id="date-line"></small></h1>
-      <span class="who"><span class="dot" id="who-dot"></span><span id="who-name"></span></span>
+      <p class="hello"><small id="date-line"></small><b id="hello-name">Bonjour</b></p>
+      <span class="avatar" id="avatar" aria-hidden="true"></span>
     </header>
     <div id="status" class="notice" hidden></div>
     <form class="vrac" id="vrac-box" data-form="vrac" autocomplete="off">
-      <textarea id="vrac" name="vrac" rows="1" placeholder="Note tout ici : « lait », « véto mardi 17h », « payer la cantine avant vendredi »" aria-label="Saisie rapide" enterkeyhint="done"></textarea>
-      <div id="vrac-preview"></div>
-      <div class="vrac-foot" id="vrac-foot" hidden><span class="muted small" id="vrac-hint"></span><button class="btn" type="submit">Ranger</button></div>
+      <p class="lbl">Note tout ici</p>
+      <textarea id="vrac" name="vrac" rows="1" placeholder="« lait », « véto Milan mardi 17h », « payer la cantine avant vendredi »" aria-label="Saisie rapide" enterkeyhint="done"></textarea>
+      <div id="vrac-preview" class="sec"></div>
+      <div class="vrac-foot" id="vrac-foot" hidden><span class="small" id="vrac-hint"></span><button class="btn" type="submit">Ranger</button></div>
     </form>
     <main id="view"><p class="muted">Chargement…</p></main>
   </div>
 
-  <button class="fab" data-act="open-add" aria-label="Ajouter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-
   <nav class="tabs" aria-label="Rubriques"><div class="tabs-in">
-    <button data-act="tab" data-v="accueil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg>Accueil</button>
-    <button data-act="tab" data-v="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Agenda</button>
-    <button data-act="tab" data-v="courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9h18l-2 11H5z"/><path d="M8 9l4-6 4 6"/></svg>Courses</button>
-    <button data-act="tab" data-v="rappels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></svg>Rappels</button>
-    <button data-act="tab" data-v="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Plus</button>
+    <button data-act="tab" data-v="accueil" aria-label="Accueil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg></button>
+    <button data-act="tab" data-v="agenda" aria-label="Agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button>
+    <button data-act="tab" data-v="courses" aria-label="Courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9h18l-2 11H5z"/><path d="M8 9l4-6 4 6"/></svg></button>
+    <button class="add" data-act="open-add" aria-label="Ajouter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button data-act="tab" data-v="rappels" aria-label="Rappels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></svg></button>
+    <button data-act="tab" data-v="envies" aria-label="Envies et idées"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+    <button data-act="tab" data-v="plus" aria-label="Plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></button>
   </div></nav>
 </div>
 
@@ -226,7 +321,7 @@ label.f { display: flex; flex-direction: column; gap: 5px; font-size: 14px; font
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 import { classerTout } from "./vrac.js";
 
 /* ---------- Configuration ---------- */
@@ -239,6 +334,12 @@ const firebaseConfig = {
   appId: "1:727669042117:web:ad9cbe9590da6f520439ac"
 };
 const PERSONNES = { "9NzQmcWTbtW1mJMdBIJioNIPlcv1": "Chloé", "5nDSdTq7oKRElUM1NSsM6xQUDgM2": "Medhi" };
+// Chaque enfant a sa couleur. Pour en ajouter un : une ligne ici et une classe .k-prenom dans le style.
+const ENFANTS = [
+  { nom: "Milan", cls: "k-milan", re: /\bmilan\b/i },
+  { nom: "Lyssia", cls: "k-lyssia", re: /\blyssia\b/i },
+  { nom: "Naelia", cls: "k-naelia", re: /\bna[eë]lia\b/i },
+];
 
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
@@ -255,6 +356,7 @@ const pad = (n) => String(n).padStart(2, "0");
 const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const parse = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
 const utc = (s) => { const [y, m, d] = s.split("-").map(Number); return Date.UTC(y, m - 1, d); };
+const isDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(utc(s));
 const today = () => iso(new Date());
 const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return iso(d); };
 const diffDays = (a, b) => Math.round((utc(b) - utc(a)) / 86400000);
@@ -265,8 +367,12 @@ const JL = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanc
 const MC = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
 const ML = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 const fmt = (s) => { const d = parse(s); return `${JC[wday(s)]} ${d.getDate()} ${MC[d.getMonth()]}`; };
+const fmtCourt = (s) => { const d = parse(s); return `${d.getDate()} ${MC[d.getMonth()]}`; };
+const fmtAn = (s) => { const d = parse(s); return `${d.getDate()} ${MC[d.getMonth()]} ${d.getFullYear()}`; };
 const fmtLong = (s) => { const d = parse(s); return `${JL[wday(s)]} ${d.getDate()} ${ML[d.getMonth()]}`; };
 const fmtH = (h) => h ? h.replace(":", " h ").replace(/ h 00$/, " h") : "";
+const nb = (n) => Math.round(n).toLocaleString("fr-FR");
+const km = (n) => nb(n) + " km";
 function rel(s) {
   const n = diffDays(today(), s);
   if (n === 0) return "aujourd'hui"; if (n === 1) return "demain"; if (n === -1) return "hier";
@@ -289,19 +395,28 @@ function recurTxt(r) {
   return n === 1 ? one[r.unite] : `tous les ${n} ${many[r.unite]}`;
 }
 const QUI = ["Chloé", "Medhi", "Les deux"];
-const quiCls = (q) => q === "Chloé" ? "q-chloe" : q === "Medhi" ? "q-medhi" : "q-deux";
-const quiTag = (q) => q ? `<span class="qui"><span class="dot ${quiCls(q)}"></span>${esc(q)}</span>` : "";
+const quiTag = (q) => q ? `<span class="qui">${esc(q)}</span>` : "";
 const CATS = ["Animaux", "Santé enfants", "Maison", "Voiture", "Administratif", "Abonnements", "École", "Autre"];
 const LISTES = { urgent: "Urgent", constate: "Constaté", unjour: "Un jour" };
 const STATUTS = ["À voir", "En réflexion", "Validé", "Abandonné"];
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sansAccent = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+/* ---------- Enfants ---------- */
+const enfant = (nom) => ENFANTS.find((e) => e.nom === nom);
+const pourDe = (x) => (Array.isArray(x?.pour) ? x.pour : []).filter(enfant);
+const kidCls = (x) => { const p = pourDe(x); return p.length ? enfant(p[0]).cls : ""; };
+const kidTags = (x) => pourDe(x).map((n) => `<span class="kid ${enfant(n).cls}">${esc(n)}</span>`).join("");
+const enfantsDans = (txt) => ENFANTS.filter((e) => e.re.test(sansAccent(txt))).map((e) => e.nom);
+const pourField = (sel = [], name = "pour") => `<div class="f">Pour qui<div class="chips">${ENFANTS.map((e) => `<label class="${e.cls}"><input type="checkbox" name="${name}" value="${e.nom}" ${sel.includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div></div>`;
 
 /* ---------- État ---------- */
 const S = {
-  view: "accueil", sub: null, courseTab: "urgent", rapTab: "rappels", me: "",
-  events: [], courses: [], rappels: [], routines: [], checklists: [], liens: [], exceptions: [],
-  garde: null, frequents: [], loaded: new Set(), offline: !navigator.onLine, confirm: null, unsub: [],
+  view: "accueil", sub: null, courseTab: "urgent", rapTab: "rappels", envieTab: "achat", envieKid: "", kid: "", me: "",
+  events: [], courses: [], rappels: [], routines: [], checklists: [], liens: [], exceptions: [], releves: [],
+  garde: undefined, voiture: null, frequents: [], loaded: new Set(), offline: !navigator.onLine, confirm: null, unsub: [],
+  kmYear: null, kmAll: false,
 };
 const COLS = { events: "events", courses: "courses", rappels: "rappels", routines: "routines", checklists: "checklists", liens: "liens", exceptions: "garde_exceptions" };
 const qui = () => S.me;
@@ -331,17 +446,66 @@ const rappelsActifs = () => S.rappels.filter((r) => !r.termine && r.prochaine).s
 const routineDue = (r, s) => (r.jours || []).includes(wday(s));
 const routineFaite = (r, s) => r.fait === s;
 const sacLyssia = () => S.checklists.find((c) => /lyssia/i.test(c.nom || ""));
+const filtreKid = (x) => !S.kid || (S.kid === "famille" ? !pourDe(x).length : pourDe(x).includes(S.kid));
+const evtsDu = (d) => S.events.filter((e) => e.date === d && filtreKid(e)).sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
+
+/* ---------- Suivi kilométrique du leasing ---------- */
+const VOITURE = { start: "2026-09-11", allowance: 30000, kmDepart: 0, marge: 1500, medhi: 105, chloe: null };
+const cfgV = () => ({ ...VOITURE, ...(S.voiture || {}) });
+const addYearsS = (s, k) => { const [y, m, d] = s.split("-").map(Number); return `${y + k}-${pad(m)}-${pad(d)}`; };
+function kmPoints() {
+  const c = cfgV();
+  const pts = S.releves.slice().sort((a, b) => a.date.localeCompare(b.date));
+  if (!pts.length || pts[0].date > c.start) pts.unshift({ date: c.start, km: Number(c.kmDepart) || 0, virtual: true });
+  return pts;
+}
+function odoAt(date) {
+  const pts = kmPoints();
+  if (date < pts[0].date) return null;
+  for (let i = 0; i < pts.length; i++) {
+    if (pts[i].date === date) return pts[i].km;
+    if (pts[i].date > date) { const a = pts[i - 1], b = pts[i]; return a.km + (b.km - a.km) * diffDays(a.date, date) / diffDays(a.date, b.date); }
+  }
+  return null;
+}
+function anneeCourante() { const c = cfgV(), t = today(); for (let k = 0; k < 3; k++) if (t < addYearsS(c.start, k + 1)) return k; return 2; }
+function niveau(proj) { const c = cfgV(); if (proj == null) return "none"; if (proj <= c.allowance - c.marge) return "ok"; if (proj <= c.allowance) return "warn"; return "hot"; }
+function anneeInfo(k) {
+  const c = cfgV(); const ys = addYearsS(c.start, k), ye = addYearsS(c.start, k + 1);
+  const yearDays = diffDays(ys, ye), t = today();
+  const info = { k, ys, ye, yEnd: addDays(ye, -1), yearDays, state: t < ys ? "future" : t >= ye ? "past" : "current", empty: true };
+  const base = odoAt(ys);
+  const inYear = S.releves.filter((r) => r.date >= ys && r.date < ye).sort((a, b) => a.date.localeCompare(b.date));
+  if (base == null || !inYear.length) return info;
+  const last = inYear[inYear.length - 1], endOdo = odoAt(ye);
+  let elapsed, used;
+  if (endOdo != null) { elapsed = yearDays; used = endOdo - base; } else { elapsed = diffDays(ys, last.date); used = last.km - base; }
+  Object.assign(info, { empty: false, base, last, elapsed, used });
+  info.series = [{ d: 0, v: 0 }, ...inYear.map((r) => ({ d: diffDays(ys, r.date), v: r.km - base }))];
+  info.budget = c.allowance * elapsed / yearDays;
+  info.gap = used - info.budget;
+  info.remaining = c.allowance - used;
+  info.daysLeft = yearDays - elapsed;
+  info.pace = elapsed > 0 ? used / elapsed : null;
+  info.proj = endOdo != null ? used : info.pace != null ? info.pace * yearDays : null;
+  info.perDay = info.daysLeft > 0 ? info.remaining / info.daysLeft : null;
+  info.level = niveau(info.proj);
+  const pts = kmPoints(); let ref = null;
+  for (let i = pts.length - 1; i >= 0; i--) if (pts[i].date <= addDays(last.date, -21)) { ref = pts[i]; break; }
+  if (ref && endOdo == null) { const dd = diffDays(ref.date, last.date); if (dd > 0) { info.recentPace = (last.km - ref.km) / dd; info.recentProj = used + info.recentPace * info.daysLeft; info.recentFrom = ref.date; } }
+  return info;
+}
+const VERDICTS = { ok: "On est bons", warn: "Ça passe, mais juste", hot: "C'est chaud", none: "Aucun relevé" };
 
 /* ---------- Rendu ---------- */
 const main = $("#view");
 function render() {
   const a = document.activeElement;
   const keep = a && a.id && main.contains(a) && "value" in a ? { id: a.id, v: a.value, s: a.selectionStart } : null;
-  const t = today();
-  $("#date-line").textContent = fmtLong(t);
-  $("#who-name").textContent = qui();
-  $("#who-dot").className = "dot " + quiCls(qui());
-  document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-current", b.dataset.v === S.view ? "page" : "false"));
+  $("#date-line").textContent = fmtLong(today()).replace(/^./, (c) => c.toUpperCase());
+  $("#hello-name").textContent = `Bonjour ${qui()}`;
+  const av = $("#avatar"); av.textContent = qui().slice(0, 1); av.style.background = qui() === "Medhi" ? "var(--sage)" : "var(--lav)";
+  document.querySelectorAll(".tabs button[data-v]").forEach((b) => b.setAttribute("aria-current", b.dataset.v === S.view && !S.sub ? "page" : "false"));
   $("#vrac-box").hidden = !(S.view === "accueil" && !S.sub);
   renderStatus();
   main.innerHTML = (VIEWS[S.sub ? S.sub.type : S.view] || VIEWS.accueil)();
@@ -353,45 +517,59 @@ function renderStatus() {
   el.hidden = !msg; el.textContent = msg;
 }
 const loading = (k) => !S.loaded.has(k);
+const filtresKids = (actif, act = "kid") => `<div class="filters" role="group" aria-label="Filtrer par enfant">
+  <button data-act="${act}" data-k="" aria-pressed="${!actif}">Tous</button>
+  ${ENFANTS.map((e) => `<button class="${e.cls}" data-act="${act}" data-k="${e.nom}" aria-pressed="${actif === e.nom}">${e.nom}</button>`).join("")}
+  ${act === "kid" ? `<button data-act="${act}" data-k="famille" aria-pressed="${actif === "famille"}">Famille</button>` : ""}</div>`;
 
 const VIEWS = {
   accueil() {
     const t = today(); const lun = mondayOf(t);
-    const out = [gardeBanner(t, lun)];
+    const out = [gardeBanner(lun)];
     const sac = sacLyssia();
     const passToday = passageLe(t), passTomorrow = passageLe(addDays(t, 1));
     if (passToday || passTomorrow) {
       const s = statutSemaine(passToday ? t : addDays(t, 1));
-      out.push(`<section class="sec"><div class="garde"><p style="margin:0"><b>${passToday ? "Aujourd'hui" : "Demain"} à ${heurePassage()}</b> : Lyssia ${s && s.avec ? "arrive" : "repart chez son autre parent"}.</p>
-        ${sac ? `<div class="actions"><button class="btn sm" data-act="open-check" data-id="${sac.id}">Préparer le sac (${(sac.items || []).filter((i) => i.ok).length}/${(sac.items || []).length})</button></div>` : ""}</div></section>`);
+      out.push(`<section class="card c-white k-lyssia"><p style="margin:0"><b>${passToday ? "Aujourd'hui" : "Demain"} à ${heurePassage()}</b> : Lyssia ${s && s.avec ? "arrive" : "repart chez son autre parent"}.</p>
+        ${sac ? `<div class="actions"><button class="btn sm" data-act="open-check" data-id="${sac.id}">Préparer le sac (${(sac.items || []).filter((i) => i.ok).length}/${(sac.items || []).length})</button></div>` : ""}</section>`);
     }
+    // Les trois enfants
+    out.push(`<section class="kids">${ENFANTS.map((e) => {
+      const ev = S.events.filter((x) => x.date >= t && pourDe(x).includes(e.nom)).sort((a, b) => (a.date + (a.heure || "")).localeCompare(b.date + (b.heure || "")));
+      const rp = rappelsActifs().filter((r) => pourDe(r).includes(e.nom));
+      const next = [...ev.map((x) => ({ d: x.date, h: x.heure, t: x.titre })), ...rp.map((r) => ({ d: r.prochaine, h: "", t: r.titre }))].sort((a, b) => (a.d + (a.h || "")).localeCompare(b.d + (b.h || "")))[0];
+      const n = ev.filter((x) => x.date <= addDays(t, 7)).length + rp.filter((r) => r.prochaine <= addDays(t, 7)).length;
+      return `<button class="kidcard ${e.cls}" data-act="kid-agenda" data-k="${e.nom}"><b>${e.nom}</b>
+        <span>${next ? `${esc(next.t)}<br><span class="muted">${rel(next.d)}${next.h ? " · " + fmtH(next.h) : ""}</span>` : '<span class="muted">Rien de prévu</span>'}</span>
+        <span class="n">${n}<span class="small muted" style="font-family:var(--f-body);font-weight:500"> cette sem.</span></span></button>`;
+    }).join("")}</section>`);
+    // Aujourd'hui
     const dus = rappelsActifs().filter((r) => r.prochaine <= t);
     const rout = S.routines.filter((r) => routineDue(r, t));
-    const evToday = S.events.filter((e) => e.date === t).sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
-    let todo = evToday.map(eventRow).join("");
+    let todo = evtsDu(t).map(eventRow).join("");
     for (const r of dus) todo += rappelRow(r);
     for (const r of rout) todo += routineRow(r, t);
     out.push(`<section class="sec"><div class="sec-head"><h2>Aujourd'hui</h2></div>
       ${loading("rappels") ? '<p class="muted">Chargement…</p>' : todo ? `<ul class="list">${todo}</ul>` : '<p class="empty">Rien de prévu aujourd\'hui.</p>'}</section>`);
+    // 7 jours
     let week = "";
     for (let i = 1; i <= 7; i++) {
-      const d = addDays(t, i);
-      const ev = S.events.filter((e) => e.date === d).sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
-      const rp = rappelsActifs().filter((r) => r.prochaine === d);
+      const d = addDays(t, i); const ev = evtsDu(d); const rp = rappelsActifs().filter((r) => r.prochaine === d);
       if (!ev.length && !rp.length && !passageLe(d)) continue;
       week += `<li class="day">${i === 1 ? "Demain" : fmt(d)}${passageLe(d) ? ` · passage de Lyssia ${heurePassage()}` : ""}</li>` + ev.map(eventRow).join("") + rp.map(rappelRow).join("");
     }
     out.push(`<section class="sec"><div class="sec-head"><h2>Les 7 prochains jours</h2><button class="link" data-act="tab" data-v="agenda">Agenda</button></div>
       ${week ? `<ul class="list">${week}</ul>` : '<p class="empty">Aucun rendez-vous ni rappel dans les 7 prochains jours.</p>'}</section>`);
+    // Courses
     const urg = S.courses.filter((c) => c.liste === "urgent");
-    out.push(`<section class="sec"><div class="sec-head"><h2>Courses urgentes <span class="muted small">${urg.length}</span></h2><button class="link" data-act="tab" data-v="courses">Tout voir</button></div>
-      ${urg.length ? `<ul class="list">${urg.slice(0, 5).map(courseRow).join("")}</ul>${urg.length > 5 ? `<p class="muted small" style="margin:0">et ${urg.length - 5} autres</p>` : ""}` : '<p class="empty">Rien à acheter en urgence.</p>'}</section>`);
-    return `<div class="sec" style="gap:22px">${out.join("")}</div>`;
+    out.push(`<section class="card c-sage"><div class="sec-head"><h2>Courses urgentes · ${urg.length}</h2><button class="link" data-act="tab" data-v="courses">Tout voir</button></div>
+      ${urg.length ? `<ul class="list">${urg.slice(0, 5).map(courseRow).join("")}</ul>${urg.length > 5 ? `<p class="small" style="margin:0">et ${urg.length - 5} autres</p>` : ""}` : '<p style="margin:0">Rien à acheter en urgence.</p>'}</section>`);
+    return `<div class="sec" style="gap:20px">${out.join("")}</div>`;
   },
 
   agenda() {
     const t = today(); const lun0 = mondayOf(t);
-    let html = `<div class="sec-head"><h2>Agenda</h2><button class="link" data-act="sub" data-type="garde">Garde de Lyssia</button></div>`;
+    let html = `<div class="sec-head"><h2>Agenda</h2><button class="link" data-act="sub" data-type="garde">Garde de Lyssia</button></div>${filtresKids(S.kid)}`;
     for (let w = 0; w < 10; w++) {
       const m = addDays(lun0, 7 * w), dim = addDays(m, 6), s = statutSemaine(m);
       const dm = parse(m), dd = parse(dim);
@@ -399,18 +577,18 @@ const VIEWS = {
       let days = "";
       for (let i = 0; i < 7; i++) {
         const d = addDays(m, i); if (d < t) continue;
-        const ev = S.events.filter((e) => e.date === d).sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
-        const rp = rappelsActifs().filter((r) => r.prochaine === d || (d === t && r.prochaine < t));
-        const pass = passageLe(d);
+        const ev = evtsDu(d);
+        const rp = rappelsActifs().filter((r) => (r.prochaine === d || (d === t && r.prochaine < t)) && filtreKid(r));
+        const pass = passageLe(d) && (!S.kid || S.kid === "Lyssia");
         if (!ev.length && !rp.length && !pass && d !== t) continue;
-        days += `<li class="day ${d === t ? "today" : ""}">${d === t ? "Aujourd'hui" : fmt(d)}${pass ? ` · passage ${heurePassage()}` : ""}</li>`;
+        days += `<li class="day ${d === t ? "today" : ""}">${d === t ? "Aujourd'hui" : fmt(d)}${pass ? ` · passage de Lyssia ${heurePassage()}` : ""}</li>`;
         days += ev.map(eventRow).join("") + rp.map(rappelRow).join("");
         if (!ev.length && !rp.length) days += `<li class="row"><span class="muted small">Rien de prévu</span></li>`;
       }
       html += `<section class="week"><div class="week-head"><b>${label}</b>${s ? `<span class="pill ${s.avec ? "avec" : "sans"}">${s.avec ? "Avec Lyssia" : "Sans Lyssia"}</span>` : ""}</div>
         ${days ? `<ul class="list">${days}</ul>` : ""}</section>`;
     }
-    return `<div class="sec">${html}<div class="actions"><button class="btn" data-act="form" data-type="event">Ajouter un événement</button></div></div>`;
+    return `<div class="sec" style="gap:16px">${html}<div class="actions"><button class="btn" data-act="form" data-type="event">Ajouter un événement</button></div></div>`;
   },
 
   courses() {
@@ -418,7 +596,7 @@ const VIEWS = {
     const items = S.courses.filter((c) => c.liste === tab).sort((a, b) => (a.cree || "").localeCompare(b.cree || ""));
     const n = (k) => S.courses.filter((c) => c.liste === k).length;
     const ph = { urgent: "Ex. lait, piles, croquettes", constate: "Ce qui va bientôt manquer", unjour: "Ex. nouvelle poêle" }[tab];
-    return `<div class="sec">
+    return `<div class="sec" style="gap:14px">
       <h2>Courses</h2>
       <div class="seg" role="group">${Object.entries(LISTES).map(([k, v]) => `<button data-act="course-tab" data-k="${k}" aria-pressed="${k === tab}">${v} <span class="n">${n(k)}</span></button>`).join("")}</div>
       <form class="quick" data-form="quick-course" autocomplete="off">
@@ -437,43 +615,60 @@ const VIEWS = {
     const seg = `<div class="seg" role="group"><button data-act="rap-tab" data-k="rappels" aria-pressed="${S.rapTab === "rappels"}">Rappels</button><button data-act="rap-tab" data-k="routines" aria-pressed="${S.rapTab === "routines"}">Routines du foyer</button></div>`;
     if (S.rapTab === "routines") {
       const list = S.routines.slice().sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
-      return `<div class="sec"><h2>Rappels</h2>${seg}
+      return `<div class="sec" style="gap:14px"><h2>Rappels</h2>${seg}
         ${list.length ? `<ul class="list">${list.map((r) => routineRow(r, t, true)).join("")}</ul>` : '<p class="empty">Aucune routine. Exemple : poubelles le mardi soir, litière, draps.</p>'}
         <div class="actions"><button class="btn" data-act="form" data-type="routine">Nouvelle routine</button></div></div>`;
     }
-    const act = rappelsActifs(); const in7 = addDays(t, 7);
+    const act = rappelsActifs().filter(filtreKid); const in7 = addDays(t, 7);
     const groups = [
       ["En retard", act.filter((r) => r.prochaine < t)],
       ["Aujourd'hui", act.filter((r) => r.prochaine === t)],
       ["7 prochains jours", act.filter((r) => r.prochaine > t && r.prochaine <= in7)],
       ["Plus tard", act.filter((r) => r.prochaine > in7)],
     ].filter(([, l]) => l.length);
-    return `<div class="sec"><h2>Rappels</h2>${seg}
-      ${loading("rappels") ? '<p class="muted">Chargement…</p>' : groups.length ? groups.map(([h, l]) => `<div class="sec"><h3>${h}</h3><ul class="list">${l.map(rappelRow).join("")}</ul></div>`).join("") : '<p class="empty">Aucun rappel. Exemple : collier antiparasitaire des chats tous les 8 mois, vaccin annuel, contrôle technique.</p>'}
+    return `<div class="sec" style="gap:14px"><h2>Rappels</h2>${seg}${filtresKids(S.kid)}
+      ${loading("rappels") ? '<p class="muted">Chargement…</p>' : groups.length ? groups.map(([h, l]) => `<div class="sec"><h3>${h}</h3><ul class="list">${l.map(rappelRow).join("")}</ul></div>`).join("") : '<p class="empty">Aucun rappel. Exemple : collier antiparasitaire des chats tous les 8 mois, vaccin de Naelia, contrôle technique.</p>'}
       <div class="actions"><button class="btn" data-act="form" data-type="rappel">Nouveau rappel</button></div></div>`;
   },
 
+  envies() {
+    const tab = S.envieTab;
+    const order = (l) => STATUTS.indexOf(l.statut || "À voir");
+    const genre = (l) => l.genre || "idee";
+    const list = S.liens.filter((l) => genre(l) === tab && (!S.envieKid || pourDe(l).includes(S.envieKid)))
+      .sort((a, b) => order(a) - order(b) || (b.cree || "").localeCompare(a.cree || ""));
+    const n = (g) => S.liens.filter((l) => genre(l) === g && l.statut !== "Abandonné" && l.statut !== "Validé").length;
+    return `<div class="sec" style="gap:14px">
+      <h2>Envies et idées</h2>
+      <div class="seg" role="group"><button data-act="envie-tab" data-k="achat" aria-pressed="${tab === "achat"}">Achats <span class="n">${n("achat")}</span></button><button data-act="envie-tab" data-k="idee" aria-pressed="${tab === "idee"}">Idées pour plus tard <span class="n">${n("idee")}</span></button></div>
+      ${filtresKids(S.envieKid, "envie-kid")}
+      ${list.length ? `<div class="list" style="padding:0">${list.map(envieRow).join("")}</div>` : `<p class="empty">${tab === "achat" ? "Les produits repérés qu'on aime bien : un lien, un prix, pour qui. Pratique pour les cadeaux." : "Sorties, vacances, déco, projets : tout ce qu'on veut garder pour plus tard."} Colle un lien dans « Note tout ici » ou utilise le bouton ci-dessous.</p>`}
+      <div class="actions"><button class="btn" data-act="form" data-type="lien">${tab === "achat" ? "Ajouter un achat" : "Ajouter une idée"}</button></div></div>`;
+  },
+
   plus() {
-    const nCheck = S.checklists.length, nLiens = S.liens.filter((l) => l.statut !== "Abandonné" && l.statut !== "Validé").length;
+    const nCheck = S.checklists.length;
     const s = statutSemaine(mondayOf(today()));
-    const soon = ["Projets et devis", "Infos pratiques", "Cadeaux", "Budget et défis"];
-    return `<div class="sec"><h2>Plus</h2>
+    const yi = anneeInfo(S.voiture === null && !S.releves.length ? 0 : anneeCourante());
+    const lv = yi.empty ? "none" : yi.level;
+    const soon = ["Projets et devis", "Infos pratiques", "Budget et défis"];
+    return `<div class="sec" style="gap:14px"><h2>Plus</h2>
       <div class="tiles">
-        <button class="tile" data-act="sub" data-type="checklists"><b>Checklists</b><span class="muted small">${nCheck} modèle${nCheck > 1 ? "s" : ""}</span></button>
-        <button class="tile" data-act="sub" data-type="liens"><b>À réfléchir</b><span class="muted small">${nLiens} en cours</span></button>
-        <button class="tile" data-act="sub" data-type="garde"><b>Garde de Lyssia</b><span class="muted small">${s ? (s.avec ? "Avec nous cette semaine" : "Sans Lyssia cette semaine") : "À configurer"}</span></button>
-        <button class="tile" data-act="export"><b>Sauvegarde</b><span class="muted small">Télécharger toutes nos données</span></button>
+        <button class="tile lvl-${lv}" style="background:var(--lvbg)" data-act="sub" data-type="voiture"><b>Voiture</b><span>Kilométrage du leasing</span><span class="s"><b style="font-size:16px">${VERDICTS[lv]}</b>${yi.empty ? "" : `<br>${km(yi.used)} cette année`}</span></button>
+        <button class="tile k-lyssia" style="background:var(--kbg)" data-act="sub" data-type="garde"><b>Garde de Lyssia</b><span class="s">${s ? (s.avec ? "Avec nous cette semaine" : "Sans Lyssia cette semaine") : "À configurer"}</span></button>
+        <button class="tile c-sage" data-act="sub" data-type="checklists"><b>Checklists</b><span class="s">${nCheck} modèle${nCheck > 1 ? "s" : ""}</span></button>
+        <button class="tile c-lav" data-act="export"><b>Sauvegarde</b><span class="s">Télécharger toutes nos données</span></button>
       </div>
       <h3>Prochainement</h3>
-      <div class="tiles">${soon.map((x) => `<div class="tile soon"><b class="muted">${x}</b><span class="muted small">À construire</span></div>`).join("")}</div>
+      <div class="tiles">${soon.map((x) => `<div class="tile soon"><b class="muted" style="font-size:17px">${x}</b><span class="muted small">À construire</span></div>`).join("")}</div>
       <div class="actions"><button class="btn ghost" data-act="logout">Se déconnecter (${esc(qui())})</button></div></div>`;
   },
 
   checklists() {
-    return `<div class="sec">${back()}<h2>Checklists</h2>
+    return `<div class="sec" style="gap:14px">${back()}<h2>Checklists</h2>
       ${S.checklists.length ? `<ul class="list">${S.checklists.slice().sort((a, b) => (a.nom || "").localeCompare(b.nom || "")).map((c) => {
         const it = c.items || [], ok = it.filter((i) => i.ok).length;
-        return `<li class="row"><button class="grow" data-act="open-check" data-id="${c.id}"><div class="t">${esc(c.nom)}</div><div class="m">${ok}/${it.length} coché${ok > 1 ? "s" : ""}</div></button></li>`;
+        return `<li class="row ${kidCls(c) || (/lyssia/i.test(c.nom) ? "k-lyssia" : "")}"><span class="bubble">${ok}/${it.length}</span><button class="grow" data-act="open-check" data-id="${c.id}"><div class="t">${esc(c.nom)}</div><div class="m">${kidTags(c)}<span>${ok} coché${ok > 1 ? "s" : ""}</span></div></button></li>`;
       }).join("")}</ul>` : '<p class="empty">Aucune checklist. Crée un modèle une fois, réutilise-le à chaque fois.</p>'}
       <div class="actions"><button class="btn" data-act="form" data-type="checklist">Nouvelle checklist</button></div></div>`;
   },
@@ -482,26 +677,12 @@ const VIEWS = {
     const c = S.checklists.find((x) => x.id === S.sub.id);
     if (!c) return `<div class="sec">${back()}<p class="empty">Cette checklist n'existe plus.</p></div>`;
     const it = c.items || [];
-    return `<div class="sec">${back()}<div class="sec-head"><h2>${esc(c.nom)}</h2><span class="muted small">${it.filter((i) => i.ok).length}/${it.length}</span></div>
+    const cls = kidCls(c) || (/lyssia/i.test(c.nom) ? "k-lyssia" : "");
+    return `<div class="sec ${cls}" style="gap:14px">${back()}<div class="card" style="background:var(--kbg, var(--sage))"><p class="big">${esc(c.nom)}</p><span><b>${it.filter((i) => i.ok).length}/${it.length}</b> cochés</span></div>
       ${it.length ? `<ul class="list">${it.map((i, k) => `<li class="row"><button class="tick ${i.ok ? "on" : ""}" data-act="check-item" data-k="${k}" aria-label="${i.ok ? "Décocher" : "Cocher"} ${esc(i.t)}">${i.ok ? CHECK : ""}</button><span class="grow ${i.ok ? "muted" : ""}">${esc(i.t)}</span><button class="btn sm ghost" data-act="check-to-courses" data-k="${k}" title="Ajouter aux courses urgentes">Courses</button><button class="x" data-act="check-del" data-k="${k}" aria-label="Retirer ${esc(i.t)}">×</button></li>`).join("")}</ul>` : '<p class="empty">Ajoute le premier élément.</p>'}
       <form class="quick" data-form="check-add" autocomplete="off"><input type="text" id="ck-add" name="t" placeholder="Ajouter un élément" aria-label="Nouvel élément"><button class="btn" type="submit">Ajouter</button></form>
       <div class="actions"><button class="btn ghost" data-act="check-reset">Tout décocher pour la prochaine fois</button>
       <button class="btn danger" data-act="del" data-col="checklists" data-id="${c.id}">${S.confirm === c.id ? "Confirmer la suppression" : "Supprimer"}</button></div></div>`;
-  },
-
-  liens() {
-    const order = (l) => STATUTS.indexOf(l.statut || "À voir");
-    const list = S.liens.slice().sort((a, b) => order(a) - order(b) || (b.cree || "").localeCompare(a.cree || ""));
-    return `<div class="sec">${back()}<h2>À réfléchir</h2>
-      <p class="muted small" style="margin:0">Les liens à comparer ou à décider plus tard : une maison, une activité, un achat.</p>
-      ${list.length ? `<ul class="list">${list.map((l) => {
-        let host = ""; try { host = new URL(l.url).hostname.replace(/^www\./, ""); } catch {}
-        return `<li class="row"><div class="grow"><div class="t">${l.url ? `<a href="${esc(l.url)}" target="_blank" rel="noopener" style="color:inherit">${esc(l.titre || host || l.url)}</a>` : esc(l.titre)}</div>
-          <div class="m">${host ? `<span>${esc(host)}</span>` : ""}${l.tag ? `<span class="tag">${esc(l.tag)}</span>` : ""}${l.note ? `<span>${esc(l.note)}</span>` : ""}</div></div>
-          <select data-chg="lien-statut" data-id="${l.id}" aria-label="Statut" style="width:auto;padding:6px 8px;font-size:14px">${STATUTS.map((s) => `<option ${s === (l.statut || "À voir") ? "selected" : ""}>${s}</option>`).join("")}</select>
-          <button class="x" data-act="del" data-col="liens" data-id="${l.id}" aria-label="Supprimer">${S.confirm === l.id ? "✓" : "×"}</button></li>`;
-      }).join("")}</ul>` : '<p class="empty">Aucun lien pour l\'instant. Colle un lien dans la saisie rapide de l\'accueil.</p>'}
-      <div class="actions"><button class="btn" data-act="form" data-type="lien">Ajouter un lien</button></div></div>`;
   },
 
   garde() {
@@ -512,38 +693,164 @@ const VIEWS = {
       weeks += `<li class="row"><span class="grow">Semaine du ${fmt(m)}</span>${s ? `<span class="pill ${s.avec ? "avec" : "sans"}">${s.avec ? "Avec Lyssia" : "Sans"}</span>` : ""}${s && s.motif !== "Alternance" ? `<span class="muted small">${esc(s.motif)}</span>` : ""}</li>`;
     }
     const ex = S.exceptions.slice().sort((a, b) => (a.du || "").localeCompare(b.du || ""));
-    return `<div class="sec">${back()}<h2>Garde de Lyssia</h2>
-      <p class="muted small" style="margin:0">Une semaine sur deux, du lundi ${heurePassage()} au lundi suivant. Les vacances et les échanges se gèrent avec des exceptions.</p>
+    return `<div class="sec" style="gap:14px">${back()}
+      <div class="garde avec"><p class="tagline">Lyssia</p><p class="big">Garde alternée</p><p>Une semaine sur deux, du lundi ${heurePassage()} au lundi suivant. Les vacances et les échanges se gèrent avec des exceptions.</p></div>
       <form class="form" data-form="garde-cfg">
         <div class="two"><label class="f">Un lundi où elle arrive<input type="date" id="g-ancre" name="ancre" value="${esc(g.ancre || "")}" required></label>
         <label class="f">Heure de passage<input type="time" id="g-heure" name="heure" value="${esc(g.heure || "16:40")}"></label></div>
         <div class="actions"><button class="btn sm" type="submit">Enregistrer la règle</button></div>
       </form>
       <h3>Les 12 prochaines semaines</h3><ul class="list">${weeks}</ul>
-      <div class="sec-head"><h3>Exceptions</h3></div>
+      <h3>Exceptions</h3>
       ${ex.length ? `<ul class="list">${ex.map((e) => `<li class="row"><div class="grow"><div class="t">${fmt(e.du)} → ${fmt(e.au)}</div><div class="m"><span class="pill ${e.avec ? "avec" : "sans"}">${e.avec ? "Avec" : "Sans"}</span><span>${esc(e.motif || "")}</span></div></div><button class="x" data-act="del" data-col="exceptions" data-id="${e.id}" aria-label="Supprimer">${S.confirm === e.id ? "✓" : "×"}</button></li>`).join("")}</ul>` : '<p class="empty">Aucune exception.</p>'}
       <div class="actions"><button class="btn" data-act="form" data-type="exception">Ajouter une exception</button></div></div>`;
+  },
+
+  voiture() {
+    const c = cfgV();
+    const cy = anneeCourante(); if (S.kmYear == null) S.kmYear = cy;
+    const yi = anneeInfo(S.kmYear);
+    const lv = yi.empty ? "none" : yi.level;
+    const A = c.allowance, end = fmtAn(yi.yEnd);
+    let verdict = VERDICTS[lv], lead = "", notes = [], action = "";
+    if (yi.empty) {
+      verdict = yi.state === "future" ? "Pas encore commencée" : "Aucun relevé";
+      lead = yi.state === "future" ? `Cette année de contrat démarre le ${fmtAn(yi.ys)}.` : "Saisis le compteur du jour pour lancer le suivi de cette année.";
+    } else if (yi.state === "past" && yi.elapsed === yi.yearDays) {
+      verdict = yi.used <= A ? "Année validée" : "Année dépassée";
+      lead = `${km(yi.used)} sur ${km(A)}, ` + (yi.used <= A ? `soit ${km(A - yi.used)} de marge.` : `soit ${km(yi.used - A)} de trop.`);
+    } else if (yi.proj == null) {
+      verdict = "Premier relevé"; lead = "Il faut au moins un jour d'écart pour calculer un rythme.";
+    } else {
+      lead = lv === "ok" ? `À ce rythme, on finit l'année à ${km(yi.proj)} le ${end}, soit ${km(A - yi.proj)} de marge.`
+        : lv === "warn" ? `À ce rythme, on finit l'année à ${km(yi.proj)} le ${end}. Il reste seulement ${km(A - yi.proj)} de marge pour les imprévus.`
+        : `À ce rythme, on finit l'année à ${km(yi.proj)} le ${end}, soit ${km(yi.proj - A)} de trop.`;
+      if (yi.elapsed < 30) notes.push("Moins d'un mois de données : la projection va encore bouger.");
+      const age = diffDays(yi.last.date, today());
+      if (yi.state === "current" && age >= 10) notes.push(`Dernier relevé il y a ${age} jours, pense à en saisir un.`);
+      if (yi.recentPace != null && niveau(yi.recentProj) !== lv) notes.push(`Depuis le ${fmtCourt(yi.recentFrom)}, le rythme est de ${nb(yi.recentPace)} km/jour : s'il continue, ce serait ${km(yi.recentProj)} en fin d'année.`);
+      if (yi.daysLeft > 0) {
+        if (lv === "ok") action = `<p>Budget restant jusqu'au ${end} : <b>${km(yi.perDay * 7)} par semaine</b> en moyenne (${nb(yi.perDay)} km/jour, week-ends compris).</p>`;
+        else {
+          const target = A - c.marge, toSave = Math.max(0, yi.proj - target), tw = (target - yi.used) / yi.daysLeft * 7;
+          action = tw > 0 ? `<p>Pour retrouver ${km(c.marge)} de marge, il faut rester sous <b>${km(tw)} par semaine</b> d'ici le ${end}.</p>` : `<p>La marge est déjà consommée : chaque km compte jusqu'au ${end}.</p>`;
+          let parts = `Ça représente environ ${km(toSave)} à économiser`;
+          const m = Number(c.medhi), ch = Number(c.chloe);
+          if (m > 0) parts += `, soit ${nb(Math.ceil(toSave / m))} jours de trajet de Medhi`;
+          if (m > 0 && c.chloe != null && c.chloe !== "" && m - ch > 0) parts += `, ou ${nb(Math.ceil(toSave / (m - ch)))} jours où vous échangez les voitures`;
+          action += `<p>${parts}.</p>`;
+        }
+      }
+    }
+    // Jauge
+    const max = A * 1.15, pct = (v) => Math.max(0, Math.min(100, v / max * 100));
+    const gauge = yi.empty ? "" : `<div class="gauge" role="img" aria-label="Parcouru ${km(yi.used)} sur ${km(A)}">
+      <div class="fp" style="width:${pct(yi.proj ?? yi.used)}%"></div><div class="fu" style="width:${pct(yi.used)}%"></div>
+      ${yi.elapsed < yi.yearDays ? `<div class="tk" style="left:${pct(yi.budget)}%"></div>` : ""}<div class="cap" style="left:${pct(A)}%"></div></div>
+      <ul class="legend"><li><span class="sw" style="background:var(--ink)"></span>Parcouru <b>${km(yi.used)}</b></li>
+      ${yi.elapsed < yi.yearDays && yi.proj != null ? `<li><span class="sw" style="background:var(--lv);opacity:.5"></span>Fin d'année à ce rythme <b>${km(yi.proj)}</b></li>` : ""}
+      <li><span class="sw" style="background:var(--hot);width:3px"></span>Plafond ${km(A)}</li></ul>`;
+    const figs = yi.empty ? "" : `<div class="figs">
+      <div class="fig"><div class="v">${nb(yi.used)}</div><div class="l">km parcourus depuis le ${fmtCourt(yi.ys)}</div></div>
+      <div class="fig"><div class="v">${nb(yi.budget)}</div><div class="l">km prévus à date</div>${yi.elapsed < yi.yearDays ? `<div class="s" style="color:${yi.gap > 0 ? "var(--hot)" : "var(--ok)"}">${yi.gap > 0 ? "+" + nb(yi.gap) + " km d'avance" : nb(-yi.gap) + " km sous le budget"}</div>` : ""}</div>
+      <div class="fig"><div class="v">${nb(yi.remaining)}</div><div class="l">km restants sur ${nb(A)}</div></div>
+      <div class="fig"><div class="v">${yi.perDay != null ? nb(yi.perDay * 7) : "—"}</div><div class="l">km max par semaine à partir de maintenant</div></div></div>`;
+    // Historique
+    const sorted = S.releves.slice().sort((a, b) => b.date.localeCompare(a.date));
+    const chrono = kmPoints();
+    const hist = sorted.length ? `<ul class="list">${(S.kmAll ? sorted : sorted.slice(0, 6)).map((r) => {
+      const idx = chrono.findIndex((p) => p.date === r.date && !p.virtual); const prev = idx > 0 ? chrono[idx - 1] : null;
+      const nd = prev ? diffDays(prev.date, r.date) : 0;
+      return `<li class="row"><div class="grow"><div class="t">${fmtAn(r.date)}</div>${prev ? `<div class="m">+${km(r.km - prev.km)} en ${nd} j${nd > 0 ? ` (${nb((r.km - prev.km) / nd)} km/j)` : ""}</div>` : ""}</div>
+        <span class="price">${km(r.km)}</span><button class="x" data-act="km-del" data-d="${r.date}" aria-label="Supprimer le relevé du ${fmtAn(r.date)}">${S.confirm === "km" + r.date ? "✓" : "×"}</button></li>`;
+    }).join("")}</ul>${sorted.length > 6 ? `<button class="link" data-act="km-all">${S.kmAll ? "Afficher moins" : `Tout afficher (${sorted.length})`}</button>` : ""}` : "";
+    // Années
+    const years = [0, 1, 2].map((k) => {
+      const y = anneeInfo(k);
+      return `<li class="row" style="cursor:pointer" data-act="km-year" data-k="${k}"><div style="width:84px"><div class="t">Année ${k + 1}</div><div class="m">${y.state === "current" ? "en cours" : y.state === "past" ? "terminée" : "à venir"}</div></div>
+        <div class="grow"><span class="ybar"><span style="width:${y.empty ? 0 : Math.min(100, y.used / A * 100)}%;background:var(--${y.empty ? "line" : y.level === "warn" ? "warn" : y.level === "hot" ? "hot" : "ok"})"></span></span>
+        <div class="m">${y.empty ? (y.state === "future" ? "Démarre le " + fmtAn(y.ys) : "Pas encore de relevé") : `${km(y.used)} / ${nb(A)}${y.proj != null && y.elapsed < y.yearDays ? `, projection ${km(y.proj)}` : ""}`}</div></div></li>`;
+    }).join("");
+    return `<div class="sec lvl-${lv}" style="gap:14px">${back()}
+      <div class="seg" role="group">${[0, 1, 2].map((k) => `<button data-act="km-year" data-k="${k}" aria-pressed="${k === S.kmYear}">Année ${k + 1}</button>`).join("")}</div>
+      <section class="card status" aria-live="polite">
+        <span class="small">Année ${yi.k + 1} du contrat : du ${fmtAn(yi.ys)} au ${fmtAn(yi.yEnd)}</span>
+        <p class="verdict">${esc(verdict)}</p><p style="margin:0">${lead}</p>
+        ${notes.length ? `<p class="small" style="margin:0">${notes.join(" ")}</p>` : ""}
+        ${gauge}${figs}${action ? `<div class="sec small" style="gap:6px">${action}</div>` : ""}
+      </section>
+      <section class="card c-white">
+        <h2>Nouveau relevé</h2>
+        <form class="form" data-form="km-add" novalidate>
+          <div class="two"><label class="f">Date<input type="date" id="km-date" name="date" value="${today()}" max="${today()}" required></label>
+          <label class="f">Compteur total (km)<input type="number" id="km-val" name="km" inputmode="numeric" min="0" step="1" placeholder="ex. 4 250" required></label></div>
+          <div class="actions"><button class="btn" type="submit">Enregistrer le relevé</button></div>
+          <p class="msg" id="km-msg" role="status"></p>
+        </form>
+      </section>
+      ${yi.empty ? "" : `<section class="card c-white"><h2>Évolution sur l'année</h2>${kmChart(yi)}</section>`}
+      <section class="sec"><h2>Les 3 années du contrat</h2><ul class="list">${years}</ul></section>
+      <section class="sec"><h2>Historique des relevés</h2>${hist || '<p class="empty">Aucun relevé pour l\'instant.</p>'}</section>
+      ${sorted.length ? "" : `<section class="card c-lav"><h2>Reprendre les anciens relevés</h2><p style="margin:0" class="small">Colle ici le texte que Claude t'a donné, une ligne par relevé : date puis kilométrage.</p>
+        <form class="form" data-form="km-import"><textarea id="km-import" name="t" placeholder="2026-10-07 1154&#10;2026-10-08 1286"></textarea><div class="actions"><button class="btn" type="submit">Importer</button></div></form></section>`}
+      <section class="card c-white"><details><summary>Réglages du contrat</summary>
+        <form class="form" data-form="km-cfg" novalidate style="margin-top:14px">
+          <div class="two"><label class="f">Début du contrat<input type="date" id="v-start" name="start" value="${esc(c.start)}"></label>
+          <label class="f">Km autorisés par an<input type="number" id="v-allow" name="allowance" min="1" step="100" inputmode="numeric" value="${esc(c.allowance)}"></label></div>
+          <div class="two"><label class="f">Compteur à la livraison<input type="number" id="v-dep" name="kmDepart" min="0" step="1" inputmode="numeric" value="${esc(c.kmDepart)}"></label>
+          <label class="f">Marge pour imprévus<input type="number" id="v-marge" name="marge" min="0" step="100" inputmode="numeric" value="${esc(c.marge)}"></label></div>
+          <div class="two"><label class="f">Trajet par jour travaillé, Medhi<input type="number" id="v-medhi" name="medhi" min="0" step="1" inputmode="numeric" value="${esc(c.medhi)}"></label>
+          <label class="f">Trajet par jour, Chloé<input type="number" id="v-chloe" name="chloe" min="0" step="1" inputmode="numeric" value="${esc(c.chloe ?? "")}" placeholder="à renseigner"></label></div>
+          <div class="actions"><button class="btn" type="submit">Enregistrer les réglages</button></div>
+          <p class="msg" id="v-msg" role="status"></p>
+        </form></details></section>
+    </div>`;
   },
 };
 const back = () => `<div><button class="link" data-act="back">← Retour</button></div>`;
 
-function gardeBanner(t, lun) {
+function kmChart(yi) {
+  const A = cfgV().allowance;
+  const W = 360, H = 210, pl = 34, pr = 10, pt = 14, pb = 26;
+  const ymax = Math.max(A * 1.1, (yi.proj || 0) * 1.05);
+  const x = (d) => pl + (W - pl - pr) * d / yi.yearDays, y = (v) => H - pb - (H - pt - pb) * v / ymax;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Kilomètres cumulés comparés au budget">`;
+  for (let v = 0; v <= ymax; v += 10000) s += `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pl - 6}" y="${y(v) + 4}" text-anchor="end">${v ? v / 1000 + "k" : "0"}</text>`;
+  s += `<line x1="${pl}" x2="${W - pr}" y1="${y(A)}" y2="${y(A)}" stroke="var(--hot)" stroke-width="1.5"/><text x="${W - pr}" y="${y(A) - 5}" text-anchor="end" style="fill:var(--hot)">Plafond ${nb(A)}</text>`;
+  for (let mth = 0; mth <= 12; mth += 3) {
+    const [yy, mm, dd0] = yi.ys.split("-").map(Number); const ds = iso(new Date(yy, mm - 1 + mth, dd0));
+    const d = Math.min(diffDays(yi.ys, ds), yi.yearDays);
+    s += `<text x="${x(d)}" y="${H - 8}" text-anchor="${mth === 0 ? "start" : mth === 12 ? "end" : "middle"}">${MC[parse(ds).getMonth()]}</text>`;
+  }
+  s += `<line x1="${x(0)}" y1="${y(0)}" x2="${x(yi.yearDays)}" y2="${y(A)}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 5"/>`;
+  const lp = yi.series[yi.series.length - 1];
+  const col = `var(--${yi.level === "warn" ? "warn" : yi.level === "hot" ? "hot" : "ok"})`;
+  if (yi.proj != null && yi.elapsed < yi.yearDays) s += `<line x1="${x(lp.d)}" y1="${y(lp.v)}" x2="${x(yi.yearDays)}" y2="${y(yi.proj)}" stroke="${col}" stroke-width="2.5" stroke-dasharray="7 6"/><circle cx="${x(yi.yearDays)}" cy="${y(yi.proj)}" r="4.5" fill="${col}"/>`;
+  s += `<path d="${yi.series.map((p, i) => (i ? "L" : "M") + x(p.d).toFixed(1) + " " + y(p.v).toFixed(1)).join(" ")}" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  yi.series.slice(1).forEach((p) => { s += `<circle cx="${x(p.d)}" cy="${y(p.v)}" r="3.5" fill="var(--ink)"/>`; });
+  s += `</svg><ul class="legend"><li><span class="sw" style="background:var(--ink)"></span>Réel</li><li><span class="sw" style="border-top:2px dashed var(--muted);height:0;width:16px;border-radius:0"></span>Rythme idéal (${nb(A / yi.yearDays)} km/jour)</li>${yi.proj != null && yi.elapsed < yi.yearDays ? `<li><span class="sw" style="border-top:2px dashed ${col};height:0;width:16px;border-radius:0"></span>Projection</li>` : ""}</ul>`;
+  return s;
+}
+
+function gardeBanner(lun) {
   const s = statutSemaine(lun);
-  if (!s) return `<section class="garde"><p class="garde-title">Garde de Lyssia</p><p class="muted" style="margin:0">${S.garde === undefined ? "Chargement…" : "La règle de garde n'est pas encore réglée."}</p></section>`;
+  if (!s) return `<section class="garde sans"><p class="tagline">Lyssia</p><p class="big">${S.garde === undefined ? "Chargement…" : "Garde à régler"}</p></section>`;
   const nx = prochainChangement(lun);
-  return `<section class="garde">
-    <p class="garde-title">${s.avec ? '<span class="hl">Lyssia est avec nous cette semaine</span>' : "Semaine sans Lyssia"}</p>
-    <p class="muted" style="margin:0">${nx ? (s.avec ? `Elle repart le ${fmtLong(nx)} à ${heurePassage()}.` : `Elle arrive le ${fmtLong(nx)} à ${heurePassage()}.`) : ""}${s.motif !== "Alternance" ? ` ${esc(s.motif)}.` : ""}</p></section>`;
+  return `<section class="garde ${s.avec ? "avec" : "sans"}" data-act="sub" data-type="garde" role="button" tabindex="0">
+    <p class="tagline">Lyssia</p>
+    <p class="big">${s.avec ? "Avec nous cette semaine" : "Semaine sans Lyssia"}</p>
+    <p>${nx ? (s.avec ? `Elle repart ${fmtLong(nx)} à ${heurePassage()}.` : `Elle arrive ${fmtLong(nx)} à ${heurePassage()}.`) : ""}${s.motif !== "Alternance" ? ` ${esc(s.motif)}.` : ""}</p></section>`;
 }
 function eventRow(e) {
-  return `<li class="row"><button class="grow" data-act="form" data-type="event" data-id="${e.id}"><div class="t">${esc(e.titre)}</div>
-    <div class="m">${e.heure ? `<span>${fmtH(e.heure)}</span>` : ""}${quiTag(e.qui)}${e.note ? `<span>${esc(e.note)}</span>` : ""}</div></button><span class="kind">RDV</span></li>`;
+  return `<li class="row ${kidCls(e)}"><span class="bubble">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "Jour-<br>née"}</span>
+    <button class="grow" data-act="form" data-type="event" data-id="${e.id}"><div class="t">${esc(e.titre)}</div>
+    <div class="m">${kidTags(e)}${quiTag(e.qui)}${e.note ? `<span>${esc(e.note)}</span>` : ""}</div></button></li>`;
 }
 function rappelRow(r) {
   const late = r.prochaine < today();
-  return `<li class="row"><button class="tick" data-act="rappel-done" data-id="${r.id}" aria-label="Fait : ${esc(r.titre)}"></button>
+  return `<li class="row ${kidCls(r)}"><button class="tick" data-act="rappel-done" data-id="${r.id}" aria-label="Fait : ${esc(r.titre)}"></button>
     <button class="grow" data-act="form" data-type="rappel" data-id="${r.id}"><div class="t">${esc(r.titre)}</div>
-    <div class="m">${r.cat ? `<span>${esc(r.cat)}</span>` : ""}${r.recur ? `<span>${recurTxt(r.recur)}</span>` : ""}${quiTag(r.qui)}${r.note ? `<span>${esc(r.note)}</span>` : ""}</div></button>
+    <div class="m">${kidTags(r)}${r.cat ? `<span>${esc(r.cat)}</span>` : ""}${r.recur ? `<span>${recurTxt(r.recur)}</span>` : ""}${quiTag(r.qui)}${r.note ? `<span>${esc(r.note)}</span>` : ""}</div></button>
     <span class="when ${late ? "late" : ""}">${rel(r.prochaine)}</span></li>`;
 }
 function routineRow(r, t, showDays) {
@@ -555,21 +862,32 @@ function routineRow(r, t, showDays) {
 function courseRow(c) {
   return `<li class="row"><button class="tick" data-act="buy" data-id="${c.id}" aria-label="Acheté : ${esc(c.nom)}"></button>
     <button class="grow" data-act="course-menu" data-id="${c.id}"><div class="t">${esc(c.nom)}</div>${c.note ? `<div class="m">${esc(c.note)}</div>` : ""}</button>
-    ${c.qui ? `<span class="dot ${quiCls(c.qui)}" title="Ajouté par ${esc(c.qui)}"></span>` : ""}</li>`;
+    ${c.qui ? `<span class="small muted">${esc(c.qui)}</span>` : ""}</li>`;
+}
+function envieRow(l) {
+  let host = ""; try { host = new URL(l.url).hostname.replace(/^www\./, ""); } catch {}
+  const titre = l.titre || host || l.url;
+  return `<div class="envie ${kidCls(l)}"><span class="ico">${esc((host || titre || "?").slice(0, 1))}</span>
+    <div class="grow" style="flex:1;min-width:0"><div class="t" style="font-weight:700;overflow-wrap:anywhere">${l.url ? `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(titre)}</a>` : esc(titre)}</div>
+    <div class="m" style="font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-top:3px">${kidTags(l)}${host ? `<span>${esc(host)}</span>` : ""}${l.tag ? `<span class="tag">${esc(l.tag)}</span>` : ""}${l.note ? `<span>${esc(l.note)}</span>` : ""}</div>
+    <div class="actions" style="margin-top:8px;align-items:center"><select data-chg="lien-statut" data-id="${l.id}" aria-label="Statut" style="width:auto;padding:6px 10px;font-size:14px;border-radius:999px">${STATUTS.map((s) => `<option ${s === (l.statut || "À voir") ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <button class="btn sm ghost" data-act="form" data-type="lien" data-id="${l.id}">Modifier</button></div></div>
+    ${l.prix ? `<span class="price">${esc(l.prix)} €</span>` : ""}</div>`;
 }
 
 /* ---------- Saisie en vrac ---------- */
-const TYPES = { course: "Course", evenement: "Événement", rappel: "Rappel", lien: "Lien" };
-const DEST = { course: "Courses", evenement: "Agenda", rappel: "Rappels", lien: "À réfléchir" };
-let props = []; // éléments proposés par le rangement automatique
+const TYPES = { course: "Course", evenement: "Événement", rappel: "Rappel", lien: "Envie" };
+const DEST = { course: "Courses", evenement: "Agenda", rappel: "Rappels", lien: "Envies" };
+let props = [];
 function vracPropsHTML(prefix) {
-  if (!props.length) return "";
   return props.map((p, i) => `<div class="prop">
     <div class="prop-top"><select data-prop="${i}" data-field="type" id="${prefix}${i}-type" aria-label="Ranger dans">${Object.entries(TYPES).map(([k, v]) => `<option value="${k}" ${k === p.type ? "selected" : ""}>${v}</option>`).join("")}</select>
     <input type="text" data-prop="${i}" data-field="titre" id="${prefix}${i}-titre" value="${esc(p.titre || p.url || "")}" aria-label="Titre">
     <button class="x" type="button" data-act="prop-del" data-k="${i}" aria-label="Retirer">×</button></div>
     ${p.type === "evenement" || p.type === "rappel" ? `<div class="two"><input type="date" data-prop="${i}" data-field="date" id="${prefix}${i}-date" value="${esc(p.date || today())}" aria-label="Date"><input type="time" data-prop="${i}" data-field="heure" id="${prefix}${i}-heure" value="${esc(p.heure || "")}" aria-label="Heure"></div>` : ""}
     ${p.type === "course" ? `<div class="chips">${Object.entries(LISTES).map(([k, v]) => `<label><input type="radio" name="${prefix}${i}-liste" value="${k}" data-prop="${i}" data-field="liste" ${k === (p.liste || "urgent") ? "checked" : ""}><span>${v}</span></label>`).join("")}</div>` : ""}
+    ${p.type === "lien" ? `<div class="chips"><label><input type="radio" name="${prefix}${i}-genre" value="achat" data-prop="${i}" data-field="genre" ${p.genre !== "idee" ? "checked" : ""}><span>Achat</span></label><label><input type="radio" name="${prefix}${i}-genre" value="idee" data-prop="${i}" data-field="genre" ${p.genre === "idee" ? "checked" : ""}><span>Idée</span></label></div>` : ""}
+    ${p.type !== "course" ? `<div class="chips">${ENFANTS.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
   </div>`).join("");
 }
 function hintTxt() {
@@ -578,10 +896,7 @@ function hintTxt() {
   return `${props.length} élément${props.length > 1 ? "s" : ""} → ${dests.join(", ")}`;
 }
 function renderVrac() {
-  for (const [box, prefix] of [["#vrac-preview", "v"], ["#vrac-preview-s", "s"]]) {
-    const el = $(box); if (!el) continue;
-    el.innerHTML = vracPropsHTML(prefix);
-  }
+  for (const [box, prefix] of [["#vrac-preview", "v"], ["#vrac-preview-s", "s"]]) { const el = $(box); if (el) el.innerHTML = vracPropsHTML(prefix); }
   for (const [foot, hint] of [["#vrac-foot", "#vrac-hint"], ["#vrac-foot-s", "#vrac-hint-s"]]) {
     const f = $(foot); if (f) f.hidden = !props.length;
     const h = $(hint); if (h) h.textContent = hintTxt();
@@ -589,29 +904,28 @@ function renderVrac() {
 }
 function onVracInput(el) {
   el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 220) + "px";
-  props = classerTout(el.value);
+  props = classerTout(el.value).map((p) => ({ ...p, pour: enfantsDans(p.titre || ""), genre: p.type === "lien" ? "achat" : undefined }));
   renderVrac();
 }
 async function saveVrac() {
   const keep = props.filter((p) => (p.titre || p.url || "").trim());
   if (!keep.length) return;
-  const t = today(); const me = qui();
+  const t = today(); const me = qui(); const hint = hintTxt();
   const ok = await W(async () => {
     const b = writeBatch(fs);
     for (const p of keep) {
-      const titre = (p.titre || "").trim();
-      if (p.type === "course") b.set(doc(collection(fs, "courses")), { nom: titre, liste: p.liste || "urgent", note: "", qui: me, cree: new Date().toISOString() });
-      else if (p.type === "evenement") b.set(doc(collection(fs, "events")), { titre, date: p.date || t, heure: p.heure || "", note: "", qui: "Les deux", par: me, cree: new Date().toISOString() });
-      else if (p.type === "rappel") b.set(doc(collection(fs, "rappels")), { titre, prochaine: p.date || t, cat: "Autre", recur: null, note: p.heure ? `à ${fmtH(p.heure)}` : "", qui: me, histo: [], termine: false, cree: new Date().toISOString() });
-      else b.set(doc(collection(fs, "liens")), { url: p.url || titre, titre: p.url ? titre : "", tag: "", note: "", statut: "À voir", par: me, cree: new Date().toISOString() });
+      const titre = (p.titre || "").trim(); const pour = p.pour || [];
+      if (p.type === "course") b.set(doc(collection(fs, "courses")), { nom: titre, liste: p.liste || "urgent", note: "", qui: me, cree: now() });
+      else if (p.type === "evenement") b.set(doc(collection(fs, "events")), { titre, date: p.date || t, heure: p.heure || "", note: "", pour, qui: "Les deux", par: me, cree: now() });
+      else if (p.type === "rappel") b.set(doc(collection(fs, "rappels")), { titre, prochaine: p.date || t, cat: "Autre", recur: null, note: p.heure ? `à ${fmtH(p.heure)}` : "", pour, qui: me, histo: [], termine: false, cree: now() });
+      else b.set(doc(collection(fs, "liens")), { url: p.url || (/^https?:/.test(titre) ? titre : ""), titre: p.url ? titre : (/^https?:/.test(titre) ? "" : titre), genre: p.genre || "achat", pour, tag: "", note: "", prix: "", statut: "À voir", par: me, cree: now() });
     }
     await b.commit();
-  }, `Rangé : ${hintTxt().split("→ ")[1] || ""}`);
+  }, `Rangé : ${hint.split("→ ")[1] || ""}`);
   if (ok) {
     props = [];
     for (const id of ["#vrac", "#vrac-s"]) { const el = $(id); if (el) { el.value = ""; el.style.height = ""; } }
-    renderVrac();
-    closeSheet();
+    renderVrac(); closeSheet();
   }
 }
 
@@ -622,21 +936,22 @@ function openSheet(title, body) {
   const f = $("#sheet-root input:not([type=hidden]):not([type=radio]):not([type=checkbox]), #sheet-root textarea"); if (f && !f.value) setTimeout(() => f.focus(), 60);
 }
 const closeSheet = () => { $("#sheet-root").innerHTML = ""; };
-const quiField = (v, name = "qui") => `<div class="f" style="font-size:14px;font-weight:700;color:var(--muted)">Qui s'en occupe<div class="chips" role="radiogroup">${QUI.map((q) => `<label><input type="radio" name="${name}" value="${q}" ${q === (v || qui() || "Les deux") ? "checked" : ""}><span>${q}</span></label>`).join("")}</div></div>`;
+const quiField = (v, name = "qui") => `<div class="f">Qui s'en occupe<div class="chips" role="radiogroup">${QUI.map((q) => `<label><input type="radio" name="${name}" value="${q}" ${q === (v || qui() || "Les deux") ? "checked" : ""}><span>${q}</span></label>`).join("")}</div></div>`;
 
 function openAdd() {
   props = [];
   openSheet("Ajouter", `<form class="vrac" data-form="vrac" autocomplete="off">
-      <textarea id="vrac-s" name="vrac" rows="1" placeholder="Tape ou dicte : « réunion école jeudi 18h30 »" aria-label="Saisie rapide"></textarea>
-      <div id="vrac-preview-s"></div>
-      <div class="vrac-foot" id="vrac-foot-s" hidden><span class="muted small" id="vrac-hint-s"></span><button class="btn" type="submit">Ranger</button></div>
+      <p class="lbl">Note tout ici</p>
+      <textarea id="vrac-s" name="vrac" rows="1" placeholder="Tape ou dicte : « réunion école Milan jeudi 18h30 »" aria-label="Saisie rapide"></textarea>
+      <div id="vrac-preview-s" class="sec"></div>
+      <div class="vrac-foot" id="vrac-foot-s" hidden><span class="small" id="vrac-hint-s"></span><button class="btn" type="submit">Ranger</button></div>
     </form>
     <h3>Ou avec tous les détails</h3>
     <div class="choice">
-      <button data-act="form" data-type="event"><b>Événement</b><span class="muted small">RDV, sortie</span></button>
-      <button data-act="form" data-type="rappel"><b>Rappel</b><span class="muted small">Récurrent, avec catégorie</span></button>
-      <button data-act="form" data-type="routine"><b>Routine</b><span class="muted small">Tâche de la maison</span></button>
-      <button data-act="form" data-type="checklist"><b>Checklist</b><span class="muted small">Valise, sac, rentrée</span></button>
+      <button class="c-lav" data-act="form" data-type="event"><b>Événement</b><span class="small">RDV, sortie</span></button>
+      <button class="c-yellow" data-act="form" data-type="rappel"><b>Rappel</b><span class="small">Récurrent, avec catégorie</span></button>
+      <button class="c-sage" data-act="form" data-type="routine"><b>Routine</b><span class="small">Tâche de la maison</span></button>
+      <button class="c-sand" data-act="form" data-type="lien"><b>Envie</b><span class="small">Achat ou idée</span></button>
     </div>`);
 }
 
@@ -645,10 +960,10 @@ function openForm(type, id) {
   if (type === "event") {
     const e = S.events.find((x) => x.id === id) || {};
     openSheet(id ? "Modifier l'événement" : "Nouvel événement", `<form class="form" data-form="event" data-id="${id || ""}">
-      <label class="f">Quoi<input type="text" id="f-titre" name="titre" value="${esc(e.titre)}" required placeholder="Ex. vaccin de Lyssia"></label>
+      <label class="f">Quoi<input type="text" id="f-titre" name="titre" value="${esc(e.titre)}" required placeholder="Ex. vaccin de Naelia"></label>
       <div class="two"><label class="f">Date<input type="date" id="f-date" name="date" value="${esc(e.date || t)}" required></label>
       <label class="f">Heure<input type="time" id="f-heure" name="heure" value="${esc(e.heure || "")}"></label></div>
-      ${quiField(e.qui)}
+      ${pourField(pourDe(e))}${quiField(e.qui)}
       <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(e.note)}" placeholder="Lieu, choses à prévoir…"></label>
       <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="events" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
   }
@@ -661,31 +976,37 @@ function openForm(type, id) {
       <label class="f">Catégorie<select id="f-cat" name="cat">${CATS.map((c) => `<option ${c === (r.cat || "Autre") ? "selected" : ""}>${c}</option>`).join("")}</select></label></div>
       <div class="two"><label class="f">Répéter<select id="f-unite" name="unite"><option value="">Une seule fois</option>${[["jour", "jours"], ["semaine", "semaines"], ["mois", "mois"], ["an", "ans"]].map(([k, v]) => `<option value="${k}" ${rc && rc.unite === k ? "selected" : ""}>Tous les N ${v}</option>`).join("")}</select></label>
       <label class="f">N<input type="number" id="f-n" name="n" min="1" max="99" value="${esc(rc ? rc.n : 1)}"></label></div>
-      ${quiField(r.qui)}
+      ${pourField(pourDe(r))}${quiField(r.qui)}
       <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(r.note)}"></label>
       ${r.histo && r.histo.length ? `<div><h3>Historique</h3><ul class="histo">${r.histo.map((h) => `<li>Fait le ${fmt(h.d)}${h.par ? ` par ${esc(h.par)}` : ""}</li>`).join("")}</ul></div>` : ""}
       <div class="actions"><button class="btn" type="submit">Enregistrer</button>
       ${id ? `<button class="btn ghost" type="button" data-act="snooze" data-id="${id}" data-d="1">Demain</button><button class="btn ghost" type="button" data-act="snooze" data-id="${id}" data-d="7">Dans 1 semaine</button><button class="btn danger" type="button" data-act="del" data-col="rappels" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
   }
   if (type === "lien") {
-    openSheet("Ajouter un lien", `<form class="form" data-form="lien">
-      <label class="f">Lien<input type="url" id="f-url" name="url" placeholder="https://…" required></label>
-      <label class="f">Titre<input type="text" id="f-titre" name="titre" placeholder="Facultatif"></label>
-      <div class="two"><label class="f">Thème<input type="text" id="f-tag" name="tag" placeholder="Ex. vacances été" list="tags"></label><datalist id="tags">${[...new Set(S.liens.map((l) => l.tag).filter(Boolean))].map((x) => `<option value="${esc(x)}">`).join("")}</datalist>
-      <label class="f">Note<input type="text" id="f-note" name="note"></label></div>
-      <div class="actions"><button class="btn" type="submit">Ajouter</button></div></form>`);
+    const l = S.liens.find((x) => x.id === id) || { genre: S.envieTab };
+    openSheet(id ? "Modifier" : "Nouvelle envie", `<form class="form" data-form="lien" data-id="${id || ""}">
+      <div class="chips"><label><input type="radio" name="genre" value="achat" ${(l.genre || "idee") === "achat" ? "checked" : ""}><span>Achat</span></label><label><input type="radio" name="genre" value="idee" ${(l.genre || "idee") === "idee" ? "checked" : ""}><span>Idée pour plus tard</span></label></div>
+      <label class="f">Lien<input type="url" id="f-url" name="url" value="${esc(l.url)}" placeholder="https://… (facultatif)"></label>
+      <label class="f">Titre<input type="text" id="f-titre" name="titre" value="${esc(l.titre)}" placeholder="Ex. vélo 20 pouces, week-end à Étretat"></label>
+      <div class="two"><label class="f">Prix (€)<input type="text" id="f-prix" name="prix" inputmode="decimal" value="${esc(l.prix)}" placeholder="Facultatif"></label>
+      <label class="f">Thème<input type="text" id="f-tag" name="tag" value="${esc(l.tag)}" placeholder="Ex. Noël, déco" list="tags"></label></div>
+      <datalist id="tags">${[...new Set(S.liens.map((x) => x.tag).filter(Boolean))].map((x) => `<option value="${esc(x)}">`).join("")}</datalist>
+      ${pourField(pourDe(l))}
+      <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(l.note)}"></label>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="liens" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
   }
   if (type === "routine") {
     const r = S.routines.find((x) => x.id === id) || { jours: [] };
     openSheet(id ? "Routine" : "Nouvelle routine", `<form class="form" data-form="routine" data-id="${id || ""}">
       <label class="f">Quoi<input type="text" id="f-nom" name="nom" value="${esc(r.nom)}" required placeholder="Ex. sortir les poubelles"></label>
-      <div class="f" style="font-size:14px;font-weight:700;color:var(--muted)">Quels jours<div class="chips">${JC.map((j, k) => `<label><input type="checkbox" name="jours" value="${k}" ${(r.jours || []).includes(k) ? "checked" : ""}><span>${j}</span></label>`).join("")}</div></div>
+      <div class="f">Quels jours<div class="chips">${JC.map((j, k) => `<label><input type="checkbox" name="jours" value="${k}" ${(r.jours || []).includes(k) ? "checked" : ""}><span>${j}</span></label>`).join("")}</div></div>
       ${quiField(r.qui)}
       <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="routines" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
   }
   if (type === "checklist") {
     openSheet("Nouvelle checklist", `<form class="form" data-form="checklist">
       <label class="f">Nom<input type="text" id="f-nom" name="nom" required placeholder="Ex. Valise vacances"></label>
+      ${pourField([])}
       <label class="f">Éléments, un par ligne<textarea id="f-items" name="items" placeholder="Maillot&#10;Crème solaire&#10;Chargeurs"></textarea></label>
       <div class="actions"><button class="btn" type="submit">Créer</button></div></form>`);
   }
@@ -735,7 +1056,7 @@ function addFrequent(nom) {
   setDoc(doc(fs, "config", "frequents"), { noms: list }).catch(() => {});
 }
 async function exporter() {
-  const data = { exporte: now(), garde: S.garde };
+  const data = { exporte: now(), garde: S.garde, voiture: S.voiture, releves: S.releves };
   for (const k of Object.keys(COLS)) data[k] = S[k];
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const name = `qg-famille-${today()}.json`;
@@ -746,21 +1067,33 @@ async function exporter() {
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
+const kmMsg = (txt, cls) => { const m = $("#km-msg"); if (m) { m.textContent = txt; m.className = "msg " + (cls || ""); } };
 
 /* ---------- Actions ---------- */
 const ACT = {
   tab: (d) => { S.view = d.v; S.sub = null; S.confirm = null; render(); scrollTo(0, 0); },
-  sub: (d) => { S.sub = { type: d.type }; render(); scrollTo(0, 0); },
+  sub: (d) => { S.sub = { type: d.type }; S.kmYear = null; render(); scrollTo(0, 0); },
   back: () => { S.sub = S.sub && S.sub.type === "checklist" ? { type: "checklists" } : null; S.confirm = null; render(); },
   close: () => closeSheet(),
   "open-add": () => openAdd(),
   form: (d) => openForm(d.type, d.id),
+  kid: (d) => { S.kid = d.k; render(); },
+  "kid-agenda": (d) => { S.kid = d.k; S.view = "agenda"; S.sub = null; render(); scrollTo(0, 0); },
+  "envie-kid": (d) => { S.envieKid = d.k; render(); },
+  "envie-tab": (d) => { S.envieTab = d.k; render(); },
   "course-tab": (d) => { S.courseTab = d.k; render(); },
   "rap-tab": (d) => { S.rapTab = d.k; render(); },
   undo: async () => { const u = S.undo; S.undo = null; $("#toast-root").innerHTML = ""; if (u) await W(u, "Rétabli"); },
   export: () => exporter(),
   logout: () => { signOut(auth); },
   "prop-del": (d) => { props.splice(Number(d.k), 1); renderVrac(); },
+  "km-year": (d) => { S.kmYear = Number(d.k); render(); },
+  "km-all": () => { S.kmAll = !S.kmAll; render(); },
+  "km-del": async (d) => {
+    if (S.confirm !== "km" + d.d) { S.confirm = "km" + d.d; render(); return; }
+    S.confirm = null; const r = S.releves.find((x) => x.date === d.d);
+    await W(() => deleteDoc(doc(fs, "voiture_releves", d.d)), "Relevé supprimé", r ? () => setDoc(doc(fs, "voiture_releves", d.d), { km: r.km, savedAt: Date.now() }) : null);
+  },
 
   buy: async (d) => {
     const c = S.courses.find((x) => x.id === d.id); if (!c) return;
@@ -833,13 +1166,13 @@ const SUBMIT = {
     const n2 = $("#qc-nom"); if (n2) n2.focus();
   },
   event: async (fd, f) => {
-    const id = f.dataset.id; const data = { titre: String(fd.get("titre")).trim(), date: fd.get("date"), heure: fd.get("heure") || "", qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || "") };
+    const id = f.dataset.id; const data = { titre: String(fd.get("titre")).trim(), date: fd.get("date"), heure: fd.get("heure") || "", pour: fd.getAll("pour"), qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || "") };
     closeSheet();
     await W(() => (id ? col("events").doc(id).update(data) : col("events").add({ ...data, par: qui(), cree: now() })), id ? "Modifié" : `Ajouté le ${fmt(data.date)}`);
   },
   rappel: async (fd, f) => {
     const id = f.dataset.id; const u = fd.get("unite");
-    const data = { titre: String(fd.get("titre")).trim(), prochaine: fd.get("prochaine"), cat: fd.get("cat"), recur: u ? { n: Math.max(1, Number(fd.get("n")) || 1), unite: u } : null, qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || ""), termine: false };
+    const data = { titre: String(fd.get("titre")).trim(), prochaine: fd.get("prochaine"), cat: fd.get("cat"), recur: u ? { n: Math.max(1, Number(fd.get("n")) || 1), unite: u } : null, pour: fd.getAll("pour"), qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || ""), termine: false };
     closeSheet();
     await W(() => (id ? col("rappels").doc(id).update(data) : col("rappels").add({ ...data, histo: [], cree: now() })), id ? "Modifié" : "Rappel créé");
   },
@@ -850,14 +1183,18 @@ const SUBMIT = {
     closeSheet();
     await W(() => (id ? col("routines").doc(id).update(data) : col("routines").add({ ...data, fait: "", cree: now() })), id ? "Modifié" : "Routine créée");
   },
-  lien: async (fd) => {
-    const data = { url: String(fd.get("url")).trim(), titre: String(fd.get("titre") || "").trim(), tag: String(fd.get("tag") || "").trim(), note: String(fd.get("note") || ""), statut: "À voir", par: qui(), cree: now() };
-    closeSheet(); await W(() => col("liens").add(data), "Lien ajouté");
+  lien: async (fd, f) => {
+    const id = f.dataset.id;
+    const data = { url: String(fd.get("url") || "").trim(), titre: String(fd.get("titre") || "").trim(), genre: fd.get("genre") || "idee", prix: String(fd.get("prix") || "").trim().replace(/\s*€$/, ""), tag: String(fd.get("tag") || "").trim(), pour: fd.getAll("pour"), note: String(fd.get("note") || "") };
+    if (!data.url && !data.titre) { toast("Ajoute au moins un lien ou un titre"); return; }
+    closeSheet(); S.envieTab = data.genre;
+    await W(() => (id ? col("liens").doc(id).update(data) : col("liens").add({ ...data, statut: "À voir", par: qui(), cree: now() })), id ? "Modifié" : data.genre === "achat" ? "Ajouté aux achats" : "Idée ajoutée");
+    render();
   },
   checklist: async (fd) => {
     const nom = String(fd.get("nom")).trim();
     const items = String(fd.get("items") || "").split("\n").map((s) => s.trim()).filter(Boolean).map((t) => ({ t, ok: false }));
-    closeSheet(); await W(() => col("checklists").add({ nom, items, cree: now() }), "Checklist créée");
+    closeSheet(); await W(() => col("checklists").add({ nom, items, pour: fd.getAll("pour"), cree: now() }), "Checklist créée");
   },
   "check-add": async (fd, f) => {
     const t = String(fd.get("t") || "").trim(); const c = S.checklists.find((x) => x.id === S.sub?.id); if (!t || !c) return;
@@ -872,10 +1209,54 @@ const SUBMIT = {
     const ancre = fd.get("ancre"); if (!ancre) return;
     await W(() => setDoc(doc(fs, "config", "garde"), { ancre: mondayOf(ancre), heure: fd.get("heure") || "16:40" }), "Règle enregistrée");
   },
+  "km-add": async (fd) => {
+    const c = cfgV(); const date = fd.get("date"); const raw = String(fd.get("km") || "").replace(/\s/g, ""); let v = Number(raw);
+    if (!isDate(date)) return kmMsg("Choisis une date.", "err");
+    if (date > today()) return kmMsg("La date ne peut pas être dans le futur.", "err");
+    if (date < c.start) return kmMsg(`La date est antérieure au début du contrat (${fmtAn(c.start)}).`, "err");
+    if (!raw || !isFinite(v) || v < 0) return kmMsg("Indique le compteur en km.", "err");
+    v = Math.round(v);
+    const others = S.releves.filter((r) => r.date !== date);
+    const before = others.filter((r) => r.date < date).sort((a, b) => b.date.localeCompare(a.date))[0];
+    const after = others.filter((r) => r.date > date).sort((a, b) => a.date.localeCompare(b.date))[0];
+    if (v < (Number(c.kmDepart) || 0)) return kmMsg(`Le compteur est inférieur au kilométrage à la livraison (${km(c.kmDepart)}).`, "err");
+    if (before && v < before.km) return kmMsg(`Le compteur était déjà à ${km(before.km)} le ${fmtAn(before.date)}. Vérifie le chiffre.`, "err");
+    if (after && v > after.km) return kmMsg(`Le relevé du ${fmtAn(after.date)} indique ${km(after.km)}, c'est moins que ce chiffre.`, "err");
+    const replacing = S.releves.some((r) => r.date === date);
+    S.kmYear = null;
+    await W(() => setDoc(doc(fs, "voiture_releves", date), { km: v, savedAt: Date.now() }), replacing ? `Relevé du ${fmtAn(date)} mis à jour` : `Relevé enregistré : ${km(v)}`);
+  },
+  "km-import": async (fd) => {
+    const lignes = String(fd.get("t") || "").split(/\n+/).map((l) => l.trim()).filter(Boolean);
+    const out = [];
+    for (const l of lignes) {
+      const m = l.match(/(\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{4})\D+([\d\s. ]+)/);
+      if (!m) continue;
+      let d = m[1]; if (d.includes("/")) { const [j, mo, y] = d.split("/"); d = `${y}-${pad(mo)}-${pad(j)}`; }
+      const v = Number(m[2].replace(/[\s. ]/g, ""));
+      if (isDate(d) && isFinite(v)) out.push({ d, v });
+    }
+    if (!out.length) { toast("Aucune ligne reconnue : date puis kilométrage, une par ligne."); return; }
+    await W(async () => { const b = writeBatch(fs); for (const r of out) b.set(doc(fs, "voiture_releves", r.d), { km: r.v, savedAt: Date.now() }); await b.commit(); }, `${out.length} relevé${out.length > 1 ? "s" : ""} importé${out.length > 1 ? "s" : ""}`);
+  },
+  "km-cfg": async (fd) => {
+    const m = $("#v-msg");
+    const next = {
+      start: fd.get("start"), allowance: Math.round(Number(fd.get("allowance"))), kmDepart: Math.round(Number(fd.get("kmDepart")) || 0),
+      marge: Math.round(Number(fd.get("marge")) || 0), medhi: Math.round(Number(fd.get("medhi")) || 0),
+      chloe: fd.get("chloe") === "" ? null : Math.round(Number(fd.get("chloe"))),
+    };
+    if (!isDate(next.start)) { m.className = "msg err"; m.textContent = "Date de début invalide."; return; }
+    if (!(next.allowance > 0)) { m.className = "msg err"; m.textContent = "Le nombre de km par an doit être positif."; return; }
+    if (next.marge >= next.allowance) { m.className = "msg err"; m.textContent = "La marge doit être inférieure au nombre de km par an."; return; }
+    S.kmYear = null;
+    await W(() => setDoc(doc(fs, "config", "voiture"), next), "Réglages enregistrés");
+  },
 };
 
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-act]"); if (!el) return;
+  if (e.target.closest("a")) return;
   const fn = ACT[el.dataset.act]; if (!fn) return;
   e.preventDefault(); fn(el.dataset, el, e);
 });
@@ -888,23 +1269,23 @@ document.addEventListener("change", async (e) => {
   if (el.dataset.chg === "lien-statut") await W(() => col("liens").doc(el.dataset.id).update({ statut: el.value }), "Statut mis à jour");
   if (el.dataset.prop !== undefined) {
     const p = props[Number(el.dataset.prop)]; if (!p) return;
+    if (el.dataset.pour) { const set = new Set(p.pour || []); el.checked ? set.add(el.dataset.pour) : set.delete(el.dataset.pour); p.pour = [...set]; return; }
     p[el.dataset.field] = el.value;
-    if (el.dataset.field === "type") { if (p.type === "lien" && !p.url) p.url = p.titre; renderVrac(); }
+    if (el.dataset.field === "type") { if (p.type === "lien") { if (!p.url && /^https?:/.test(p.titre)) p.url = p.titre; p.genre = p.genre || "achat"; } renderVrac(); }
   }
 });
 document.addEventListener("input", (e) => {
   const el = e.target;
   if (el.id === "vrac" || el.id === "vrac-s") { onVracInput(el); return; }
-  if (el.dataset.prop !== undefined && el.dataset.field !== "type" && el.type !== "radio") { const p = props[Number(el.dataset.prop)]; if (p) p[el.dataset.field] = el.value; }
+  if (el.dataset.prop !== undefined && el.dataset.field && el.dataset.field !== "type" && el.type !== "radio") { const p = props[Number(el.dataset.prop)]; if (p) p[el.dataset.field] = el.value; }
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && $("#sheet-root").innerHTML) closeSheet();
-  // Entrée valide la saisie rapide ; Maj+Entrée passe à la ligne
   if ((e.target.id === "vrac" || e.target.id === "vrac-s") && e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveVrac(); }
+  if (e.key === "Enter" && e.target.getAttribute("role") === "button") e.target.click();
 });
 addEventListener("online", () => { S.offline = false; renderStatus(); });
 addEventListener("offline", () => { S.offline = true; renderStatus(); });
-// Passage à minuit ou retour sur l'appli après plusieurs heures : on rafraîchit les dates
 document.addEventListener("visibilitychange", () => { if (!document.hidden && $("#app").hidden === false) render(); });
 
 /* ---------- Premier lancement : règle de garde 2026-2027 ---------- */
@@ -915,8 +1296,8 @@ async function premierLancement() {
   b.set(doc(fs, "garde_exceptions", "toussaint-2026-s2"), { du: "2026-10-26", au: "2026-11-08", avec: false, motif: "Toussaint, 2e semaine" });
   b.set(doc(fs, "garde_exceptions", "ete-2027-juillet"), { du: "2027-07-01", au: "2027-07-31", avec: false, motif: "Été 2027 : juillet chez l'autre parent" });
   b.set(doc(fs, "garde_exceptions", "ete-2027-aout"), { du: "2027-08-01", au: "2027-08-31", avec: true, motif: "Été 2027 : août avec nous" });
-  b.set(doc(fs, "checklists", "sac-lyssia"), { nom: "Sac de Lyssia", items: ["Cahiers et trousse", "Affaires de sport", "Doudou", "Médicaments en cours", "Chargeur"].map((t) => ({ t, ok: false })), cree: now() });
-  b.set(doc(fs, "rappels", "verif-garde-2027"), { titre: "Vérifier la règle de garde (petites vacances, été)", prochaine: "2027-09-01", cat: "Administratif", recur: { n: 1, unite: "an" }, qui: "Chloé", note: "Les semaines de petites vacances s'inversent-elles ? Mettre à jour les exceptions.", histo: [], termine: false, cree: now() });
+  b.set(doc(fs, "checklists", "sac-lyssia"), { nom: "Sac de Lyssia", pour: ["Lyssia"], items: ["Cahiers et trousse", "Affaires de sport", "Doudou", "Médicaments en cours", "Chargeur"].map((t) => ({ t, ok: false })), cree: now() });
+  b.set(doc(fs, "rappels", "verif-garde-2027"), { titre: "Vérifier la règle de garde (petites vacances, été)", prochaine: "2027-09-01", cat: "Administratif", recur: { n: 1, unite: "an" }, pour: ["Lyssia"], qui: "Chloé", note: "Les semaines de petites vacances s'inversent-elles ? Mettre à jour les exceptions.", histo: [], termine: false, cree: now() });
   await b.commit();
 }
 
@@ -924,12 +1305,17 @@ async function premierLancement() {
 function ecouter() {
   S.garde = undefined;
   for (const [k, path] of Object.entries(COLS)) {
-    S.unsub.push(onSnapshot(collection(fs, path), { includeMetadataChanges: false }, (snap) => {
+    S.unsub.push(onSnapshot(collection(fs, path), (snap) => {
       S[k] = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       if (!snap.metadata.fromCache || S[k].length) S.loaded.add(k);
       render();
     }, (e) => { if (e.code === "permission-denied") toast("Accès refusé à cette base."); }));
   }
+  S.unsub.push(onSnapshot(collection(fs, "voiture_releves"), (snap) => {
+    S.releves = snap.docs.map((d) => ({ date: d.id, km: Number(d.data().km) })).filter((r) => isDate(r.date) && isFinite(r.km));
+    render();
+  }, () => {}));
+  S.unsub.push(onSnapshot(doc(fs, "config", "voiture"), (s) => { S.voiture = s.exists() ? s.data() : null; render(); }, () => {}));
   S.unsub.push(onSnapshot(doc(fs, "config", "garde"), (s) => {
     S.garde = s.exists() ? s.data() : null;
     if (!s.exists() && !s.metadata.fromCache) premierLancement().catch(() => {});
@@ -945,7 +1331,7 @@ onAuthStateChanged(auth, (u) => {
     $("#login").hidden = true; $("#app").hidden = false;
     ecouter(); render();
   } else {
-    if (u) signOut(auth); // compte inconnu
+    if (u) signOut(auth);
     S.me = "";
     $("#app").hidden = true; $("#login").hidden = false;
   }
