@@ -116,6 +116,12 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .row .m { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-top: 2px; }
 .row button.grow { background: none; border: 0; text-align: left; padding: 0; }
 .bubble { width: 50px; min-height: 46px; border-radius: 14px; background: var(--kbg, var(--lav)); display: grid; place-items: center; text-align: center; font-family: var(--f-display); font-weight: 800; font-size: 14px; line-height: 1.05; flex: none; padding: 4px; }
+.bubble.tard { background: #2A2350; color: #FFE98A; }
+.tard-card { background: #2A2350; color: #FFFFFF; position: relative; overflow: hidden; }
+.tard-card::after { content: ""; position: absolute; right: 18px; top: 16px; width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle at 28% 36%, #2A2350 0 46%, #FFE98A 47%); }
+.tard-card > * { position: relative; z-index: 1; }
+.tard-card .tagline { color: #FFE98A; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin: 0; }
+.tard-card .consignes { background: rgba(255,255,255,.1); border-radius: 14px; padding: 10px 12px; margin: 0; white-space: pre-line; }
 .bubble.psg, .psg-tag { background: #10264A; color: #FFFFFF; }
 .psg-tag { font-weight: 800; letter-spacing: .04em; }
 .psg-hero, .tile.psg-hero { background: #10264A; color: #FFFFFF; position: relative; overflow: hidden; padding-right: 52px; }
@@ -544,6 +550,15 @@ const VIEWS = {
       out.push(`<section class="card c-white k-lyssia"><p style="margin:0"><b>${passToday ? "Aujourd'hui" : "Demain"} à ${heurePassage()}</b> : Lyssia ${s && s.avec ? "arrive" : "repart chez son autre parent"}.</p>
         ${sac ? `<div class="actions"><button class="btn sm" data-act="open-check" data-id="${sac.id}">Préparer le sac (${(sac.items || []).filter((i) => i.ok).length}/${(sac.items || []).length})</button></div>` : ""}</section>`);
     }
+    // Soirée où l'un rentre tard : l'autre couche les enfants
+    for (const e of S.events.filter((x) => x.type === "tard" && (x.date === t || (x.date === addDays(t, 1) && new Date().getHours() >= 18)))) {
+      const autre = coucheur(e);
+      out.push(`<section class="card tard-card"><p class="tagline">${e.date === t ? "Ce soir" : "Demain soir"}</p>
+        <p class="big" style="padding-right:70px">${esc(autre)} couche les enfants</p>
+        <p style="margin:0">${esc(e.qui)} rentre tard${e.heure ? `, vers ${fmtH(e.heure)}` : ""}.</p>
+        ${e.note ? `<p class="consignes">${esc(e.note)}</p>` : ""}
+        <div class="actions"><button class="btn sm soft" style="color:#fff;background:rgba(255,255,255,.16)" data-act="form" data-type="tard" data-id="${e.id}">Modifier</button></div></section>`);
+    }
     // Les trois enfants
     out.push(`<section class="kids">${ENFANTS.map((e) => {
       const ev = S.events.filter((x) => x.date >= t && pourDe(x).includes(e.nom)).sort((a, b) => (a.date + (a.heure || "")).localeCompare(b.date + (b.heure || "")));
@@ -865,7 +880,10 @@ function gardeBanner(lun) {
     <p class="big">${s.avec ? "Avec nous cette semaine" : "Semaine sans Lyssia"}</p>
     <p>${nx ? (s.avec ? `Elle repart ${fmtLong(nx)} à ${heurePassage()}.` : `Elle arrive ${fmtLong(nx)} à ${heurePassage()}.`) : ""}${s.motif !== "Alternance" ? ` ${esc(s.motif)}.` : ""}</p></section>`;
 }
+const coucheur = (e) => e.qui === "Medhi" ? "Chloé" : "Medhi";
 function eventRow(e) {
+  if (e.type === "tard") return `<li class="row"><span class="bubble tard">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "Soir"}</span>
+    <button class="grow" data-act="form" data-type="tard" data-id="${e.id}"><div class="t">${esc(coucheur(e))} couche les enfants</div><div class="m"><span>${esc(e.qui)} rentre tard${e.heure ? ` (vers ${fmtH(e.heure)})` : ""}</span>${e.note ? `<span>${esc(e.note.split("\n")[0])}${e.note.includes("\n") ? "…" : ""}</span>` : ""}</div></button></li>`;
   if (e.psg) return `<li class="row"><span class="bubble psg">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "À<br>conf."}</span>
     <button class="grow" data-act="sub" data-type="psg"><div class="t">${esc(e.titre)}</div><div class="m"><span class="tag psg-tag">PSG</span><span>Medhi</span><span>${esc(e.note)}</span></div></button></li>`;
   return `<li class="row ${kidCls(e)}"><span class="bubble">${e.heure ? fmtH(e.heure).replace(" h ", " h<br>") : "Jour-<br>née"}</span>
@@ -902,18 +920,18 @@ function envieRow(l) {
 }
 
 /* ---------- Saisie en vrac ---------- */
-const TYPES = { course: "Course", evenement: "Événement", rappel: "Rappel", lien: "Envie" };
-const DEST = { course: "Courses", evenement: "Agenda", rappel: "Rappels", lien: "Envies" };
+const TYPES = { course: "Course", evenement: "Événement", rappel: "Rappel", lien: "Envie", tard: "Soirée tard" };
+const DEST = { course: "Courses", evenement: "Agenda", rappel: "Rappels", lien: "Envies", tard: "Agenda" };
 let props = [];
 function vracPropsHTML(prefix) {
   return props.map((p, i) => `<div class="prop">
     <div class="prop-top"><select data-prop="${i}" data-field="type" id="${prefix}${i}-type" aria-label="Ranger dans">${Object.entries(TYPES).map(([k, v]) => `<option value="${k}" ${k === p.type ? "selected" : ""}>${v}</option>`).join("")}</select>
     <input type="text" data-prop="${i}" data-field="titre" id="${prefix}${i}-titre" value="${esc(p.titre || p.url || "")}" aria-label="Titre">
     <button class="x" type="button" data-act="prop-del" data-k="${i}" aria-label="Retirer">×</button></div>
-    ${p.type === "evenement" || p.type === "rappel" ? `<div class="two"><input type="date" data-prop="${i}" data-field="date" id="${prefix}${i}-date" value="${esc(p.date || today())}" aria-label="Date"><input type="time" data-prop="${i}" data-field="heure" id="${prefix}${i}-heure" value="${esc(p.heure || "")}" aria-label="Heure"></div>` : ""}
+    ${p.type === "evenement" || p.type === "rappel" || p.type === "tard" ? `<div class="two"><input type="date" data-prop="${i}" data-field="date" id="${prefix}${i}-date" value="${esc(p.date || today())}" aria-label="Date"><input type="time" data-prop="${i}" data-field="heure" id="${prefix}${i}-heure" value="${esc(p.heure || "")}" aria-label="Heure"></div>` : ""}
     ${p.type === "course" ? `<div class="chips">${Object.entries(LISTES).map(([k, v]) => `<label><input type="radio" name="${prefix}${i}-liste" value="${k}" data-prop="${i}" data-field="liste" ${k === (p.liste || "urgent") ? "checked" : ""}><span>${v}</span></label>`).join("")}</div>` : ""}
     ${p.type === "lien" ? `<div class="chips"><label><input type="radio" name="${prefix}${i}-genre" value="achat" data-prop="${i}" data-field="genre" ${p.genre !== "idee" ? "checked" : ""}><span>Achat</span></label><label><input type="radio" name="${prefix}${i}-genre" value="idee" data-prop="${i}" data-field="genre" ${p.genre === "idee" ? "checked" : ""}><span>Idée</span></label></div>` : ""}
-    ${p.type !== "course" ? `<div class="chips">${ENFANTS.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
+    ${p.type !== "course" && p.type !== "tard" ? `<div class="chips">${ENFANTS.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
   </div>`).join("");
 }
 function hintTxt() {
@@ -930,7 +948,13 @@ function renderVrac() {
 }
 function onVracInput(el) {
   el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 220) + "px";
-  props = classerTout(el.value).map((p) => ({ ...p, pour: enfantsDans(p.titre || ""), genre: p.type === "lien" ? "achat" : undefined }));
+  props = classerTout(el.value).map((p) => {
+    const txt = sansAccent(p.titre || "").toLowerCase();
+    if (/\brentr\w*\s+(un peu\s+|tres\s+)?tard\b|\bcouche[rs]?\s+les enfants\b/.test(txt)) {
+      return { ...p, type: "tard", date: p.date || today(), qui: /\bmedhi\s+rentre/.test(txt) ? "Medhi" : /\bchloe\s+rentre/.test(txt) ? "Chloé" : qui() };
+    }
+    return { ...p, pour: enfantsDans(p.titre || ""), genre: p.type === "lien" ? "achat" : undefined };
+  });
   renderVrac();
 }
 async function saveVrac() {
@@ -942,6 +966,7 @@ async function saveVrac() {
     for (const p of keep) {
       const titre = (p.titre || "").trim(); const pour = p.pour || [];
       if (p.type === "course") b.set(doc(collection(fs, "courses")), { nom: titre, liste: p.liste || "urgent", note: "", qui: me, cree: now() });
+      else if (p.type === "tard") { const q = p.qui || me; b.set(doc(collection(fs, "events")), { type: "tard", titre: `${q} rentre tard`, date: p.date || t, heure: p.heure || "", qui: q, note: "", pour: [], par: me, cree: now() }); }
       else if (p.type === "evenement") b.set(doc(collection(fs, "events")), { titre, date: p.date || t, heure: p.heure || "", note: "", pour, qui: "Les deux", par: me, cree: now() });
       else if (p.type === "rappel") b.set(doc(collection(fs, "rappels")), { titre, prochaine: p.date || t, cat: "Autre", recur: null, note: p.heure ? `à ${fmtH(p.heure)}` : "", pour, qui: me, histo: [], termine: false, cree: now() });
       else b.set(doc(collection(fs, "liens")), { url: p.url || (/^https?:/.test(titre) ? titre : ""), titre: p.url ? titre : (/^https?:/.test(titre) ? "" : titre), genre: p.genre || "achat", pour, tag: "", note: "", prix: "", statut: "À voir", par: me, cree: now() });
@@ -974,6 +999,7 @@ function openAdd() {
     </form>
     <h3>Ou avec tous les détails</h3>
     <div class="choice">
+      <button class="tard-card" style="grid-column:1/-1" data-act="form" data-type="tard"><b>Je rentre tard</b><span class="small">L'autre couche les enfants, avec les consignes</span></button>
       <button class="c-lav" data-act="form" data-type="event"><b>Événement</b><span class="small">RDV, sortie</span></button>
       <button class="c-yellow" data-act="form" data-type="rappel"><b>Rappel</b><span class="small">Récurrent, avec catégorie</span></button>
       <button class="c-sage" data-act="form" data-type="routine"><b>Routine</b><span class="small">Tâche de la maison</span></button>
@@ -991,6 +1017,18 @@ function openForm(type, id) {
       <label class="f">Heure<input type="time" id="f-heure" name="heure" value="${esc(e.heure || "")}"></label></div>
       ${pourField(pourDe(e))}${quiField(e.qui)}
       <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(e.note)}" placeholder="Lieu, choses à prévoir…"></label>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="events" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
+  }
+  if (type === "tard") {
+    const e = S.events.find((x) => x.id === id) || { qui: qui() || "Chloé" };
+    // Reprend les consignes de la dernière soirée pour ne pas tout retaper
+    const derniere = S.events.filter((x) => x.type === "tard" && x.note).sort((a, b) => b.date.localeCompare(a.date))[0];
+    openSheet(id ? "Soirée tard" : "Je rentre tard", `<form class="form" data-form="tard" data-id="${id || ""}">
+      <div class="f">Qui rentre tard<div class="chips">${["Chloé", "Medhi"].map((q) => `<label><input type="radio" name="qui" value="${q}" ${q === e.qui ? "checked" : ""}><span>${q}</span></label>`).join("")}</div></div>
+      <div class="two"><label class="f">Quel soir<input type="date" id="f-date" name="date" value="${esc(e.date || t)}" required></label>
+      <label class="f">Retour vers<input type="time" id="f-heure" name="heure" value="${esc(e.heure || "")}"></label></div>
+      <label class="f">Consignes pour le coucher<textarea id="f-note" name="note" placeholder="Bain de Naelia, devoirs de Milan, histoire…">${esc(e.note ?? (derniere ? derniere.note : ""))}</textarea></label>
+      ${!id && derniere ? '<p class="small muted" style="margin:0">Consignes reprises de la dernière fois, modifie-les si besoin.</p>' : ""}
       <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="events" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
   }
   if (type === "rappel") {
@@ -1195,6 +1233,12 @@ const SUBMIT = {
     const id = f.dataset.id; const data = { titre: String(fd.get("titre")).trim(), date: fd.get("date"), heure: fd.get("heure") || "", pour: fd.getAll("pour"), qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || "") };
     closeSheet();
     await W(() => (id ? col("events").doc(id).update(data) : col("events").add({ ...data, par: qui(), cree: now() })), id ? "Modifié" : `Ajouté le ${fmt(data.date)}`);
+  },
+  tard: async (fd, f) => {
+    const id = f.dataset.id; const q = fd.get("qui") || qui();
+    const data = { type: "tard", titre: `${q} rentre tard`, date: fd.get("date"), heure: fd.get("heure") || "", qui: q, note: String(fd.get("note") || "").trim(), pour: [] };
+    closeSheet();
+    await W(() => (id ? col("events").doc(id).update(data) : col("events").add({ ...data, par: qui(), cree: now() })), id ? "Modifié" : `Noté : ${q === "Medhi" ? "Chloé" : "Medhi"} couche les enfants ${data.date === today() ? "ce soir" : "le " + fmt(data.date)}`);
   },
   rappel: async (fd, f) => {
     const id = f.dataset.id; const u = fd.get("unite");
