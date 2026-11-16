@@ -12,6 +12,11 @@ const MOIS_RE = "(janv(?:ier)?|fevr?(?:ier)?|mars|avr(?:il)?|mai|juin|juil(?:let
 const MOTS_RAPPEL = /\b(avant|payer|paye|regler|signer|rendre|rapporter|ramener|inscrire|inscription|renouveler|resilier|appeler|rappeler|penser a|pense a|envoyer|deposer|prendre rdv|prendre rendez-vous|reserver|commander|verifier|changer|vacciner|vermifuge|collier|declarer|imprimer|preparer|faire)\b/;
 const MOTS_EVENT = /\b(rdv|rendez-vous|rendez vous|reunion|anniversaire|anniv|diner|dejeuner|repas|soiree|sortie|spectacle|kermesse|fete|mariage|bapteme|match|cours|medecin|docteur|veto|veterinaire|dentiste|pediatre|orthodontiste|ophtalmo|kine|osteo|coiffeur|vaccin|visite|entretien|garage|controle technique|bebe sitter|baby-sitter|nounou|cinema|resto|restaurant)\b/;
 const MOTS_COURSE = /^(acheter|racheter|achete|prendre|plus de|il manque|il n'y a plus de|manque|courses?\s*:)\s+/;
+// Tâches de la maison sans date : un verbe d'action en tête, ou une corvée reconnaissable
+const MOTS_TACHE = /^(lancer|ranger|nettoyer|reparer|recuperer|deposer|appeler|rappeler|repondre|imprimer|monter|descendre|changer|laver|trier|vider|sortir|passer|envoyer|faire|mettre|enlever|installer|fixer|demander|prevenir|chercher|rendre|ramener|rapporter|inscrire|signer|payer|reserver|preparer|plier|repasser|etendre|aspirer|arroser|tondre|degivrer|detartrer|remplir|regarder|verifier|telephoner|contacter|ecrire|scanner|resilier|renouveler|planter|peindre|percer|accrocher|jeter|donner|vendre|poster|relancer)\b/;
+const MOTS_CORVEE = /\b(machine|lave[- ]vaisselle|toiles? d'araignee|rideau|rangement|poubelles?|linge|aspirateur|menage|colis|vinted|courrier|draps?|repassage|vitres|frigo a nettoyer|carton|cartons|dressing|garage a ranger|a lancer|a ranger|a reparer|a recuperer|a deposer|a laver|a trier|a vider)\b/;
+// Objets à acheter même s'ils parlent de ménage (« sac poubelle », « pastilles lave-vaisselle »)
+const MOTS_OBJET = /^(sacs?|pastilles?|tablettes?|lessive|produits?|recharges?|ampoules?|piles?|papier|pq|eponges?|liquide|sel|filtres?|capsules?|dosettes?|gel|spray|desodorisant|febreze)\b/;
 const MOTS_UNJOUR = /^(un jour|plus tard|quand on pourra)\s*:?\s+/;
 
 // Prochaine date pour un jour de la semaine (aujourd'hui compris)
@@ -105,7 +110,7 @@ function nettoyer(s) {
 
 // Classe une ligne. Renvoie un ou plusieurs éléments.
 export function classer(ligne, maintenant = new Date()) {
-  const brut = ligne.trim();
+  const brut = ligne.trim().replace(/^(n'?oublie pas (de |d')?|noublie pas (de |d')?|oublie pas (de |d')?|pense(r|s)? a |pense(r|s)? à |il faut (que (je|tu|on) )?|faut (que (je|tu|on) )?)/i, "");
   if (!brut) return [];
   const url = brut.match(/https?:\/\/\S+/);
   if (url) {
@@ -132,8 +137,9 @@ export function classer(ligne, maintenant = new Date()) {
     if (avant || (estRappel && !estEvent && !heure)) return [{ type: "rappel", titre, date: d, heure, note: heure ? `à ${heure.replace(":", " h ")}` : "" }];
     return [{ type: "evenement", titre, date: d, heure }];
   }
-  if (estRappel || estEvent) {
-    return [{ type: "rappel", titre, date: iso(new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate())), heure: "" }];
+  // Sans date : c'est une chose à faire, pas un rappel daté
+  if (!MOTS_OBJET.test(low) && (estRappel || estEvent || MOTS_TACHE.test(low) || MOTS_CORVEE.test(low))) {
+    return [{ type: "tache", titre: nettoyer(brut) }];
   }
   // Par défaut : des courses. « lait, pain, œufs » donne trois articles.
   const parts = brut.split(/\s*[,;+]\s*/).map(nettoyer).filter(Boolean);

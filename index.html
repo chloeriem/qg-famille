@@ -117,6 +117,30 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .row button.grow { background: none; border: 0; text-align: left; padding: 0; }
 .bubble { width: 50px; min-height: 46px; border-radius: 14px; background: var(--kbg, var(--lav)); display: grid; place-items: center; text-align: center; font-family: var(--f-display); font-weight: 800; font-size: 14px; line-height: 1.05; flex: none; padding: 4px; }
 .bubble.tard { background: #2A2350; color: #FFE98A; }
+/* Infos pratiques, frais, animaux */
+.info { display: flex; gap: 12px; align-items: flex-start; padding: 12px; }
+.info + .info { border-top: 1px solid var(--line); }
+.info .lib { font-size: 13px; font-weight: 700; color: var(--muted); }
+.info .val { font-weight: 700; font-size: 17px; overflow-wrap: anywhere; white-space: pre-line; font-variant-numeric: tabular-nums; }
+.info .val a { color: inherit; }
+.info .val.masque { letter-spacing: .2em; color: var(--muted); }
+.mini { border: 0; background: var(--sand); color: var(--ink); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.sugg { display: flex; flex-wrap: wrap; gap: 6px; }
+.sugg button { border: 1.5px dashed var(--line); background: transparent; border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.solde { font-family: var(--f-display); font-weight: 800; font-size: 34px; line-height: 1.05; letter-spacing: -.02em; margin: 0; font-variant-numeric: tabular-nums; }
+.euro { font-family: var(--f-display); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 17px; }
+.regle { opacity: .55; }
+.pet { display: flex; gap: 14px; align-items: center; border: 0; text-align: left; border-radius: var(--r); padding: 16px; width: 100%; color: var(--ink); }
+.pet .ava { width: 56px; height: 56px; border-radius: 18px; background: rgba(255,255,255,.65); display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; font-size: 24px; flex: none; }
+@media (prefers-color-scheme: dark) { .pet .ava { background: rgba(0,0,0,.25); } }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 15px; }
+.kv dt { color: var(--muted); font-weight: 600; }
+.kv dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+.taille { border: 0; border-radius: 20px; padding: 12px; text-align: left; background: var(--kbg); color: var(--ink); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.taille b { font-family: var(--f-display); font-weight: 800; font-size: 17px; display: flex; align-items: center; gap: 6px; }
+.taille b::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--k); }
+.taille span { font-size: 13.5px; }
+.taille .warn { color: var(--hot); font-weight: 700; }
 .tard-card { background: #2A2350; color: #FFFFFF; position: relative; overflow: hidden; }
 .tard-card::after { content: ""; position: absolute; right: 18px; top: 16px; width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle at 28% 36%, #2A2350 0 46%, #FFE98A 47%); }
 .tard-card > * { position: relative; z-index: 1; }
@@ -348,9 +372,9 @@ const firebaseConfig = {
 const PERSONNES = { "9NzQmcWTbtW1mJMdBIJioNIPlcv1": "Chloé", "5nDSdTq7oKRElUM1NSsM6xQUDgM2": "Medhi" };
 // Chaque enfant a sa couleur. Pour en ajouter un : une ligne ici et une classe .k-prenom dans le style.
 const ENFANTS = [
-  { nom: "Milan", cls: "k-milan", re: /\bmilan\b/i },
+  { nom: "Milan", cls: "k-milan", re: /\b(milan|titi)\b/i },
   { nom: "Lyssia", cls: "k-lyssia", re: /\blyssia\b/i },
-  { nom: "Naelia", cls: "k-naelia", re: /\bna[eë]lia\b/i },
+  { nom: "Naelia", cls: "k-naelia", re: /\b(na[eë]lia|nanou)\b/i },
 ];
 
 const fbApp = initializeApp(firebaseConfig);
@@ -427,10 +451,11 @@ const pourField = (sel = [], name = "pour") => `<div class="f">Pour qui<div clas
 const S = {
   view: "accueil", sub: null, courseTab: "urgent", rapTab: "rappels", envieTab: "achat", envieKid: "", kid: "", me: "",
   events: [], courses: [], rappels: [], routines: [], checklists: [], liens: [], exceptions: [], releves: [],
+  taches: [], infos: [], frais: [], animaux: [], fiches: [], reveal: new Set(), infoQ: "", fraisAll: false, tachesFaites: false,
   garde: undefined, voiture: null, frequents: [], loaded: new Set(), offline: !navigator.onLine, confirm: null, unsub: [],
   kmYear: null, kmAll: false,
 };
-const COLS = { events: "events", courses: "courses", rappels: "rappels", routines: "routines", checklists: "checklists", liens: "liens", exceptions: "garde_exceptions" };
+const COLS = { events: "events", courses: "courses", rappels: "rappels", routines: "routines", checklists: "checklists", liens: "liens", exceptions: "garde_exceptions", taches: "taches", infos: "infos", frais: "frais_lyssia", animaux: "animaux", fiches: "fiches_enfants" };
 const qui = () => S.me;
 
 /* ---------- Garde de Lyssia ---------- */
@@ -586,6 +611,16 @@ const VIEWS = {
     }
     out.push(`<section class="sec"><div class="sec-head"><h2>Les 7 prochains jours</h2><button class="link" data-act="tab" data-v="agenda">Agenda</button></div>
       ${week ? `<ul class="list">${week}</ul>` : '<p class="empty">Aucun rendez-vous ni rappel dans les 7 prochains jours.</p>'}</section>`);
+    // Croquettes à racheter bientôt
+    for (const a of S.animaux) {
+      const c = croquettes(a);
+      if (c && c.jours <= 5) out.push(`<section class="card c-yellow"><p style="margin:0"><b>Croquettes de ${esc(a.nom)}</b> : ${c.jours < 0 ? `le sac devait être fini il y a ${-c.jours} j` : c.jours === 0 ? "le sac devrait être fini aujourd'hui" : `plus que ${c.jours} jour${c.jours > 1 ? "s" : ""} environ`}.</p>
+        <div class="actions"><button class="btn sm" data-act="animal-courses" data-id="${a.id}">Ajouter aux courses</button><button class="btn sm ghost" data-act="animal-sac" data-id="${a.id}">Sac acheté</button></div></section>`);
+    }
+    // À faire
+    const taf = tachesOuvertes();
+    out.push(`<section class="card c-sand"><div class="sec-head"><h2>À faire · ${taf.length}</h2><button class="link" data-act="go-taches">Tout voir</button></div>
+      ${taf.length ? `<ul class="list">${taf.slice(0, 4).map(tacheRow).join("")}</ul>${taf.length > 4 ? `<p class="small" style="margin:0">et ${taf.length - 4} autres</p>` : ""}` : '<p style="margin:0">Rien en attente. Écris « lancer la machine » ou « récupérer le colis Vinted » dans « Note tout ici ».</p>'}</section>`);
     // Courses
     const urg = S.courses.filter((c) => c.liste === "urgent");
     out.push(`<section class="card c-sage"><div class="sec-head"><h2>Courses urgentes · ${urg.length}</h2><button class="link" data-act="tab" data-v="courses">Tout voir</button></div>
@@ -638,7 +673,15 @@ const VIEWS = {
 
   rappels() {
     const t = today();
-    const seg = `<div class="seg" role="group"><button data-act="rap-tab" data-k="rappels" aria-pressed="${S.rapTab === "rappels"}">Rappels</button><button data-act="rap-tab" data-k="routines" aria-pressed="${S.rapTab === "routines"}">Routines du foyer</button></div>`;
+    const seg = `<div class="seg" role="group"><button data-act="rap-tab" data-k="taches" aria-pressed="${S.rapTab === "taches"}">À faire <span class="n">${tachesOuvertes().length}</span></button><button data-act="rap-tab" data-k="rappels" aria-pressed="${S.rapTab === "rappels"}">Rappels</button><button data-act="rap-tab" data-k="routines" aria-pressed="${S.rapTab === "routines"}">Routines</button></div>`;
+    if (S.rapTab === "taches") {
+      const ouv = tachesOuvertes(), faites = S.taches.filter((x) => x.fait).sort((a, b) => (b.faitLe || "").localeCompare(a.faitLe || "")).slice(0, 15);
+      const parQui = (q) => ouv.filter((x) => (x.qui || "Les deux") === q);
+      return `<div class="sec" style="gap:14px"><h2>À faire</h2>${seg}
+        <form class="quick" data-form="quick-tache" autocomplete="off"><input type="text" id="qt-titre" name="titre" placeholder="Ex. lancer la machine, rideau chambre Milan" aria-label="Nouvelle tâche" enterkeyhint="done"><button class="btn" type="submit">Ajouter</button></form>
+        ${ouv.length ? ["Chloé", "Medhi", "Les deux"].map((q) => parQui(q).length ? `<div class="sec"><h3>${q === "Les deux" ? "Pour qui veut" : q} · ${parQui(q).length}</h3><ul class="list">${parQui(q).map(tacheRow).join("")}</ul></div>` : "").join("") : '<p class="empty">Rien en attente. Les tâches sans date (machine, colis à récupérer, petites réparations) arrivent ici.</p>'}
+        ${faites.length ? `<button class="link" data-act="taches-faites">${S.tachesFaites ? "Masquer" : "Afficher"} ce qui a été fait récemment</button>${S.tachesFaites ? `<ul class="list regle">${faites.map(tacheRow).join("")}</ul>` : ""}` : ""}</div>`;
+    }
     if (S.rapTab === "routines") {
       const list = S.routines.slice().sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
       return `<div class="sec" style="gap:14px"><h2>Rappels</h2>${seg}
@@ -677,17 +720,99 @@ const VIEWS = {
     const s = statutSemaine(mondayOf(today()));
     const yi = anneeInfo(S.voiture === null && !S.releves.length ? 0 : anneeCourante());
     const lv = yi.empty ? "none" : yi.level;
-    const soon = ["Projets et devis", "Infos pratiques", "Budget et défis"];
+    const soon = ["Projets et devis", "Budget et défis"];
+    const sol = soldeFrais();
+    const nbInfos = S.infos.length;
     return `<div class="sec" style="gap:14px"><h2>Plus</h2>
       <div class="tiles">
         <button class="tile lvl-${lv}" style="background:var(--lvbg)" data-act="sub" data-type="voiture"><b>Voiture</b><span>Kilométrage du leasing</span><span class="s"><b style="font-size:16px">${VERDICTS[lv]}</b>${yi.empty ? "" : `<br>${km(yi.used)} cette année`}</span></button>
         <button class="tile k-lyssia" style="background:var(--kbg)" data-act="sub" data-type="garde"><b>Garde de Lyssia</b><span class="s">${s ? (s.avec ? "Avec nous cette semaine" : "Sans Lyssia cette semaine") : "À configurer"}</span></button>
+        <button class="tile c-lav" data-act="sub" data-type="infos"><b>Infos pratiques</b><span>Codes, mutuelle, contacts, tailles</span><span class="s">${nbInfos} info${nbInfos > 1 ? "s" : ""} enregistrée${nbInfos > 1 ? "s" : ""}</span></button>
+        <button class="tile k-lyssia" style="background:var(--kbg)" data-act="sub" data-type="frais"><b>Frais de Lyssia</b><span>Partagés avec ${FLAVIE}</span><span class="s"><b style="font-size:16px">${soldeTxt(sol)}</b></span></button>
+        <button class="tile c-yellow" data-act="sub" data-type="animaux"><b>Animaux</b><span>${S.animaux.map((a) => esc(a.nom)).join(", ") || "Véga et les chats"}</span><span class="s">${(() => { const c = S.animaux.map((a) => ({ a, c: croquettes(a) })).filter((x) => x.c).sort((x, y) => x.c.jours - y.c.jours)[0]; return c ? `Croquettes de ${esc(c.a.nom)} : ${c.c.jours <= 0 ? "à racheter" : "encore " + c.c.jours + " j"}` : "Croquettes, véto, consignes"; })()}</span></button>
         <button class="tile c-sage" data-act="sub" data-type="checklists"><b>Checklists</b><span class="s">${nCheck} modèle${nCheck > 1 ? "s" : ""}</span></button>
-        <button class="tile psg-hero" data-act="sub" data-type="psg"><b>Matchs du PSG</b><span class="s">${(() => { const n = MATCHS.find((m) => (m.au || m.date) >= today()); return n ? `Prochain : ${esc(n.adv)}, ${n.heure ? fmt(n.date) + " · " + fmtH(n.heure) : "à confirmer"}` : "Saison terminée"; })()}</span></button>
+        <button class="tile psg-hero" style="grid-column:1/-1;min-height:96px" data-act="sub" data-type="psg"><b>Matchs du PSG</b><span class="s">${(() => { const n = MATCHS.find((m) => (m.au || m.date) >= today()); return n ? `Prochain : ${esc(n.adv)}, ${n.heure ? fmt(n.date) + " · " + fmtH(n.heure) : "à confirmer"}` : "Saison terminée"; })()}</span></button>
       </div>
       <h3>Prochainement</h3>
       <div class="tiles">${soon.map((x) => `<div class="tile soon"><b class="muted" style="font-size:17px">${x}</b><span class="muted small">À construire</span></div>`).join("")}</div>
       <div class="actions"><button class="btn ghost" data-act="export">Sauvegarder nos données</button><button class="btn ghost" data-act="logout">Se déconnecter (${esc(qui())})</button></div></div>`;
+  },
+
+  infos() {
+    const q = sansAccent(S.infoQ).toLowerCase().trim();
+    const match = (i) => !q || sansAccent(`${i.titre} ${i.valeur} ${i.note || ""} ${(i.pour || []).join(" ")}`).toLowerCase().includes(q);
+    const sections = CAT_INFOS.map(([k, lib]) => {
+      const items = S.infos.filter((i) => (i.cat || "autre") === k && match(i)).sort((a, b) => (a.titre || "").localeCompare(b.titre || ""));
+      const deja = new Set(S.infos.map((i) => sansAccent(i.titre).toLowerCase()));
+      const sugg = (SUGG_INFOS[k] || []).filter((x) => !deja.has(sansAccent(x).toLowerCase()));
+      if ((q || !sugg.length) && !items.length) return "";
+      return `<section class="sec"><div class="sec-head"><h3>${lib}</h3></div>
+        ${items.length ? `<div class="list" style="padding:0">${items.map(infoRow).join("")}</div>` : ""}
+        ${!q && sugg.length ? `<div class="sugg">${sugg.map((x) => `<button data-act="info-sugg" data-cat="${k}" data-t="${esc(x)}">+ ${esc(x)}</button>`).join("")}</div>` : ""}</section>`;
+    }).join("");
+    const tailles = ENFANTS.map((e) => {
+      const f = S.fiches.find((x) => x.id === e.nom) || {};
+      const mois = f.maj ? Math.floor(diffDays(f.maj, today()) / 30) : null;
+      return `<button class="taille ${e.cls}" data-act="form" data-type="taille" data-id="${e.nom}"><b>${e.nom}</b>
+        <span>Vêtements : <b style="display:inline;font-size:inherit">${esc(f.vetements || "?")}</b></span><span>Pointure : <b style="display:inline;font-size:inherit">${esc(f.pointure || "?")}</b></span>
+        <span class="${mois != null && mois >= 6 ? "warn" : "muted"}">${f.maj ? (mois >= 6 ? `À vérifier (${mois} mois)` : `Mis à jour ${mois ? `il y a ${mois} mois` : "ce mois-ci"}`) : "À remplir"}</span></button>`;
+    }).join("");
+    return `<div class="sec" style="gap:16px">${back()}
+      <section class="card c-lav"><p class="big">Infos pratiques</p><p style="margin:0" class="small">Tout ce qu'on se redemande : codes, identifiants de l'école, mutuelle, contacts. Les codes restent masqués jusqu'à ce qu'on les touche.</p></section>
+      <input type="text" id="info-q" placeholder="Chercher : wifi, Pronote, nounou…" value="${esc(S.infoQ)}" aria-label="Chercher une info">
+      ${q ? "" : `<section class="sec"><h3>Tailles des enfants</h3><div class="kids">${tailles}</div></section>`}
+      ${sections || '<p class="empty">Rien ne correspond à cette recherche.</p>'}
+      <div class="actions"><button class="btn" data-act="form" data-type="info">Ajouter une info</button></div>
+      <p class="small muted" style="margin:0">À ne jamais mettre ici : mots de passe de banque, numéros de carte bancaire ou de sécurité sociale complets.</p></div>`;
+  },
+
+  frais() {
+    const sol = soldeFrais();
+    const ouverts = S.frais.filter((f) => !f.regle).sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    const regles = S.frais.filter((f) => f.regle).sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    return `<div class="sec k-lyssia" style="gap:16px">${back()}
+      <section class="card" style="background:var(--kbg)"><p class="tagline" style="margin:0;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--k)">Frais de Lyssia avec ${FLAVIE}</p>
+        <p class="solde">${soldeTxt(sol)}</p>
+        <p class="small" style="margin:0">${ouverts.length ? `${ouverts.length} dépense${ouverts.length > 1 ? "s" : ""} pas encore réglée${ouverts.length > 1 ? "s" : ""}.` : "Aucune dépense en attente."} Cantine, fournitures, sorties, vêtements : chacun note ce qu'il paie.</p>
+        ${ouverts.length ? `<div class="actions"><button class="btn sm" data-act="frais-recap">Copier le récap pour ${FLAVIE}</button><button class="btn sm soft" data-act="frais-solde">${S.confirm === "solde" ? "Confirmer : tout est réglé" : "Tout est réglé"}</button></div>` : ""}</section>
+      ${ouverts.length ? `<ul class="list">${ouverts.map(fraisRow).join("")}</ul>` : '<p class="empty">Ajoute la première dépense : par exemple « Cantine septembre, 45 €, payé par nous ».</p>'}
+      <div class="actions"><button class="btn" data-act="form" data-type="frais">Ajouter une dépense</button></div>
+      ${regles.length ? `<button class="link" data-act="frais-all">${S.fraisAll ? "Masquer" : "Afficher"} l'historique réglé (${regles.length})</button>${S.fraisAll ? `<ul class="list regle">${regles.map(fraisRow).join("")}</ul>` : ""}` : ""}</div>`;
+  },
+
+  animaux() {
+    const bg = ["c-yellow", "c-lav", "c-sage", "c-sand"];
+    return `<div class="sec" style="gap:14px">${back()}<h2>Animaux</h2>
+      ${S.animaux.length ? S.animaux.slice().sort((a, b) => (a.cree || "").localeCompare(b.cree || "")).map((a, i) => {
+        const c = croquettes(a);
+        return `<button class="pet ${bg[i % 4]}" data-act="open-animal" data-id="${a.id}"><span class="ava">${esc((a.nom || "?").slice(0, 1))}</span>
+          <span style="flex:1;min-width:0"><b style="font-family:var(--f-display);font-size:21px;font-weight:800">${esc(a.nom)}</b><br><span class="small">${esc(a.espece || "")}${a.veto?.nom ? ` · véto : ${esc(a.veto.nom)}` : ""}</span><br>
+          <span class="small" style="font-weight:700;${c && c.jours <= 5 ? "color:var(--hot)" : ""}">${c ? (c.jours <= 0 ? "Croquettes à racheter" : `Croquettes : encore ~${c.jours} j`) : a.croq?.marque ? "Croquettes : date d'achat à renseigner" : "Fiche à compléter"}</span></span></button>`;
+      }).join("") : '<p class="empty">Chargement…</p>'}
+      <div class="actions"><button class="btn" data-act="form" data-type="animal">Ajouter un animal</button></div></div>`;
+  },
+
+  animal() {
+    const a = S.animaux.find((x) => x.id === S.sub.id);
+    if (!a) return `<div class="sec">${back()}<p class="empty">Cette fiche n'existe plus.</p></div>`;
+    const c = croquettes(a), cr = a.croq || {}, v = a.veto || {};
+    const nomN = sansAccent(a.nom).toLowerCase();
+    const rap = rappelsActifs().filter((r) => sansAccent(r.titre).toLowerCase().includes(nomN) || (r.cat === "Animaux" && a.espece && sansAccent(r.titre).toLowerCase().includes(sansAccent(a.espece).toLowerCase())));
+    const tel = v.tel ? String(v.tel).replace(/[^\d+]/g, "") : "";
+    return `<div class="sec" style="gap:14px">${back()}
+      <section class="card c-yellow"><p class="big">${esc(a.nom)}</p><p style="margin:0">${esc(a.espece || "")}${a.naissance ? ` · né${a.espece === "Chienne" || a.espece === "Chatte" ? "e" : ""} le ${fmtAn(a.naissance)}` : ""}${a.poids ? ` · ${esc(a.poids)} kg` : ""}</p>
+        <div class="actions"><button class="btn sm" data-act="form" data-type="animal" data-id="${a.id}">Modifier la fiche</button></div></section>
+      <section class="card c-white"><h2>Croquettes</h2>
+        ${cr.marque ? `<dl class="kv"><dt>Marque</dt><dd>${esc(cr.marque)}</dd>${cr.ref ? `<dt>Référence</dt><dd>${esc(cr.ref)}</dd>` : ""}${cr.poids ? `<dt>Sac</dt><dd>${esc(cr.poids)} kg${cr.prix ? ` · ${esc(cr.prix)} €` : ""}</dd>` : ""}${cr.magasin ? `<dt>Où</dt><dd>${/^https?:/.test(cr.magasin) ? `<a href="${esc(cr.magasin)}" target="_blank" rel="noopener">Lien d'achat</a>` : esc(cr.magasin)}</dd>` : ""}${cr.duree ? `<dt>Un sac dure</dt><dd>${esc(cr.duree)} semaines</dd>` : ""}</dl>` : '<p class="muted" style="margin:0">Marque, référence, taille du sac et où les acheter : plus besoin de se renvoyer la photo du paquet.</p>'}
+        ${c ? `<p style="margin:0;font-weight:700;${c.jours <= 5 ? "color:var(--hot)" : ""}">Sac acheté le ${fmtAn(a.dernierSac)} · à racheter vers le ${fmtAn(c.fin)}</p>` : ""}
+        <div class="actions"><button class="btn sm" data-act="animal-sac" data-id="${a.id}">Sac acheté aujourd'hui</button><button class="btn sm ghost" data-act="animal-courses" data-id="${a.id}">Ajouter aux courses</button></div></section>
+      <section class="card c-white"><h2>Vétérinaire</h2>
+        ${v.nom || v.tel || v.adresse ? `<dl class="kv">${v.nom ? `<dt>Nom</dt><dd>${esc(v.nom)}</dd>` : ""}${v.tel ? `<dt>Téléphone</dt><dd><a href="tel:${esc(tel)}" style="color:inherit">${esc(v.tel)}</a> <button class="mini" data-act="copy" data-v="${esc(v.tel)}">Copier</button></dd>` : ""}${v.adresse ? `<dt>Adresse</dt><dd>${esc(v.adresse)}</dd>` : ""}</dl>` : '<p class="muted" style="margin:0">Pas encore renseigné.</p>'}</section>
+      ${a.consignes ? `<section class="card c-lav"><h2>Consignes</h2><p style="margin:0;white-space:pre-line">${esc(a.consignes)}</p></section>` : ""}
+      <section class="sec"><h2>Rappels de ${esc(a.nom)}</h2>${rap.length ? `<ul class="list">${rap.map(rappelRow).join("")}</ul>` : `<p class="empty">Aucun rappel. Vaccin, vermifuge, antipuce : crée un rappel qui contient « ${esc(a.nom)} » dans son titre, il apparaîtra ici.</p>`}
+        <div class="actions"><button class="btn ghost" data-act="form" data-type="rappel">Nouveau rappel</button></div></section>
+      ${a.notes ? `<section class="card c-sand"><h2>Notes</h2><p style="margin:0;white-space:pre-line">${esc(a.notes)}</p></section>` : ""}
+    </div>`;
   },
 
   psg() {
@@ -903,6 +1028,57 @@ function routineRow(r, t, showDays) {
   return `<li class="row">${due ? `<button class="tick ${done ? "on" : ""}" data-act="routine-done" data-id="${r.id}" aria-label="${done ? "Annuler" : "Fait"} : ${esc(r.nom)}">${done ? CHECK : ""}</button>` : `<span class="tick" aria-hidden="true" style="opacity:.35"></span>`}
     <button class="grow" data-act="form" data-type="routine" data-id="${r.id}"><div class="t ${done ? "muted" : ""}">${esc(r.nom)}</div><div class="m">${showDays || !due ? `<span>${days}</span>` : '<span>routine</span>'}${quiTag(r.qui)}</div></button></li>`;
 }
+/* ---------- À faire, infos, frais, animaux ---------- */
+const FLAVIE = "Flavie"; // maman de Lyssia, avec qui les frais sont partagés
+const CAT_INFOS = [["acces", "Codes et accès"], ["sante", "Santé et mutuelle"], ["contacts", "Contacts"], ["maison", "Maison"], ["autre", "Autre"]];
+const SUGG_INFOS = {
+  acces: ["Code wifi", "Educonnect", "Pronote de Lyssia", "ENT de Naelia", "Code du portail"],
+  sante: ["Mutuelle", "Qui est sur quelle carte Vitale", "Pédiatre", "Médecin traitant"],
+  contacts: ["Nounou", "Maîtresse de Milan", "Centre de loisirs", "Flavie", "Collège de Lyssia"],
+  maison: ["Compteur électrique", "Jour des poubelles"],
+};
+const euros = (n) => (Math.round(n * 100) / 100).toLocaleString("fr-FR", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }) + "\u202f€";
+const num = (v) => { const x = Number(String(v ?? "").replace(/\s|€/g, "").replace(",", ".")); return isFinite(x) ? x : 0; };
+const tachesOuvertes = () => S.taches.filter((x) => !x.fait).sort((a, b) => (a.cree || "").localeCompare(b.cree || ""));
+function tacheRow(x) {
+  return `<li class="row ${kidCls(x)}"><button class="tick ${x.fait ? "on" : ""}" data-act="tache-done" data-id="${x.id}" aria-label="${x.fait ? "Remettre" : "Fait"} : ${esc(x.titre)}">${x.fait ? CHECK : ""}</button>
+    <button class="grow" data-act="form" data-type="tache" data-id="${x.id}"><div class="t ${x.fait ? "muted" : ""}">${esc(x.titre)}</div>
+    <div class="m">${kidTags(x)}${x.fait ? `<span>Fait${x.faitPar ? " par " + esc(x.faitPar) : ""} le ${fmtCourt(x.faitLe)}</span>` : `<span>${esc(x.qui || "Les deux")}</span>`}${x.note ? `<span>${esc(x.note)}</span>` : ""}</div></button></li>`;
+}
+function infoRow(i) {
+  const v = String(i.valeur || "");
+  const masque = i.cat === "acces" && !S.reveal.has(i.id);
+  const tel = /^[\d +().-]{8,}$/.test(v.trim()) ? v.replace(/[^\d+]/g, "") : "";
+  const url = /^https?:\/\/\S+$/.test(v.trim());
+  const val = masque ? "••••••••" : tel ? `<a href="tel:${esc(tel)}">${esc(v)}</a>` : url ? `<a href="${esc(v)}" target="_blank" rel="noopener">${esc(v.replace(/^https?:\/\/(www\.)?/, "").slice(0, 40))}</a>` : esc(v);
+  return `<div class="info ${kidCls(i)}" style="flex-direction:column;gap:8px"><div style="min-width:0;width:100%"><div class="lib">${esc(i.titre)}</div>
+    <div class="val ${masque ? "masque" : ""}" ${masque ? `data-act="reveal" data-id="${i.id}" role="button" tabindex="0" title="Afficher"` : ""}>${val || '<span class="muted">—</span>'}</div>
+    ${i.note || pourDe(i).length ? `<div class="m" style="font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:4px">${kidTags(i)}${i.note ? `<span>${esc(i.note)}</span>` : ""}</div>` : ""}</div>
+    <div class="actions" style="gap:6px">${masque ? `<button class="mini" data-act="reveal" data-id="${i.id}">Afficher</button>` : ""}${v ? `<button class="mini" data-act="copy" data-v="${esc(v)}">Copier</button>` : ""}<button class="mini" data-act="form" data-type="info" data-id="${i.id}">Modifier</button></div></div>`;
+}
+function soldeFrais() {
+  // positif : Flavie nous doit ; négatif : on doit à Flavie
+  return S.frais.filter((f) => !f.regle).reduce((t, f) => t + (f.payePar === FLAVIE ? -1 : 1) * num(f.montant) * (Number(f.part ?? 50) / 100), 0);
+}
+const soldeTxt = (s) => Math.abs(s) < 0.005 ? "Tout est réglé" : s > 0 ? `${FLAVIE} vous doit ${euros(s)}` : `Vous devez ${euros(-s)} à ${FLAVIE}`;
+function fraisRow(f) {
+  const part = Number(f.part ?? 50); const du = num(f.montant) * part / 100;
+  return `<li class="row k-lyssia"><span class="bubble" style="font-size:12.5px">${f.date ? fmtCourt(f.date).replace(" ", "<br>") : "?"}</span>
+    <button class="grow" data-act="form" data-type="frais" data-id="${f.id}"><div class="t">${esc(f.libelle)}</div>
+    <div class="m"><span>Payé par ${f.payePar === FLAVIE ? FLAVIE : "nous"}</span><span>${part === 100 ? `entièrement à la charge ${f.payePar === FLAVIE ? "de nous" : "de " + FLAVIE}` : `part de ${f.payePar === FLAVIE ? "nous" : FLAVIE} : ${euros(du)}`}</span>${f.regle ? `<span>réglé${f.regleLe ? " le " + fmtCourt(f.regleLe) : ""}</span>` : ""}</div></button>
+    <span class="euro">${euros(num(f.montant))}</span></li>`;
+}
+function croquettes(a) {
+  const sem = num(a?.croq?.duree);
+  if (!a?.dernierSac || !sem) return null;
+  const fin = addDays(a.dernierSac, Math.round(sem * 7));
+  return { fin, jours: diffDays(today(), fin) };
+}
+async function copier(txt, ok = "Copié") {
+  try { await navigator.clipboard.writeText(txt); toast(ok); }
+  catch { openSheet("Copier", `<textarea id="copy-area" style="min-height:160px">${esc(txt)}</textarea><p class="small muted" style="margin:0">Sélectionne le texte puis copie-le.</p>`); setTimeout(() => { const t = $("#copy-area"); if (t) { t.focus(); t.select(); } }, 80); }
+}
+
 function courseRow(c) {
   return `<li class="row"><button class="tick" data-act="buy" data-id="${c.id}" aria-label="Acheté : ${esc(c.nom)}"></button>
     <button class="grow" data-act="course-menu" data-id="${c.id}"><div class="t">${esc(c.nom)}</div>${c.note ? `<div class="m">${esc(c.note)}</div>` : ""}</button>
@@ -920,8 +1096,8 @@ function envieRow(l) {
 }
 
 /* ---------- Saisie en vrac ---------- */
-const TYPES = { course: "Course", evenement: "Événement", rappel: "Rappel", lien: "Envie", tard: "Soirée tard" };
-const DEST = { course: "Courses", evenement: "Agenda", rappel: "Rappels", lien: "Envies", tard: "Agenda" };
+const TYPES = { course: "Course", tache: "À faire", evenement: "Événement", rappel: "Rappel", lien: "Envie", tard: "Soirée tard" };
+const DEST = { course: "Courses", tache: "À faire", evenement: "Agenda", rappel: "Rappels", lien: "Envies", tard: "Agenda" };
 let props = [];
 function vracPropsHTML(prefix) {
   return props.map((p, i) => `<div class="prop">
@@ -931,7 +1107,8 @@ function vracPropsHTML(prefix) {
     ${p.type === "evenement" || p.type === "rappel" || p.type === "tard" ? `<div class="two"><input type="date" data-prop="${i}" data-field="date" id="${prefix}${i}-date" value="${esc(p.date || today())}" aria-label="Date"><input type="time" data-prop="${i}" data-field="heure" id="${prefix}${i}-heure" value="${esc(p.heure || "")}" aria-label="Heure"></div>` : ""}
     ${p.type === "course" ? `<div class="chips">${Object.entries(LISTES).map(([k, v]) => `<label><input type="radio" name="${prefix}${i}-liste" value="${k}" data-prop="${i}" data-field="liste" ${k === (p.liste || "urgent") ? "checked" : ""}><span>${v}</span></label>`).join("")}</div>` : ""}
     ${p.type === "lien" ? `<div class="chips"><label><input type="radio" name="${prefix}${i}-genre" value="achat" data-prop="${i}" data-field="genre" ${p.genre !== "idee" ? "checked" : ""}><span>Achat</span></label><label><input type="radio" name="${prefix}${i}-genre" value="idee" data-prop="${i}" data-field="genre" ${p.genre === "idee" ? "checked" : ""}><span>Idée</span></label></div>` : ""}
-    ${p.type !== "course" && p.type !== "tard" ? `<div class="chips">${ENFANTS.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
+    ${p.type === "tache" ? `<div class="chips">${QUI.map((q) => `<label><input type="radio" name="${prefix}${i}-qui" value="${q}" data-prop="${i}" data-field="qui" ${(p.qui || "Les deux") === q ? "checked" : ""}><span>${q}</span></label>`).join("")}</div>` : ""}
+    ${p.type !== "course" && p.type !== "tard" && p.type !== "tache" ? `<div class="chips">${ENFANTS.map((e) => `<label class="${e.cls}"><input type="checkbox" data-prop="${i}" data-pour="${e.nom}" ${(p.pour || []).includes(e.nom) ? "checked" : ""}><span>${e.nom}</span></label>`).join("")}</div>` : ""}
   </div>`).join("");
 }
 function hintTxt() {
@@ -966,6 +1143,7 @@ async function saveVrac() {
     for (const p of keep) {
       const titre = (p.titre || "").trim(); const pour = p.pour || [];
       if (p.type === "course") b.set(doc(collection(fs, "courses")), { nom: titre, liste: p.liste || "urgent", note: "", qui: me, cree: now() });
+      else if (p.type === "tache") b.set(doc(collection(fs, "taches")), { titre, qui: p.qui || "Les deux", note: "", pour, fait: false, par: me, cree: now() });
       else if (p.type === "tard") { const q = p.qui || me; b.set(doc(collection(fs, "events")), { type: "tard", titre: `${q} rentre tard`, date: p.date || t, heure: p.heure || "", qui: q, note: "", pour: [], par: me, cree: now() }); }
       else if (p.type === "evenement") b.set(doc(collection(fs, "events")), { titre, date: p.date || t, heure: p.heure || "", note: "", pour, qui: "Les deux", par: me, cree: now() });
       else if (p.type === "rappel") b.set(doc(collection(fs, "rappels")), { titre, prochaine: p.date || t, cat: "Autre", recur: null, note: p.heure ? `à ${fmtH(p.heure)}` : "", pour, qui: me, histo: [], termine: false, cree: now() });
@@ -1007,7 +1185,7 @@ function openAdd() {
     </div>`);
 }
 
-function openForm(type, id) {
+function openForm(type, id, extra) {
   const t = today();
   if (type === "event") {
     const e = S.events.find((x) => x.id === id) || {};
@@ -1018,6 +1196,67 @@ function openForm(type, id) {
       ${pourField(pourDe(e))}${quiField(e.qui)}
       <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(e.note)}" placeholder="Lieu, choses à prévoir…"></label>
       <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="events" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
+  }
+  if (type === "tache") {
+    const x = S.taches.find((y) => y.id === id) || {};
+    openSheet(id ? "À faire" : "Nouvelle tâche", `<form class="form" data-form="tache" data-id="${id || ""}">
+      <label class="f">Quoi<input type="text" id="f-titre" name="titre" value="${esc(x.titre)}" required placeholder="Ex. récupérer le colis Vinted au Carrefour"></label>
+      ${quiField(x.qui || "Les deux")}${pourField(pourDe(x))}
+      <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(x.note)}"></label>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="taches" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
+  }
+  if (type === "info") {
+    const i = S.infos.find((y) => y.id === id) || { cat: extra?.cat || "acces", titre: extra?.t || "" };
+    openSheet(id ? "Modifier l'info" : "Nouvelle info", `<form class="form" data-form="info" data-id="${id || ""}">
+      <label class="f">Rubrique<select id="f-cat" name="cat">${CAT_INFOS.map(([k, l]) => `<option value="${k}" ${k === (i.cat || "autre") ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+      <label class="f">Nom<input type="text" id="f-titre" name="titre" value="${esc(i.titre)}" required placeholder="Ex. Code wifi"></label>
+      <label class="f">Valeur<textarea id="f-val" name="valeur" style="min-height:70px" placeholder="Le code, l'identifiant, le numéro…">${esc(i.valeur)}</textarea></label>
+      ${pourField(pourDe(i))}
+      <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(i.note)}" placeholder="Facultatif"></label>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="infos" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
+    const v = $("#f-val"); if (v && i.titre && !i.valeur) setTimeout(() => v.focus(), 80);
+  }
+  if (type === "taille") {
+    const f = S.fiches.find((x) => x.id === id) || {};
+    openSheet(`Tailles de ${id}`, `<form class="form" data-form="taille" data-id="${esc(id)}">
+      <div class="two"><label class="f">Vêtements<input type="text" id="f-vet" name="vetements" value="${esc(f.vetements)}" placeholder="Ex. 8 ans"></label>
+      <label class="f">Pointure<input type="text" id="f-pt" name="pointure" value="${esc(f.pointure)}" inputmode="decimal" placeholder="Ex. 31"></label></div>
+      <label class="f">Note<input type="text" id="f-note" name="note" value="${esc(f.note)}" placeholder="Ex. pantalon 8 ans mais tee-shirts 10 ans"></label>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button></div></form>`);
+  }
+  if (type === "frais") {
+    const f = S.frais.find((x) => x.id === id) || { payePar: "Nous", part: 50, date: t };
+    openSheet(id ? "Modifier la dépense" : "Nouvelle dépense", `<form class="form" data-form="frais" data-id="${id || ""}">
+      <label class="f">Quoi<input type="text" id="f-lib" name="libelle" value="${esc(f.libelle)}" required placeholder="Ex. Cantine septembre, fournitures, Futuroscope"></label>
+      <div class="two"><label class="f">Montant (€)<input type="text" id="f-mt" name="montant" inputmode="decimal" value="${esc(f.montant)}" required placeholder="45"></label>
+      <label class="f">Date<input type="date" id="f-date" name="date" value="${esc(f.date || t)}"></label></div>
+      <div class="f">Payé par<div class="chips"><label><input type="radio" name="payePar" value="Nous" ${f.payePar !== FLAVIE ? "checked" : ""}><span>Nous</span></label><label><input type="radio" name="payePar" value="${FLAVIE}" ${f.payePar === FLAVIE ? "checked" : ""}><span>${FLAVIE}</span></label></div></div>
+      <div class="f">Part de l'autre<div class="chips"><label><input type="radio" name="part" value="50" ${Number(f.part ?? 50) === 50 ? "checked" : ""}><span>Moitié</span></label><label><input type="radio" name="part" value="100" ${Number(f.part) === 100 ? "checked" : ""}><span>Tout</span></label><label><input type="radio" name="part" value="0" ${Number(f.part) === 0 ? "checked" : ""}><span>Rien (pour info)</span></label></div></div>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="frais" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
+  }
+  if (type === "animal") {
+    const a = S.animaux.find((x) => x.id === id) || { croq: {}, veto: {} }; const cr = a.croq || {}, v = a.veto || {};
+    openSheet(id ? `Fiche de ${a.nom}` : "Nouvel animal", `<form class="form" data-form="animal" data-id="${id || ""}">
+      <div class="two"><label class="f">Nom<input type="text" id="f-nom" name="nom" value="${esc(a.nom)}" required></label>
+      <label class="f">Espèce<input type="text" id="f-esp" name="espece" value="${esc(a.espece)}" placeholder="Chien, chat…" list="especes"></label></div>
+      <datalist id="especes"><option value="Chien"><option value="Chienne"><option value="Chat"><option value="Chatte"></datalist>
+      <div class="two"><label class="f">Date de naissance<input type="date" id="f-nais" name="naissance" value="${esc(a.naissance)}"></label>
+      <label class="f">Poids (kg)<input type="text" id="f-poids" name="poids" inputmode="decimal" value="${esc(a.poids)}"></label></div>
+      <h3>Croquettes</h3>
+      <div class="two"><label class="f">Marque<input type="text" id="f-cm" name="c_marque" value="${esc(cr.marque)}"></label>
+      <label class="f">Référence<input type="text" id="f-cr" name="c_ref" value="${esc(cr.ref)}" placeholder="Ex. poulet, sans céréales"></label></div>
+      <div class="two"><label class="f">Poids du sac (kg)<input type="text" id="f-cp" name="c_poids" inputmode="decimal" value="${esc(cr.poids)}"></label>
+      <label class="f">Prix (€)<input type="text" id="f-cpx" name="c_prix" inputmode="decimal" value="${esc(cr.prix)}"></label></div>
+      <div class="two"><label class="f">Un sac dure (semaines)<input type="number" id="f-cd" name="c_duree" min="1" max="52" value="${esc(cr.duree)}"></label>
+      <label class="f">Dernier sac acheté le<input type="date" id="f-cds" name="dernierSac" value="${esc(a.dernierSac)}"></label></div>
+      <label class="f">Où les acheter (magasin ou lien)<input type="text" id="f-cmag" name="c_magasin" value="${esc(cr.magasin)}"></label>
+      <h3>Vétérinaire</h3>
+      <label class="f">Nom<input type="text" id="f-vn" name="v_nom" value="${esc(v.nom)}"></label>
+      <div class="two"><label class="f">Téléphone<input type="tel" id="f-vt" name="v_tel" value="${esc(v.tel)}"></label>
+      <label class="f">Adresse<input type="text" id="f-va" name="v_adresse" value="${esc(v.adresse)}"></label></div>
+      <label class="f">Consignes (sorties, rendez-vous, garde)<textarea id="f-cons" name="consignes" placeholder="Ex. à jeun la veille du véto à partir de 20 h">${esc(a.consignes)}</textarea></label>
+      <label class="f">Notes<textarea id="f-notes" name="notes" style="min-height:60px">${esc(a.notes)}</textarea></label>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button>${id ? `<button class="btn danger" type="button" data-act="del" data-col="animaux" data-id="${id}" data-close="1">Supprimer</button>` : ""}</div></form>`);
   }
   if (type === "tard") {
     const e = S.events.find((x) => x.id === id) || { qui: qui() || "Chloé" };
@@ -1137,7 +1376,7 @@ const kmMsg = (txt, cls) => { const m = $("#km-msg"); if (m) { m.textContent = t
 const ACT = {
   tab: (d) => { S.view = d.v; S.sub = null; S.confirm = null; render(); scrollTo(0, 0); },
   sub: (d) => { S.sub = { type: d.type }; S.kmYear = null; render(); scrollTo(0, 0); },
-  back: () => { S.sub = S.sub && S.sub.type === "checklist" ? { type: "checklists" } : null; S.confirm = null; render(); },
+  back: () => { S.sub = S.sub && S.sub.type === "checklist" ? { type: "checklists" } : S.sub && S.sub.type === "animal" ? { type: "animaux" } : null; S.confirm = null; render(); },
   close: () => closeSheet(),
   "open-add": () => openAdd(),
   form: (d) => openForm(d.type, d.id),
@@ -1147,6 +1386,40 @@ const ACT = {
   "envie-tab": (d) => { S.envieTab = d.k; render(); },
   "course-tab": (d) => { S.courseTab = d.k; render(); },
   "rap-tab": (d) => { S.rapTab = d.k; render(); },
+  "go-taches": () => { S.view = "rappels"; S.rapTab = "taches"; S.sub = null; render(); scrollTo(0, 0); },
+  "taches-faites": () => { S.tachesFaites = !S.tachesFaites; render(); },
+  "tache-done": async (d) => {
+    const x = S.taches.find((y) => y.id === d.id); if (!x) return;
+    const patch = x.fait ? { fait: false, faitLe: "", faitPar: "" } : { fait: true, faitLe: today(), faitPar: qui() };
+    await W(() => col("taches").doc(x.id).update(patch), x.fait ? "Remis dans la liste" : `Fait : ${x.titre}`, x.fait ? null : () => col("taches").doc(x.id).update({ fait: false, faitLe: "", faitPar: "" }));
+  },
+  reveal: (d) => { S.reveal.has(d.id) ? S.reveal.delete(d.id) : S.reveal.add(d.id); render(); },
+  copy: (d) => copier(d.v),
+  "info-sugg": (d) => openForm("info", null, { cat: d.cat, t: d.t }),
+  "frais-all": () => { S.fraisAll = !S.fraisAll; render(); },
+  "frais-solde": async () => {
+    if (S.confirm !== "solde") { S.confirm = "solde"; render(); return; }
+    S.confirm = null; const l = S.frais.filter((f) => !f.regle); const t = today();
+    await W(async () => { const b = writeBatch(fs); for (const f of l) b.update(doc(fs, "frais_lyssia", f.id), { regle: true, regleLe: t }); await b.commit(); }, "Compteurs remis à zéro");
+  },
+  "frais-recap": () => {
+    const l = S.frais.filter((f) => !f.regle).sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+    const lignes = l.map((f) => `• ${f.date ? fmtCourt(f.date) : ""} ${f.libelle} : ${euros(num(f.montant))} payé par ${f.payePar === FLAVIE ? "toi" : "nous"}${Number(f.part ?? 50) === 50 ? " (moitié chacun)" : Number(f.part) === 100 ? " (entièrement pour " + (f.payePar === FLAVIE ? "nous" : "toi") + ")" : ""}`);
+    const s = soldeFrais();
+    const fin = Math.abs(s) < 0.005 ? "On est quittes." : s > 0 ? `Au total, tu nous dois ${euros(s)}.` : `Au total, on te doit ${euros(-s)}.`;
+    copier(`Coucou ! Récap des frais de Lyssia :\n${lignes.join("\n")}\n${fin}`, "Récap copié, colle-le dans WhatsApp");
+  },
+  "open-animal": (d) => { S.sub = { type: "animal", id: d.id }; render(); scrollTo(0, 0); },
+  "animal-sac": async (d) => {
+    const a = S.animaux.find((x) => x.id === d.id); if (!a) return;
+    await W(() => col("animaux").doc(a.id).update({ dernierSac: today() }), `Nouveau sac de croquettes pour ${a.nom}`);
+  },
+  "animal-courses": async (d) => {
+    const a = S.animaux.find((x) => x.id === d.id); if (!a) return; const cr = a.croq || {};
+    const nom = `Croquettes ${a.nom}${cr.marque ? " " + cr.marque : ""}`;
+    const note = [cr.ref, cr.poids ? cr.poids + " kg" : "", cr.magasin].filter(Boolean).join(" · ");
+    await W(() => col("courses").add({ nom, liste: "urgent", note, qui: qui(), cree: now() }), "Ajouté aux courses urgentes");
+  },
   undo: async () => { const u = S.undo; S.undo = null; $("#toast-root").innerHTML = ""; if (u) await W(u, "Rétabli"); },
   export: () => exporter(),
   logout: () => { signOut(auth); },
@@ -1233,6 +1506,38 @@ const SUBMIT = {
     const id = f.dataset.id; const data = { titre: String(fd.get("titre")).trim(), date: fd.get("date"), heure: fd.get("heure") || "", pour: fd.getAll("pour"), qui: fd.get("qui") || "Les deux", note: String(fd.get("note") || "") };
     closeSheet();
     await W(() => (id ? col("events").doc(id).update(data) : col("events").add({ ...data, par: qui(), cree: now() })), id ? "Modifié" : `Ajouté le ${fmt(data.date)}`);
+  },
+  "quick-tache": async (fd, f) => {
+    const titre = String(fd.get("titre") || "").trim(); if (!titre) return;
+    f.reset(); const n = $("#qt-titre"); if (n) n.value = "";
+    await W(() => col("taches").add({ titre, qui: "Les deux", pour: enfantsDans(titre), note: "", fait: false, par: qui(), cree: now() }));
+    const n2 = $("#qt-titre"); if (n2) n2.focus();
+  },
+  tache: async (fd, f) => {
+    const id = f.dataset.id; const data = { titre: String(fd.get("titre")).trim(), qui: fd.get("qui") || "Les deux", pour: fd.getAll("pour"), note: String(fd.get("note") || "") };
+    closeSheet(); await W(() => (id ? col("taches").doc(id).update(data) : col("taches").add({ ...data, fait: false, par: qui(), cree: now() })), id ? "Modifié" : "Ajouté à la liste");
+  },
+  info: async (fd, f) => {
+    const id = f.dataset.id; const data = { cat: fd.get("cat"), titre: String(fd.get("titre")).trim(), valeur: String(fd.get("valeur") || "").trim(), pour: fd.getAll("pour"), note: String(fd.get("note") || "").trim() };
+    if (/\b\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}\b/.test(data.valeur) || /\b[12]\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{3}\s?\d{3}\s?\d{2}\b/.test(data.valeur)) { toast("Ça ressemble à un numéro de carte ou de sécurité sociale : à ne pas stocker ici."); return; }
+    closeSheet(); await W(() => (id ? col("infos").doc(id).update(data) : col("infos").add({ ...data, par: qui(), cree: now() })), id ? "Modifié" : "Info enregistrée");
+  },
+  taille: async (fd, f) => {
+    const id = f.dataset.id;
+    closeSheet(); await W(() => setDoc(doc(fs, "fiches_enfants", id), { vetements: String(fd.get("vetements") || "").trim(), pointure: String(fd.get("pointure") || "").trim(), note: String(fd.get("note") || "").trim(), maj: today() }), `Tailles de ${id} à jour`);
+  },
+  frais: async (fd, f) => {
+    const id = f.dataset.id; const montant = num(fd.get("montant"));
+    if (!(montant > 0)) { toast("Indique un montant"); return; }
+    const data = { libelle: String(fd.get("libelle")).trim(), montant, date: fd.get("date") || today(), payePar: fd.get("payePar") === FLAVIE ? FLAVIE : "Nous", part: Number(fd.get("part") ?? 50) };
+    closeSheet(); await W(() => (id ? col("frais").doc(id).update(data) : col("frais").add({ ...data, regle: false, par: qui(), cree: now() })), id ? "Modifié" : `Dépense ajoutée : ${soldeTxt(soldeFrais() + (data.payePar === FLAVIE ? -1 : 1) * montant * data.part / 100)}`);
+  },
+  animal: async (fd, f) => {
+    const id = f.dataset.id; const g = (k) => String(fd.get(k) || "").trim();
+    const data = { nom: g("nom"), espece: g("espece"), naissance: g("naissance"), poids: g("poids"), dernierSac: g("dernierSac"),
+      croq: { marque: g("c_marque"), ref: g("c_ref"), poids: g("c_poids"), prix: g("c_prix"), duree: g("c_duree"), magasin: g("c_magasin") },
+      veto: { nom: g("v_nom"), tel: g("v_tel"), adresse: g("v_adresse") }, consignes: g("consignes"), notes: g("notes") };
+    closeSheet(); await W(() => (id ? col("animaux").doc(id).update(data) : col("animaux").add({ ...data, cree: now() })), id ? "Fiche enregistrée" : `${data.nom} ajouté`);
   },
   tard: async (fd, f) => {
     const id = f.dataset.id; const q = fd.get("qui") || qui();
@@ -1347,12 +1652,13 @@ document.addEventListener("change", async (e) => {
 document.addEventListener("input", (e) => {
   const el = e.target;
   if (el.id === "vrac" || el.id === "vrac-s") { onVracInput(el); return; }
+  if (el.id === "info-q") { S.infoQ = el.value; render(); return; }
   if (el.dataset.prop !== undefined && el.dataset.field && el.dataset.field !== "type" && el.type !== "radio") { const p = props[Number(el.dataset.prop)]; if (p) p[el.dataset.field] = el.value; }
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && $("#sheet-root").innerHTML) closeSheet();
   if ((e.target.id === "vrac" || e.target.id === "vrac-s") && e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveVrac(); }
-  if (e.key === "Enter" && e.target.getAttribute("role") === "button") e.target.click();
+  if ((e.key === "Enter" || e.key === " ") && e.target.getAttribute("role") === "button") { e.preventDefault(); e.target.click(); }
 });
 addEventListener("online", () => { S.offline = false; renderStatus(); });
 addEventListener("offline", () => { S.offline = true; renderStatus(); });
@@ -1386,6 +1692,9 @@ function ecouter() {
     render();
   }, () => {}));
   S.unsub.push(onSnapshot(doc(fs, "config", "voiture"), (s) => { S.voiture = s.exists() ? s.data() : null; render(); }, () => {}));
+  S.unsub.push(onSnapshot(collection(fs, "animaux"), (snap) => {
+    if (!snap.metadata.fromCache && snap.empty) setDoc(doc(fs, "animaux", "vega"), { nom: "Véga", espece: "Chien", croq: {}, veto: {}, cree: now() }).catch(() => {});
+  }, () => {}));
   S.unsub.push(onSnapshot(doc(fs, "config", "garde"), (s) => {
     S.garde = s.exists() ? s.data() : null;
     if (!s.exists() && !s.metadata.fromCache) premierLancement().catch(() => {});
