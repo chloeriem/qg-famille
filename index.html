@@ -158,7 +158,7 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .psg-card::before { content: ""; position: absolute; right: 20px; top: 0; bottom: 0; width: 26px; border-left: 4px solid #FFFFFF; border-right: 4px solid #FFFFFF; box-sizing: border-box; z-index: 1; }
 .psg-card > * { position: relative; z-index: 2; }
 .psg-card .tagline { color: #FF6B6B; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin: 0; }
-.psg-tag { font-weight: 800; letter-spacing: .04em; }
+.psg-tag, .tag.psg-tag { font-weight: 800; letter-spacing: .04em; background: #10264A; color: #FFFFFF; }
 .psg-hero, .tile.psg-hero { background: #10264A; color: #FFFFFF; position: relative; overflow: hidden; padding-right: 52px; }
 .psg-hero::after { content: ""; position: absolute; right: 16px; top: 0; bottom: 0; width: 22px; background: #DA2128; }
 .psg-hero::before { content: ""; position: absolute; right: 16px; top: 0; bottom: 0; width: 22px; border-left: 3px solid #FFFFFF; border-right: 3px solid #FFFFFF; box-sizing: border-box; z-index: 1; }
@@ -181,7 +181,36 @@ h3 { font-family: var(--f-display); font-weight: 700; font-size: 14px; text-tran
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .week { display: flex; flex-direction: column; gap: 8px; }
-.week-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 4px; }
+.week-head { display: flex; justify-content: space-between; align-items: center; gap: 6px 10px; padding: 0 4px; flex-wrap: wrap; }
+.week-head .pills { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Samedis de Medhi */
+.sam { background: var(--medhi-bg); gap: 8px; }
+.tagline-s { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin: 0; }
+.sam .tagline-s { color: var(--medhi); }
+.mid { font-family: var(--f-display); font-weight: 800; font-size: 22px; line-height: 1.12; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.sam-strip { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0; }
+.sam-strip::-webkit-scrollbar { display: none; }
+.sam-strip span { flex: none; display: flex; flex-direction: column; align-items: center; min-width: 60px; padding: 6px 8px; border-radius: 14px; font-size: 12px; font-weight: 600; background: var(--surface); color: var(--muted); line-height: 1.25; }
+.sam-strip span b { font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sam-strip span.on { background: var(--medhi); color: var(--bg); }
+.sam-strip span.on b { color: var(--bg); }
+.bubble.sam-on { background: var(--medhi); color: var(--bg); }
+
+/* Vacances scolaires */
+.vac-alerte { background: var(--hot-bg); }
+.vac-alerte .tagline-s { color: var(--hot); }
+.vac-ok { background: var(--sage); }
+.vac-l { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.vac-l button { width: 100%; border: 0; text-align: left; background: var(--surface); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: var(--ink); }
+.vac-l b { font-weight: 800; }
+.vac-l span { font-size: 14px; color: var(--muted); }
+.etat { font-size: 12px; font-weight: 800; padding: 3px 9px; border-radius: 999px; white-space: nowrap; border: 0; flex: none; }
+.etat.ok { background: var(--sage); color: var(--ok); }
+.etat.partiel { background: var(--yellow); color: var(--warn); }
+.etat.alerte { background: var(--hot); color: var(--surface); }
+.faits { background: var(--sand); border-radius: 16px; padding: 12px 14px; font-size: 14px; display: flex; flex-direction: column; gap: 4px; }
+.faits p { margin: 0; }
 .week-head b { font-family: var(--f-display); font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
 
 /* Filtres et onglets */
@@ -374,6 +403,7 @@ import { initializeFirestore, getFirestore, persistentLocalCache, persistentMult
 import { classerTout } from "./vrac.js";
 import { MATCHS, MAJ as PSG_MAJ } from "./psg.js";
 import { COLLECTES, SORTES } from "./collectes.js";
+import { PERIODES, FERIES, ZONE } from "./vacances.js";
 
 /* ---------- Configuration ---------- */
 const firebaseConfig = {
@@ -397,6 +427,8 @@ const ADULTES = [
   { nom: "Medhi", cls: "k-medhi", re: /\bmedhi\b/i },
 ];
 const MEMBRES = [...ENFANTS, ...ADULTES];
+const NOUNOU = "Caroline"; // garde Milan le mercredi et une semaine sur deux pendant les vacances
+const SAMEDI_ANCRE = "2026-11-21"; // un samedi travaillé par Medhi (il travaille un samedi sur deux)
 
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
@@ -423,10 +455,11 @@ const JC = ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."];
 const JL = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
 const MC = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
 const ML = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
-const fmt = (s) => { const d = parse(s); return `${JC[wday(s)]} ${d.getDate()} ${MC[d.getMonth()]}`; };
-const fmtCourt = (s) => { const d = parse(s); return `${d.getDate()} ${MC[d.getMonth()]}`; };
-const fmtAn = (s) => { const d = parse(s); return `${d.getDate()} ${MC[d.getMonth()]} ${d.getFullYear()}`; };
-const fmtLong = (s) => { const d = parse(s); return `${JL[wday(s)]} ${d.getDate()} ${ML[d.getMonth()]}`; };
+const jr = (n) => (n === 1 ? "1er" : String(n));
+const fmt = (s) => { const d = parse(s); return `${JC[wday(s)]} ${jr(d.getDate())} ${MC[d.getMonth()]}`; };
+const fmtCourt = (s) => { const d = parse(s); return `${jr(d.getDate())} ${MC[d.getMonth()]}`; };
+const fmtAn = (s) => { const d = parse(s); return `${jr(d.getDate())} ${MC[d.getMonth()]} ${d.getFullYear()}`; };
+const fmtLong = (s) => { const d = parse(s); return `${JL[wday(s)]} ${jr(d.getDate())} ${ML[d.getMonth()]}`; };
 const fmtH = (h) => h ? `${Number(h.slice(0, 2))} h ${h.slice(3, 5)}`.replace(/ h 00$/, " h") : "";
 const nb = (n) => Math.round(n).toLocaleString("fr-FR");
 const km = (n) => nb(n) + " km";
@@ -475,9 +508,9 @@ const S = {
   events: [], courses: [], rappels: [], routines: [], checklists: [], liens: [], exceptions: [], releves: [],
   taches: [], infos: [], frais: [], animaux: [], fiches: [], poubelles: [], reveal: new Set(), infoQ: "", fraisAll: false, tachesFaites: false,
   garde: undefined, voiture: null, frequents: [], loaded: new Set(), offline: !navigator.onLine, confirm: null, unsub: [],
-  kmYear: null, kmAll: false,
+  kmYear: null, kmAll: false, samEx: [], vacs: [], samCfg: null, nounou: null, samAll: false,
 };
-const COLS = { events: "events", courses: "courses", rappels: "rappels", routines: "routines", checklists: "checklists", liens: "liens", exceptions: "garde_exceptions", taches: "taches", infos: "infos", frais: "frais_lyssia", animaux: "animaux", fiches: "fiches_enfants", poubelles: "poubelles_sorties" };
+const COLS = { events: "events", courses: "courses", rappels: "rappels", routines: "routines", checklists: "checklists", liens: "liens", exceptions: "garde_exceptions", taches: "taches", infos: "infos", frais: "frais_lyssia", animaux: "animaux", fiches: "fiches_enfants", poubelles: "poubelles_sorties", samEx: "samedis_exceptions", vacs: "vacances_semaines" };
 const qui = () => S.me;
 
 /* ---------- Garde de Lyssia ---------- */
@@ -500,6 +533,53 @@ function passageLe(s) {
   return a && b && a.avec !== b.avec;
 }
 
+/* ---------- Samedis travaillés de Medhi ---------- */
+const ancreSamedi = () => (S.samCfg && isDate(S.samCfg.ancre) ? S.samCfg.ancre : SAMEDI_ANCRE);
+const samediEx = (s) => S.samEx.find((x) => x.id === s);
+const regleSamedi = (s) => ((Math.round(diffDays(ancreSamedi(), s) / 7) % 2) + 2) % 2 === 0;
+function medhiSamedi(s) { const e = samediEx(s); return e ? { travaille: !!e.travaille, echange: true } : { travaille: regleSamedi(s), echange: false }; }
+const prochainSamedi = (s) => addDays(s, (5 - wday(s) + 7) % 7);
+const samediDu = (d) => (wday(d) === 5 && (!S.kid || S.kid === "Medhi") && medhiSamedi(d).travaille) ? [{ id: "sam-" + d, samedi: true, date: d, heure: "", pour: ["Medhi"], ex: medhiSamedi(d).echange }] : [];
+
+/* ---------- Vacances scolaires : qui garde les enfants ---------- */
+const SOLS = { nounou: `Chez ${NOUNOU}`, centre: "Centre de loisirs", famille: "Famille", chloe: "Chloé pose des jours", medhi: "Medhi pose des jours", autre: "Autre (voir la note)" };
+const SOLS_C = { nounou: `chez ${NOUNOU}`, centre: "au centre", famille: "en famille", chloe: "avec Chloé", medhi: "avec Medhi", autre: "(voir la note)" };
+const CONGE = { "": "Travaille", jours: "Quelques jours", semaine: "Toute la semaine" };
+const ETATS = { ok: "Organisé", partiel: "En partie", alerte: "À organiser" };
+const congesNounou = () => (S.nounou && Array.isArray(S.nounou.conges) ? S.nounou.conges : []).filter((c) => isDate(c.du) && isDate(c.au)).sort((a, b) => a.du.localeCompare(b.du));
+const joursVac = (p, m) => [0, 1, 2, 3, 4].map((i) => addDays(m, i)).filter((d) => d >= p.du && d <= p.au);
+function semainesVac(p) {
+  const out = [];
+  for (let m = mondayOf(p.du); m <= p.au; m = addDays(m, 7)) if (joursVac(p, m).some((d) => !FERIES.includes(d))) out.push(m);
+  return out;
+}
+const TOUTES_VAC = PERIODES.flatMap((p) => semainesVac(p).map((m, i) => ({ m, p, n: i + 1 })));
+function infoVac(m) {
+  const w = TOUTES_VAC.find((x) => x.m === m); if (!w) return null;
+  const { p } = w; const jours = joursVac(p, m);
+  const ouvres = jours.filter((d) => !FERIES.includes(d)), feries = jours.filter((d) => FERIES.includes(d));
+  const v = S.vacs.find((x) => x.id === m) || {}; const sol = v.sol || {};
+  const ly = statutSemaine(m); const avecLy = !!(ly && ly.avec);
+  const cong = congesNounou().filter((c) => c.du <= ouvres[ouvres.length - 1] && c.au >= ouvres[0]);
+  const nounou = cong.length ? "conge" : p.nounouAuto === false ? "inconnu" : "garde";
+  const enfants = [["Milan", sol.Milan || (nounou === "garde" ? "nounou" : "")], ["Naelia", sol.Naelia || ""], ...(avecLy ? [["Lyssia", sol.Lyssia || ""]] : [])];
+  const parent = v.medhi === "semaine" ? "Medhi" : v.chloe === "semaine" ? "Chloé" : "";
+  const manque = parent ? [] : enfants.filter(([, x]) => !x).map(([n]) => n);
+  const etat = !manque.length ? "ok" : (v.medhi === "jours" || v.chloe === "jours") ? "partiel" : "alerte";
+  return { m, p, n: w.n, nb: semainesVac(p).length, jours, ouvres, feries, v, avecLy, cong, nounou, enfants, parent, manque, etat, fin: jours[jours.length - 1] };
+}
+const vacAVenir = (jusqua) => TOUTES_VAC.filter((w) => w.m <= jusqua).map((w) => infoVac(w.m)).filter((x) => x && x.fin >= today());
+const vacDates = (x) => x.jours.length === 1 ? fmt(x.jours[0]) : x.jours[0].slice(5, 7) === x.fin.slice(5, 7) ? `du ${jr(parse(x.jours[0]).getDate())} au ${fmtCourt(x.fin)}` : `du ${fmtCourt(x.jours[0])} au ${fmtCourt(x.fin)}`;
+const vacTitre = (x) => x.nb > 1 ? `${x.p.nom}, semaine ${x.n}` : x.p.nom;
+function vacPourquoi(x, court) {
+  if (x.etat === "ok") return x.parent ? `${x.parent} en congé toute la semaine` : x.enfants.map(([n, k]) => `${n} ${SOLS_C[k]}`).join(" · ");
+  const r = [];
+  if (!court) { if (x.nounou === "conge") r.push(`${NOUNOU} en congés`); else if (x.nounou === "inconnu") r.push(`${NOUNOU} : à confirmer`); }
+  r.push(`${x.manque.join(", ")} sans solution`);
+  if (x.etat === "partiel") r.push("congés posés en partie");
+  return r.join(" · ");
+}
+
 /* ---------- Données dérivées ---------- */
 const rappelsActifs = () => S.rappels.filter((r) => !r.termine && r.prochaine).sort((a, b) => a.prochaine.localeCompare(b.prochaine));
 const routineDue = (r, s) => (r.jours || []).includes(wday(s));
@@ -514,7 +594,7 @@ const matchsDu = (d) => (S.kid && S.kid !== "Medhi") ? [] : MATCHS.filter((m) =>
 // Poubelles : affichées la veille au soir de chaque collecte
 const poubellesVeille = (d) => (S.kid && S.kid !== "famille") ? [] : COLLECTES.filter((c) => addDays(c.d, -1) === d).map((c) => ({ id: `pb-${c.d}-${c.s}`, poubelle: true, c, date: d, heure: "20:00" }));
 const pbFaite = (c) => S.poubelles.find((x) => x.id === `${c.d}-${c.s}`);
-const evtsDu = (d) => [...S.events.filter((e) => e.date === d && filtreKid(e)), ...matchsDu(d), ...poubellesVeille(d)].sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
+const evtsDu = (d) => [...samediDu(d), ...S.events.filter((e) => e.date === d && filtreKid(e)), ...matchsDu(d), ...poubellesVeille(d)].sort((a, b) => (a.heure || "").localeCompare(b.heure || ""));
 
 /* ---------- Suivi kilométrique du leasing ---------- */
 const VOITURE = { start: "2026-09-11", allowance: 30000, kmDepart: 0, marge: 1500, medhi: 105, chloe: null };
@@ -592,7 +672,7 @@ const filtresKids = (actif, act = "kid") => `<div class="filters" role="group" a
 const VIEWS = {
   accueil() {
     const t = today(); const lun = mondayOf(t);
-    const out = [gardeBanner(lun)];
+    const out = [gardeBanner(lun), samediCard()];
     // 1. Ce soir et aujourd'hui : ce qui ne peut pas attendre
     for (const m of MATCHS.filter((x) => x.date === t && x.heure)) {
       out.push(`<section class="card psg-card" data-act="sub" data-type="psg" role="button" tabindex="0"><p class="tagline">${Number(m.heure.slice(0, 2)) >= 18 ? "Ce soir" : "Aujourd'hui"} au Parc</p>
@@ -612,10 +692,18 @@ const VIEWS = {
         ${e.note ? `<p class="consignes">${esc(e.note)}</p>` : ""}
         <div class="actions"><button class="btn sm soft" style="color:#fff;background:rgba(255,255,255,.16)" data-act="form" data-type="tard" data-id="${e.id}">Modifier</button></div></section>`);
     }
+    // Vacances scolaires : alerte tant qu'une semaine des 2 prochains mois n'est pas organisée
+    const vacs = vacAVenir(addDays(t, 60)); const aOrg = vacs.filter((x) => x.etat !== "ok");
+    const vacNow = vacs.find((x) => x.m === lun && x.etat === "ok");
+    if (aOrg.length) out.push(`<section class="card vac-alerte"><p class="tagline-s">Vacances à organiser</p>
+      <p class="mid">${aOrg.length === 1 ? "1 semaine" : aOrg.length + " semaines"} sans solution de garde</p>
+      <ul class="vac-l">${aOrg.slice(0, 3).map((x) => `<li><button data-act="form" data-type="vac" data-id="${x.m}"><b>${esc(vacTitre(x))} · ${vacDates(x)}</b><span>${esc(vacPourquoi(x))}</span></button></li>`).join("")}</ul>
+      <div class="actions"><button class="btn sm" data-act="sub" data-type="vacances">${aOrg.length > 3 ? `Voir les ${aOrg.length} semaines` : "Toutes les vacances"}</button></div></section>`);
+    else if (vacNow) out.push(`<section class="card vac-ok" data-act="sub" data-type="vacances" role="button" tabindex="0"><p class="tagline-s">Vacances cette semaine</p><p style="margin:0"><b>${esc(vacTitre(vacNow))}</b> : ${esc(vacPourquoi(vacNow))}.</p></section>`);
     // 2. Aujourd'hui (sans répéter ce qui a déjà sa grande carte)
     const dus = rappelsActifs().filter((r) => r.prochaine <= t);
     const rout = S.routines.filter((r) => routineDue(r, t));
-    let todo = evtsDu(t).filter((e) => !e.poubelle && e.type !== "tard" && !(e.psg && e.heure)).map(eventRow).join("");
+    let todo = evtsDu(t).filter((e) => !e.poubelle && !e.samedi && e.type !== "tard" && !(e.psg && e.heure)).map(eventRow).join("");
     for (const r of dus) todo += rappelRow(r);
     for (const r of rout) todo += routineRow(r, t);
     out.push(`<section class="sec"><div class="sec-head"><h2>Aujourd'hui</h2><button class="link" data-act="tab" data-v="agenda">Agenda</button></div>
@@ -646,7 +734,7 @@ const VIEWS = {
     }).join("")}</div></section>`);
     let week = "";
     for (let i = 1; i <= 7; i++) {
-      const d = addDays(t, i); const ev = evtsDu(d); const rp = rappelsActifs().filter((r) => r.prochaine === d);
+      const d = addDays(t, i); const ev = evtsDu(d).filter((e) => !e.samedi); const rp = rappelsActifs().filter((r) => r.prochaine === d);
       if (!ev.length && !rp.length && !passageLe(d)) continue;
       week += `<li class="day">${i === 1 ? "Demain" : fmt(d)}${passageLe(d) ? ` · passage de Lyssia ${heurePassage()}` : ""}</li>` + ev.map(eventRow).join("") + rp.map(rappelRow).join("");
     }
@@ -674,7 +762,8 @@ const VIEWS = {
         days += ev.map(eventRow).join("") + rp.map(rappelRow).join("");
         if (!ev.length && !rp.length) days += `<li class="row"><span class="muted small">Rien de prévu</span></li>`;
       }
-      html += `<section class="week"><div class="week-head"><b>${label}</b>${s ? `<span class="pill ${s.avec ? "avec" : "sans"}">${s.avec ? "Avec Lyssia" : "Sans Lyssia"}</span>` : ""}</div>
+      const vx = infoVac(m);
+      html += `<section class="week"><div class="week-head"><b>${label}</b><span class="pills">${vx ? `<button class="etat ${vx.etat}" data-act="form" data-type="vac" data-id="${m}">${esc(vx.p.nom)} · ${ETATS[vx.etat].toLowerCase()}</button>` : ""}${s ? `<span class="pill ${s.avec ? "avec" : "sans"}">${s.avec ? "Avec Lyssia" : "Sans Lyssia"}</span>` : ""}</span></div>
         ${days ? `<ul class="list">${days}</ul>` : ""}</section>`;
     }
     return `<div class="sec" style="gap:16px">${html}<div class="actions"><button class="btn" data-act="form" data-type="event">Ajouter un événement</button></div></div>`;
@@ -755,6 +844,8 @@ const VIEWS = {
       <div class="tiles">
         <button class="tile lvl-${lv}" style="background:var(--lvbg)" data-act="sub" data-type="voiture"><b>Voiture</b><span>Kilométrage du leasing</span><span class="s"><b style="font-size:16px">${VERDICTS[lv]}</b>${yi.empty ? "" : `<br>${km(yi.used)} cette année`}</span></button>
         <button class="tile k-lyssia" style="background:var(--kbg)" data-act="sub" data-type="garde"><b>Garde de Lyssia</b><span class="s">${s ? (s.avec ? "Avec nous cette semaine" : "Sans Lyssia cette semaine") : "À configurer"}</span></button>
+        <button class="tile k-medhi" style="background:var(--kbg)" data-act="sub" data-type="samedis"><b>Samedis de Medhi</b><span>Un samedi sur deux</span><span class="s">${(() => { const x = prochainSamedi(today()); return `${x === today() ? "Aujourd'hui" : "Samedi " + fmtCourt(x)} : ${medhiSamedi(x).travaille ? "il travaille" : "repos"}`; })()}</span></button>
+        ${(() => { const l = vacAVenir("9999").filter((x) => x.etat !== "ok"), n = l.length; return `<button class="tile ${n ? "" : "c-sage"}" style="${n ? "background:var(--hot-bg)" : ""}" data-act="sub" data-type="vacances"><b>Vacances scolaires</b><span>Zone ${ZONE}, qui garde les enfants</span><span class="s">${n ? `<b style="font-size:16px;color:var(--hot)">${n} semaine${n > 1 ? "s" : ""} à organiser</b><br>Prochaine : ${esc(l[0].p.nom)}, ${fmtCourt(l[0].jours[0])}` : "Tout est organisé"}</span></button>`; })()}
         <button class="tile c-lav" data-act="sub" data-type="infos"><b>Infos pratiques</b><span>Codes, mutuelle, contacts, tailles</span><span class="s">${nbInfos} info${nbInfos > 1 ? "s" : ""} enregistrée${nbInfos > 1 ? "s" : ""}</span></button>
         <button class="tile k-lyssia" style="background:var(--kbg)" data-act="sub" data-type="frais"><b>Frais de Lyssia</b><span>Partagés avec ${FLAVIE}</span><span class="s"><b style="font-size:16px">${soldeTxt(sol)}</b></span></button>
         <button class="tile c-yellow" data-act="sub" data-type="animaux"><b>Animaux</b><span>${S.animaux.map((a) => esc(a.nom)).join(", ") || "Véga et les chats"}</span><span class="s">${(() => { const c = S.animaux.map((a) => ({ a, c: croquettes(a) })).filter((x) => x.c).sort((x, y) => x.c.jours - y.c.jours)[0]; return c ? `Croquettes de ${esc(c.a.nom)} : ${c.c.jours <= 0 ? "à racheter" : "encore " + c.c.jours + " j"}` : "Croquettes, véto, consignes"; })()}</span></button>
@@ -911,6 +1002,50 @@ const VIEWS = {
       <div class="actions"><button class="btn" data-act="form" data-type="exception">Ajouter une exception</button></div></div>`;
   },
 
+  samedis() {
+    const t = today(); const s0 = prochainSamedi(t); const n = S.samAll ? 52 : 16;
+    let rows = "", mois = "", nbT = 0;
+    for (let k = 0; k < n; k++) {
+      const x = addDays(s0, 7 * k), st = medhiSamedi(x), d = parse(x); if (st.travaille) nbT++;
+      const mm = `${ML[d.getMonth()]} ${d.getFullYear()}`;
+      if (mm !== mois) { rows += `<li class="day">${mm.replace(/^./, (c) => c.toUpperCase())}</li>`; mois = mm; }
+      const psg = MATCHS.find((m) => m.date === x);
+      rows += `<li class="row"><span class="bubble ${st.travaille ? "sam-on" : ""}">${d.getDate()}</span>
+        <div class="grow"><div class="t">${st.travaille ? "Medhi travaille" : "Repos"}</div><div class="m"><span>${x === t ? "aujourd'hui" : fmt(x)}</span>${st.echange ? '<span class="tag">samedi échangé</span>' : ""}${psg ? `<span class="tag psg-tag">PSG ${psg.heure ? fmtH(psg.heure) : "à conf."}</span>` : ""}</div></div>
+        <button class="btn sm ghost" data-act="sam-toggle" data-d="${x}">${st.echange ? "Remettre" : "Changer"}</button></li>`;
+    }
+    return `<div class="sec" style="gap:14px">${back()}
+      <section class="card sam"><p class="tagline-s">Medhi</p><p class="big">Un samedi sur deux</p>
+        <p style="margin:0">Jusqu'à nouvel ordre. Sur les ${n} prochains samedis, il en travaille ${nbT}. Un samedi échangé ? Appuie sur « Changer » : le reste ne bouge pas.</p></section>
+      <ul class="list">${rows}</ul>
+      <button class="link" data-act="sam-all">${S.samAll ? "Afficher moins" : "Afficher toute l'année"}</button>
+      <section class="card c-white"><details><summary>Le rythme change</summary>
+        <form class="form" data-form="sam-cfg" style="margin-top:14px"><label class="f">Un samedi où il travaille<input type="date" id="sam-ancre" name="ancre" value="${esc(ancreSamedi())}" required></label>
+        <p class="muted small" style="margin:0">L'appli recalcule tous les samedis à partir de celui-ci, un sur deux.</p>
+        <div class="actions"><button class="btn sm" type="submit">Enregistrer</button></div></form></details></section></div>`;
+  },
+
+  vacances() {
+    const t = today();
+    const per = PERIODES.filter((p) => p.au >= t);
+    const blocs = per.map((p) => {
+      const sem = semainesVac(p).map(infoVac).filter((x) => x.fin >= t);
+      return `<section class="sec"><div class="sec-head"><h2>${esc(p.nom)}</h2><span class="muted small">${p.du === p.au ? fmt(p.du) : `${fmtCourt(p.du)} → reprise ${fmt(addDays(p.au, 1))}`}</span></div>
+        ${p.note ? `<p class="muted small" style="margin:0">${esc(p.note)}</p>` : ""}
+        <ul class="list">${sem.map(vacRow).join("")}</ul></section>`;
+    }).join("");
+    const cg = congesNounou();
+    return `<div class="sec" style="gap:18px">${back()}
+      <section class="card c-lav"><p class="tagline-s">Zone ${ZONE} · 2026-2027</p><p class="big">Vacances scolaires</p>
+        <p style="margin:0">${NOUNOU} garde Milan la semaine où elle n'est pas en congés. Pour chaque semaine, note qui pose des congés et où vont les enfants : l'accueil t'alerte tant qu'une semaine n'est pas organisée.</p></section>
+      ${blocs}
+      <section class="sec"><h2>Congés de ${NOUNOU}</h2>
+        ${cg.length ? `<ul class="list">${cg.map((c, k) => `<li class="row"><div class="grow"><div class="t">${c.du === c.au ? fmt(c.du) : `Du ${fmt(c.du)} au ${fmt(c.au)}`}</div></div><button class="x" data-act="nounou-del" data-k="${k}" aria-label="Supprimer">${S.confirm === "nn" + k ? "✓" : "×"}</button></li>`).join("")}</ul>` : '<p class="empty">Aucun congé noté.</p>'}
+        <form class="form" data-form="nounou-add"><div class="two"><label class="f">Du<input type="date" id="nn-du" name="du" required></label><label class="f">Au<input type="date" id="nn-au" name="au"></label></div>
+        <div class="actions"><button class="btn sm" type="submit">Ajouter des congés</button></div></form></section>
+      <p class="muted small" style="margin:0">Dates officielles : service-public.gouv.fr.</p></div>`;
+  },
+
   voiture() {
     const c = cfgV();
     const cy = anneeCourante(); if (S.kmYear == null) S.kmYear = cy;
@@ -1051,8 +1186,24 @@ function gardeBanner(lun) {
     <p class="big">${s.avec ? "Avec nous cette semaine" : "Semaine sans Lyssia"}</p>
     <p>${ligne}${s.motif !== "Alternance" ? ` ${esc(s.motif)}.` : ""}</p></section>`;
 }
+function samediCard() {
+  const t = today(); const s0 = prochainSamedi(t); const st = medhiSamedi(s0);
+  const quand = s0 === t ? "aujourd'hui" : s0 === addDays(t, 1) ? "demain" : "ce samedi";
+  const strip = [1, 2, 3, 4, 5, 6, 7, 8].map((k) => { const x = addDays(s0, 7 * k), w = medhiSamedi(x).travaille; return `<span class="${w ? "on" : ""}"><b>${fmtCourt(x)}</b>${w ? "travaille" : "repos"}</span>`; }).join("");
+  return `<section class="card sam" data-act="sub" data-type="samedis" role="button" tabindex="0" aria-label="Samedis de Medhi">
+    <p class="tagline-s">Samedi ${fmtCourt(s0)}</p>
+    <p class="mid">${st.travaille ? `Medhi travaille ${quand}` : `Medhi ne travaille pas ${quand}`}</p>
+    <div class="sam-strip">${strip}</div></section>`;
+}
+function vacRow(x) {
+  const nn = x.nounou === "conge" ? `${NOUNOU} en congés` : x.nounou === "inconnu" ? `${NOUNOU} : à confirmer` : `${NOUNOU} garde Milan`;
+  return `<li class="row"><button class="grow" data-act="form" data-type="vac" data-id="${x.m}"><div class="t">${x.nb > 1 ? `Semaine ${x.n} · ` : ""}${vacDates(x)}</div>
+    <div class="m"><span class="pill ${x.avecLy ? "avec" : "sans"}">${x.avecLy ? "Lyssia avec nous" : `Lyssia chez ${FLAVIE}`}</span><span>${nn}</span>${x.feries.map((d) => `<span class="tag">${fmt(d)} férié</span>`).join("")}</div>
+    <div class="m">${esc(vacPourquoi(x, true))}${x.v.note ? ` · ${esc(x.v.note.split("\n")[0])}` : ""}</div></button><span class="etat ${x.etat}">${ETATS[x.etat]}</span></li>`;
+}
 const coucheur = (e) => e.qui === "Medhi" ? "Chloé" : "Medhi";
 function eventRow(e) {
+  if (e.samedi) return `<li class="row k-medhi"><span class="bubble sam-on">Sam.</span><button class="grow" data-act="sub" data-type="samedis"><div class="t">Medhi travaille</div><div class="m"><span class="kid k-medhi">Medhi</span><span>${e.ex ? "samedi échangé" : "un samedi sur deux"}</span></div></button></li>`;
   if (e.poubelle) { const so = SORTES[e.c.s], f = pbFaite(e.c);
     return `<li class="row"><button class="tick ${f ? "on" : ""}" data-act="poubelle" data-c="${e.c.d}" data-s="${e.c.s}" aria-label="${f ? "Annuler" : "C'est sorti"} : ${so.nom}" style="${f ? "" : `border-color:${so.couleur}`}">${f ? CHECK : ""}</button>
     <button class="grow" data-act="sub" data-type="poubelles"><div class="t">Sortir la ${so.nom.toLowerCase()}</div><div class="m"><span class="tag" style="background:${so.couleur};color:${so.texte}">${so.detail.split(",")[0]}</span><span>${f ? `sortie${f.par ? " par " + esc(f.par) : ""}` : `collecte ${fmt(e.c.d)} ${so.moment}`}</span></div></button></li>`; }
@@ -1386,6 +1537,23 @@ function openForm(type, id, extra) {
       <label class="f">Éléments, un par ligne<textarea id="f-items" name="items" placeholder="Maillot&#10;Crème solaire&#10;Chargeurs"></textarea></label>
       <div class="actions"><button class="btn" type="submit">Créer</button></div></form>`);
   }
+  if (type === "vac") {
+    const x = infoVac(id); if (!x) return; const v = x.v, sol = v.sol || {};
+    const radio = (name, lib, val) => `<div class="f">${lib}<div class="chips">${Object.entries(CONGE).map(([k, l]) => `<label><input type="radio" name="${name}" value="${k}" ${(val || "") === k ? "checked" : ""}><span>${l}</span></label>`).join("")}</div></div>`;
+    const sel = (nom) => {
+      const auto = nom === "Milan" && x.nounou === "garde";
+      const opts = Object.entries(SOLS).filter(([k]) => k !== "nounou" || (nom === "Milan" && !auto));
+      return `<label class="f">${nom === "Naelia" ? "Naelia (Nanou)" : nom}<select name="sol_${nom}"><option value="">${auto ? `Chez ${NOUNOU} (elle travaille cette semaine)` : "Pas encore de solution"}</option>${opts.map(([k, l]) => `<option value="${k}" ${sol[nom] === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>`;
+    };
+    const nn = x.nounou === "conge" ? `<b>${NOUNOU} est en congés</b> (${x.cong.map((c) => c.du === c.au ? fmtCourt(c.du) : `du ${fmtCourt(c.du)} au ${fmtCourt(c.au)}`).join(", ")}) : il faut une solution pour Milan.` : x.nounou === "inconnu" ? `${NOUNOU} : à confirmer avec elle.` : `${NOUNOU} travaille : elle garde Milan.`;
+    openSheet(`${vacTitre(x)} · ${vacDates(x)}`, `<form class="form" data-form="vac" data-id="${id}">
+      <div class="faits"><p>${x.avecLy ? "<b>Lyssia est avec nous.</b>" : `Lyssia est chez ${FLAVIE}.`}</p><p>${nn}</p>${x.feries.length ? `<p>${x.feries.map(fmt).join(", ")} : férié.</p>` : ""}</div>
+      ${radio("medhi", "Medhi pose des congés", v.medhi)}${radio("chloe", "Chloé pose des congés", v.chloe)}
+      <h3>Sinon, qui garde les enfants</h3>
+      ${sel("Milan")}${sel("Naelia")}${x.avecLy ? sel("Lyssia") : ""}
+      <label class="f">Note<textarea id="f-note" name="note" placeholder="Ex. Nanou au centre lundi et mardi, mamie le mercredi">${esc(v.note || "")}</textarea></label>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button></div></form>`);
+  }
   if (type === "exception") {
     openSheet("Exception de garde", `<form class="form" data-form="exception">
       <div class="two"><label class="f">Du<input type="date" id="f-du" name="du" required value="${t}"></label><label class="f">Au<input type="date" id="f-au" name="au" required value="${t}"></label></div>
@@ -1432,7 +1600,7 @@ function addFrequent(nom) {
   setDoc(doc(fs, "config", "frequents"), { noms: list }).catch(() => {});
 }
 async function exporter() {
-  const data = { exporte: now(), garde: S.garde, voiture: S.voiture, releves: S.releves };
+  const data = { exporte: now(), garde: S.garde, voiture: S.voiture, releves: S.releves, samedis: S.samCfg, nounou: S.nounou };
   for (const k of Object.keys(COLS)) data[k] = S[k];
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const name = `qg-famille-${today()}.json`;
@@ -1474,6 +1642,17 @@ const ACT = {
     await W(() => (f ? deleteDoc(doc(fs, "poubelles_sorties", id)) : setDoc(doc(fs, "poubelles_sorties", id), { par: qui(), le: now() })), f ? "Annulé" : `${so.nom} sortie, merci !`);
   },
   "frais-all": () => { S.fraisAll = !S.fraisAll; render(); },
+  "sam-all": () => { S.samAll = !S.samAll; render(); },
+  "sam-toggle": async (d) => {
+    const e = samediEx(d.d); const r = regleSamedi(d.d);
+    await W(() => (e ? deleteDoc(doc(fs, "samedis_exceptions", d.d)) : setDoc(doc(fs, "samedis_exceptions", d.d), { travaille: !r, par: qui(), le: now() })),
+      e ? `${fmt(d.d)} : retour au rythme normal` : `Noté : Medhi ${r ? "ne travaille pas" : "travaille"} ${fmt(d.d)}`);
+  },
+  "nounou-del": async (d) => {
+    if (S.confirm !== "nn" + d.k) { S.confirm = "nn" + d.k; render(); return; }
+    S.confirm = null; const l = congesNounou(); const old = l.slice(); l.splice(Number(d.k), 1);
+    await W(() => setDoc(doc(fs, "config", "nounou"), { conges: l }), "Congés supprimés", () => setDoc(doc(fs, "config", "nounou"), { conges: old }));
+  },
   "frais-solde": async () => {
     if (S.confirm !== "solde") { S.confirm = "solde"; render(); return; }
     S.confirm = null; const l = S.frais.filter((f) => !f.regle); const t = today();
@@ -1676,6 +1855,20 @@ const SUBMIT = {
     let du = fd.get("du"), au = fd.get("au"); if (au < du) [du, au] = [au, du];
     closeSheet(); await W(() => col("exceptions").add({ du, au, avec: fd.get("avec") === "1", motif: String(fd.get("motif") || "") }), "Exception ajoutée");
   },
+  vac: async (fd, f) => {
+    const id = f.dataset.id; const sol = {};
+    for (const n of ["Milan", "Naelia", "Lyssia"]) sol[n] = String(fd.get("sol_" + n) || "");
+    const data = { medhi: fd.get("medhi") || "", chloe: fd.get("chloe") || "", sol, note: String(fd.get("note") || "").trim(), maj: now(), par: qui() };
+    closeSheet(); await W(() => setDoc(doc(fs, "vacances_semaines", id), data), "Semaine enregistrée");
+  },
+  "nounou-add": async (fd, f) => {
+    let du = fd.get("du"), au = fd.get("au") || du; if (!isDate(du) || !isDate(au)) return; if (au < du) [du, au] = [au, du];
+    f.reset(); await W(() => setDoc(doc(fs, "config", "nounou"), { conges: [...congesNounou(), { du, au }].sort((a, b) => a.du.localeCompare(b.du)) }), `Congés de ${NOUNOU} ajoutés`);
+  },
+  "sam-cfg": async (fd) => {
+    const a = fd.get("ancre"); if (!isDate(a)) return; const sam = addDays(mondayOf(a), 5);
+    await W(() => setDoc(doc(fs, "config", "samedis"), { ancre: sam }), `C'est noté : un samedi sur deux à partir du ${fmt(sam)}`);
+  },
   "garde-cfg": async (fd) => {
     const ancre = fd.get("ancre"); if (!ancre) return;
     await W(() => setDoc(doc(fs, "config", "garde"), { ancre: mondayOf(ancre), heure: fd.get("heure") || "16:40" }), "Règle enregistrée");
@@ -1791,12 +1984,16 @@ function ecouter() {
   S.unsub.push(onSnapshot(doc(fs, "config", "ajouts"), (s) => {
     if (s.metadata.fromCache) return;
     const fait = s.exists() ? s.data() : {};
+    const b = writeBatch(fs); const maj = {};
     if (!fait.paieNounou) {
-      const b = writeBatch(fs);
       b.set(doc(fs, "rappels", "paie-nounou"), { titre: "Faire la paie de la nounou (Pajemploi)", prochaine: "2026-11-25", cat: "Administratif", recur: { n: 1, unite: "mois", fixe: true, jour: 25 }, pour: [], qui: "Chloé", note: "Déclaration Pajemploi entre le 25 et le 5 du mois suivant", histo: [], termine: false, cree: now() });
-      b.set(doc(fs, "config", "ajouts"), { ...fait, paieNounou: true });
-      b.commit().catch(() => {});
+      maj.paieNounou = true;
     }
+    if (!fait.congesNounou2627) {
+      b.set(doc(fs, "config", "nounou"), { conges: [{ du: "2026-12-28", au: "2026-12-31" }, { du: "2027-02-08", au: "2027-02-12" }, { du: "2027-04-05", au: "2027-04-09" }] });
+      maj.congesNounou2627 = true;
+    }
+    if (Object.keys(maj).length) { b.set(doc(fs, "config", "ajouts"), { ...fait, ...maj }); b.commit().catch(() => {}); }
   }, () => {}));
   S.unsub.push(onSnapshot(collection(fs, "animaux"), (snap) => {
     if (!snap.metadata.fromCache && snap.empty) setDoc(doc(fs, "animaux", "vega"), { nom: "Véga", espece: "Chien", croq: {}, veto: {}, cree: now() }).catch(() => {});
@@ -1806,6 +2003,8 @@ function ecouter() {
     if (!s.exists() && !s.metadata.fromCache) premierLancement().catch(() => {});
     render();
   }, () => {}));
+  S.unsub.push(onSnapshot(doc(fs, "config", "samedis"), (s) => { S.samCfg = s.exists() ? s.data() : null; render(); }, () => {}));
+  S.unsub.push(onSnapshot(doc(fs, "config", "nounou"), (s) => { S.nounou = s.exists() ? s.data() : null; render(); }, () => {}));
   S.unsub.push(onSnapshot(doc(fs, "config", "frequents"), (s) => { S.frequents = s.exists() && Array.isArray(s.data().noms) ? s.data().noms : []; }, () => {}));
 }
 
